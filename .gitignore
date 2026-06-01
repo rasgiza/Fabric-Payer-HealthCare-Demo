@@ -253,3 +253,7 @@ desktop.ini
 
 # Jupyter scratch
 *-checkpoint.ipynb
+
+# generated synthetic data
+data/synth/
+synthea/output/

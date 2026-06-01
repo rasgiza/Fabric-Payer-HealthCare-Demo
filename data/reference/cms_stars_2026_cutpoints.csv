@@ -1,0 +1,15 @@
+measure_id,one_star_max,two_star_max,three_star_max,four_star_max,five_star_min,direction,measurement_year,rating_year
+CDC-EYE,0.62,0.74,0.81,0.88,0.92,higher_better,2024,2026
+CBP,0.59,0.69,0.77,0.83,0.88,higher_better,2024,2026
+SUPD,0.78,0.84,0.88,0.92,0.95,higher_better,2024,2026
+MAH-PDC,0.83,0.87,0.89,0.91,0.93,higher_better,2024,2026
+MAD-PDC,0.83,0.87,0.89,0.91,0.93,higher_better,2024,2026
+MAC-PDC,0.82,0.86,0.88,0.90,0.92,higher_better,2024,2026
+SPC-PDC,0.55,0.62,0.68,0.74,0.80,higher_better,2024,2026
+CMR,0.55,0.66,0.74,0.82,0.88,higher_better,2024,2026
+FMC,0.55,0.62,0.68,0.74,0.80,higher_better,2024,2026
+PCR,0.13,0.11,0.09,0.07,0.05,lower_better,2024,2026
+TRC,0.42,0.55,0.66,0.76,0.84,higher_better,2024,2026
+COL,0.55,0.65,0.74,0.81,0.86,higher_better,2024,2026
+BCS,0.65,0.72,0.78,0.84,0.88,higher_better,2024,2026
+CDC-HBA1C,0.42,0.34,0.27,0.20,0.14,lower_better,2024,2026

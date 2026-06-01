@@ -1,0 +1,16 @@
+measure_id,measure_name,measure_set,domain,lob_applicability,star_weight,vsac_oid_ref,description
+CDC-EYE,Eye Exam for Patients with Diabetes,HEDIS MY2026,Effectiveness of Care,"MA,Commercial,Medicaid",1,2.16.840.1.113883.3.464.1004.2024,Diabetic retinal eye exam annually
+CDC-HBA1C,HbA1c Control for Patients with Diabetes (>9.0%),HEDIS MY2026,Effectiveness of Care,"MA,Commercial,Medicaid",1,2.16.840.1.113883.3.464.1004.2110,A1c >9.0% (poor control - inverse measure)
+COL,Colorectal Cancer Screening,HEDIS MY2026,Effectiveness of Care,"MA,Commercial",1,2.16.840.1.113883.3.464.1004.2056,Adults 45-75 with documented CRC screening
+BCS,Breast Cancer Screening,HEDIS MY2026,Effectiveness of Care,"MA,Commercial,Medicaid",1,2.16.840.1.113883.3.464.1004.2032,Women 50-74 with biennial mammogram
+CCS,Cervical Cancer Screening,HEDIS MY2026,Effectiveness of Care,"Commercial,Medicaid",1,2.16.840.1.113883.3.464.1004.2034,Women 21-64 with appropriate screening
+CBP,Controlling High Blood Pressure,HEDIS MY2026,Effectiveness of Care,"MA,Commercial,Medicaid",3,2.16.840.1.113883.3.464.1004.2025,Adults 18-85 with HTN and BP <140/90
+SUPD,Statin Use in Persons with Diabetes,HEDIS MY2026/Stars,Effectiveness of Care,MA,1,2.16.840.1.113883.3.464.1004.2585,Adults 40-75 with diabetes on statin therapy
+MAH-PDC,PDC for Hypertension (RAS antagonists),Stars Part D,Medication Adherence,MA,3,,PDC >=80% for RAS antagonists
+MAD-PDC,PDC for Diabetes,Stars Part D,Medication Adherence,MA,3,,PDC >=80% for non-insulin diabetes meds
+MAC-PDC,PDC for Cholesterol (Statins),Stars Part D,Medication Adherence,MA,3,,PDC >=80% for statins
+SPC-PDC,PDC for Schizophrenia,Stars Part D,Medication Adherence,MA,1,,PDC >=80% for antipsychotics
+CMR,Comprehensive Medication Review Completion,Stars Part D,MTM,MA,1,,Eligible MTM members with completed CMR
+FMC,Follow-up After ED Visit for People with Multiple High-Risk Chronic Conditions,HEDIS MY2026,Effectiveness of Care,"MA,Medicaid",1,,Follow-up within 7 days of ED visit
+PCR,Plan All-Cause Readmissions,HEDIS MY2026/Stars,Utilization,MA,1,2.16.840.1.113883.3.464.1004.2196,30-day acute inpatient readmission (inverse)
+TRC,Transitions of Care,HEDIS MY2026,Effectiveness of Care,MA,1,,Notification + medication reconciliation post-discharge

@@ -1,0 +1,23 @@
+condition_code,condition_name,icd10,prevalence_ma,prevalence_commercial,prevalence_medicaid,age_skew,hcc_v28
+DIABETES,Type 2 Diabetes,E11.9,0.32,0.10,0.13,55,HCC-21
+DIABETES_COMP,Type 2 Diabetes with Complications,E11.22,0.18,0.04,0.06,60,HCC-20
+HTN,Essential Hypertension,I10,0.62,0.28,0.30,55,
+HLD,Hyperlipidemia,E78.5,0.58,0.30,0.22,55,
+COPD,Chronic Obstructive Pulmonary Disease,J44.9,0.18,0.05,0.10,65,HCC-111
+CHF,Congestive Heart Failure,I50.9,0.14,0.02,0.04,70,
+CKD3,Chronic Kidney Disease Stage 3,N18.3,0.12,0.02,0.04,68,
+CKD4,Chronic Kidney Disease Stage 4,N18.4,0.04,0.005,0.012,72,HCC-189
+CAD,Coronary Artery Disease,I25.10,0.22,0.06,0.08,65,
+ATRIAL_FIB,Atrial Fibrillation,I48.91,0.10,0.02,0.03,72,HCC-223
+DEPRESSION,Major Depressive Disorder,F33.1,0.16,0.10,0.18,45,HCC-103
+BIPOLAR,Bipolar Disorder,F31.9,0.03,0.02,0.04,40,HCC-103
+ANXIETY,Generalized Anxiety Disorder,F41.1,0.18,0.16,0.18,40,
+ASTHMA,Asthma,J45.909,0.08,0.10,0.14,30,
+OBESITY,Morbid Obesity (BMI 40+),E66.01,0.10,0.08,0.13,45,HCC-37
+CANCER_BREAST,Breast Cancer (history),Z85.3,0.06,0.02,0.02,60,
+CANCER_COLON,Colon Cancer (history),Z85.038,0.04,0.01,0.01,65,
+SUD,Substance Use Disorder,F19.20,0.04,0.04,0.10,35,
+SCHIZOPHRENIA,Schizophrenia,F20.9,0.008,0.005,0.018,40,
+SEIZURE,Seizure Disorder,G40.909,0.02,0.012,0.02,40,HCC-79
+DEMENTIA,Alzheimer/Dementia,G30.9,0.10,0.002,0.005,80,
+ESRD,End-Stage Renal Disease,N18.6,0.012,0.001,0.002,68,HCC-188

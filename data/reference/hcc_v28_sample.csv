@@ -1,0 +1,21 @@
+hcc_v28,description,raf_coefficient,sample_icd10
+HCC-19,Diabetes with Acute Complications,0.302,E11.65
+HCC-20,Diabetes with Chronic Complications,0.302,E11.22
+HCC-21,Diabetes without Complication,0.105,E11.9
+HCC-37,Morbid Obesity,0.211,E66.01
+HCC-48,Coagulation Defects and Other Specified Hematological Disorders,0.187,D68.4
+HCC-79,Seizure Disorders and Convulsions,0.350,G40.909
+HCC-103,Major Depressive and Bipolar Disorders,0.314,F33.1
+HCC-111,Chronic Obstructive Pulmonary Disease,0.319,J44.9
+HCC-138,Heart Infection/Inflammation Except Rheumatic,0.378,I33.0
+HCC-180,Acute Renal Failure,0.420,N17.9
+HCC-188,Chronic Kidney Disease Stage 5,0.289,N18.5
+HCC-189,Chronic Kidney Disease Severe (Stage 4),0.289,N18.4
+HCC-223,Specified Heart Arrhythmias,0.268,I48.91
+HCC-264,Vascular Disease with Complications,0.383,I70.92
+HCC-326,Hip Fracture/Dislocation,0.337,S72.001A
+HCC-368,Major Symptoms Abnormalities,0.224,R65.20
+HCC-379,Disorders of Immunity,0.392,D89.9
+HCC-397,Cellulitis and Soft Tissue Infections,0.181,L03.90
+HCC-401,Major Head Injury,0.231,S06.0X9A
+HCC-417,Coma Brain Compression Anoxic Damage,0.519,G93.40
