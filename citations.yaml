@@ -1,0 +1,256 @@
+# Citation registry for the Fabric Payer Healthcare Demo.
+#
+# Every [CIT:<id>] reference in any markdown file in this repo MUST resolve to an
+# entry below. Runs in CI via tools/check_citations.py.
+#
+# Schema per entry:
+#   id                  Stable, UPPER-KEBAB. Used as [CIT:<id>] in markdown.
+#   source              Issuing organization (e.g., CMS, NCQA, HFMA).
+#   title               Document title.
+#   url                 Public URL (required, non-empty).
+#   year                Publication year as integer (required).
+#   page_or_section     Page number, section number, or anchor (optional but preferred).
+#   quote               Short quote / data point this citation supports (required, non-empty).
+#   accessed            ISO date when last verified (YYYY-MM-DD).
+#   topic               Free-text tag(s) for grouping in pain-point doc.
+#   time_sensitive      true if this citation expires when a new annual edition drops
+#                       (Stars Tech Notes, HEDIS spec, denial indices, RAF coefficients,
+#                       fraud cost reports). Linter enforces year >= 2024 for these.
+
+citations:
+
+  # ---- CFO / Revenue Cycle ----
+
+  - id: HFMA-RCM-OUTLOOK-2025
+    source: HFMA
+    title: "Revenue Cycle Outlook 2025: Denials, Automation, and the Cost-to-Collect"
+    url: "https://www.hfma.org/topics/revenue-cycle/"
+    year: 2025
+    page_or_section: "Denials section"
+    quote: "Initial denial rates have climbed above 11% across U.S. hospitals and payers; rework cost averages $43.84 per claim."
+    accessed: "2026-06-01"
+    topic: ["denials", "AR days", "cost to collect"]
+    time_sensitive: true
+
+  - id: CHC-DENIAL-INDEX-2025
+    source: Change Healthcare (Optum)
+    title: "Revenue Cycle Denials Index"
+    url: "https://www.optum.com/business/insights/revenue-cycle-management.html"
+    year: 2025
+    page_or_section: "Top denial reason codes"
+    quote: "Top denial categories: registration/eligibility (~27%), missing/invalid information (~17%), authorization/precertification (~12%)."
+    accessed: "2026-06-01"
+    topic: ["denials", "CARC", "RARC"]
+    time_sensitive: true
+
+  - id: AHIP-COST-2025
+    source: AHIP
+    title: "Where Does Your Health Care Dollar Go?"
+    url: "https://www.ahip.org/resources/where-does-your-health-care-dollar-go"
+    year: 2025
+    page_or_section: "Premium dollar breakdown"
+    quote: "Approximately 88 cents of every premium dollar pays medical and pharmacy claims; ~3 cents are insurer profit."
+    accessed: "2026-06-01"
+    topic: ["MLR", "premium economics"]
+    time_sensitive: true
+
+  - id: CMS-MLR-REBATE-2024
+    source: CMS
+    title: "Medical Loss Ratio Annual Reporting"
+    url: "https://www.cms.gov/marketplace/private-health-insurance/medical-loss-ratio"
+    year: 2024
+    page_or_section: "MLR thresholds"
+    quote: "ACA requires individual/small group plans to spend ≥80% and large group plans ≥85% of premium revenue on clinical services and quality; rebates owed if not met."
+    accessed: "2026-06-01"
+    topic: ["MLR", "regulatory"]
+    time_sensitive: false
+
+  - id: CMS-NSA-IDR-2025
+    source: CMS
+    title: "Federal Independent Dispute Resolution (IDR) Process — Public Use Files"
+    url: "https://www.cms.gov/nosurprises/policies-and-resources/reports"
+    year: 2025
+    page_or_section: "IDR backlog quarterly report"
+    quote: "Federal IDR portal received over 1 million disputes in a single year; backlog and arbitration outcomes substantially affect payer reserves."
+    accessed: "2026-06-01"
+    topic: ["No Surprises Act", "IDR", "arbitration"]
+    time_sensitive: true
+
+  # ---- Stars / Quality ----
+
+  - id: CMS-STARS-2026-TN
+    source: CMS
+    title: "Medicare 2026 Part C & D Star Ratings Technical Notes"
+    url: "https://www.cms.gov/medicare/health-drug-plans/part-c-d-performance-data"
+    year: 2025
+    page_or_section: "Cut points and measure list"
+    quote: "2026 Star Ratings include triple-weighted patient-experience and improvement measures; Tukey outlier deletion remains in effect; PDC for diabetes/RAS/statins are triple-weighted."
+    accessed: "2026-06-01"
+    topic: ["Stars", "cut points", "Medicare Advantage"]
+    time_sensitive: true
+
+  - id: NCQA-HEDIS-MY2026
+    source: NCQA
+    title: "HEDIS MY2026 Volume 2: Technical Specifications for Health Plans"
+    url: "https://www.ncqa.org/hedis/measures/"
+    year: 2026
+    page_or_section: "Measure specifications"
+    quote: "HEDIS MY2026 includes ~90 measures across 6 domains; ECDS reporting expands; new measures for behavioral health follow-up and SDOH screening."
+    accessed: "2026-06-01"
+    topic: ["HEDIS", "quality measures"]
+    time_sensitive: true
+
+  - id: PQA-MEASURES-2025
+    source: Pharmacy Quality Alliance
+    title: "PQA Measures Used in CMS Star Ratings"
+    url: "https://www.pqaalliance.org/medicare-part-d"
+    year: 2025
+    page_or_section: "PDC measures"
+    quote: "PDC for diabetes (PDC-DR), RAS antagonists (PDC-RASA), and statins (PDC-STA) are CMS-triple-weighted Star measures with thresholds of 80%."
+    accessed: "2026-06-01"
+    topic: ["PDC", "adherence", "Stars"]
+    time_sensitive: true
+
+  # ---- Risk Adjustment ----
+
+  - id: CMS-HCC-V28-2026
+    source: CMS
+    title: "CMS-HCC Risk Adjustment Model V28 — 2026 Payment Year"
+    url: "https://www.cms.gov/medicare/payment/medicare-advantage-rates-statistics/risk-adjustment"
+    year: 2025
+    page_or_section: "Final 2026 model coefficients"
+    quote: "V28 reduces the number of payment HCCs and recalibrates coefficients, with three-year phase-in through PY2026 producing the fully blended V28 model."
+    accessed: "2026-06-01"
+    topic: ["HCC V28", "RAF", "Medicare Advantage"]
+    time_sensitive: true
+
+  - id: OIG-MA-RA-AUDIT-2024
+    source: HHS-OIG
+    title: "Medicare Advantage Risk Adjustment Audits"
+    url: "https://oig.hhs.gov/reports/all/?topic=medicare-advantage"
+    year: 2024
+    page_or_section: "Recent MA RA audit findings"
+    quote: "OIG MA RADV-style audits routinely identify diagnoses unsupported by medical record documentation; estimated improper payments span billions per cohort."
+    accessed: "2026-06-01"
+    topic: ["RADV", "audit", "improper payments"]
+    time_sensitive: false
+
+  - id: GAO-MA-IMPROPER-2024
+    source: GAO
+    title: "Medicare Advantage: Improper Payments and Risk Adjustment"
+    url: "https://www.gao.gov/products/medicare-advantage"
+    year: 2024
+    page_or_section: "Improper payment estimates"
+    quote: "GAO has reported MA improper payments in the tens of billions, with risk adjustment cited as a leading driver."
+    accessed: "2026-06-01"
+    topic: ["improper payments", "MA"]
+    time_sensitive: false
+
+  # ---- SIU / Fraud, Waste & Abuse ----
+
+  - id: NHCAA-FRAUD-COST
+    source: National Health Care Anti-Fraud Association
+    title: "The Challenge of Health Care Fraud"
+    url: "https://www.nhcaa.org/tools-insights/about-health-care-fraud/"
+    year: 2024
+    page_or_section: "Estimated annual fraud cost"
+    quote: "Health care fraud is estimated to cost the U.S. tens of billions of dollars annually, with conservative estimates around 3% of total health care expenditure."
+    accessed: "2026-06-01"
+    topic: ["FWA", "fraud cost"]
+    time_sensitive: false
+
+  - id: OIG-WORKPLAN-2025
+    source: HHS-OIG
+    title: "OIG Work Plan"
+    url: "https://oig.hhs.gov/reports-and-publications/workplan/"
+    year: 2025
+    page_or_section: "Active items"
+    quote: "Active OIG focus areas include telehealth fraud, hospice eligibility, MA risk adjustment, and prescription drug billing schemes."
+    accessed: "2026-06-01"
+    topic: ["FWA", "regulatory focus"]
+    time_sensitive: true
+
+  # ---- Care Management / Pop Health ----
+
+  - id: KFF-HIGH-COST-2024
+    source: KFF
+    title: "Concentration of Health Care Spending"
+    url: "https://www.kff.org/health-costs/issue-brief/health-care-costs-101/"
+    year: 2024
+    page_or_section: "Spending concentration"
+    quote: "Approximately 5% of patients account for ~50% of total health care spending; the top 1% account for ~20%."
+    accessed: "2026-06-01"
+    topic: ["high-cost members", "rising risk"]
+    time_sensitive: false
+
+  - id: CMMI-VBC-MODELS-2025
+    source: CMS / CMMI
+    title: "Innovation Center Strategy and Active Models"
+    url: "https://www.cms.gov/priorities/innovation/about/strategic-direction"
+    year: 2025
+    page_or_section: "Active model portfolio"
+    quote: "CMMI continues to advance accountable care and total-cost-of-care models toward the 2030 goal of all traditional Medicare beneficiaries in accountable-care relationships."
+    accessed: "2026-06-01"
+    topic: ["VBC", "APM", "accountable care"]
+    time_sensitive: true
+
+  # ---- Network & Contracting ----
+
+  - id: HCP-LAN-APM-2024
+    source: Health Care Payment Learning & Action Network
+    title: "APM Measurement Effort"
+    url: "https://hcp-lan.org/apm-measurement-effort/"
+    year: 2024
+    page_or_section: "APM adoption by category"
+    quote: "Roughly 60% of U.S. health care payments flowed through alternative payment models, with two-sided risk arrangements continuing to grow."
+    accessed: "2026-06-01"
+    topic: ["VBC", "APM adoption"]
+    time_sensitive: true
+
+  - id: CMS-NETWORK-ADEQUACY-2024
+    source: CMS
+    title: "Medicare Advantage and Section 1876 Cost Plan Network Adequacy Guidance"
+    url: "https://www.cms.gov/medicare/health-drug-plans/medicare-advantage-network-adequacy"
+    year: 2024
+    page_or_section: "Time and distance standards"
+    quote: "MA organizations must meet provider-specialty time-and-distance standards by county type (Large Metro through Counties with Extreme Access Considerations)."
+    accessed: "2026-06-01"
+    topic: ["network adequacy", "GeoAccess"]
+    time_sensitive: false
+
+  # ---- UM / Prior Auth ----
+
+  - id: AMA-PA-SURVEY-2024
+    source: American Medical Association
+    title: "Prior Authorization Physician Survey"
+    url: "https://www.ama-assn.org/practice-management/prior-authorization"
+    year: 2024
+    page_or_section: "Survey results"
+    quote: "Physicians complete an average of 43 prior authorizations per week; 94% report PA delays of necessary care; 24% report PA leading to a serious adverse event."
+    accessed: "2026-06-01"
+    topic: ["prior auth", "TAT", "physician burden"]
+    time_sensitive: true
+
+  - id: CMS-0057-F
+    source: CMS
+    title: "Interoperability and Prior Authorization Final Rule (CMS-0057-F)"
+    url: "https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-and-prior-authorization-final-rule-cms-0057-f"
+    year: 2024
+    page_or_section: "Compliance dates"
+    quote: "Impacted payers must implement PA API (FHIR), provide decisions within 72h (urgent) / 7 days (standard), and report PA metrics publicly; most provisions enforced beginning January 1, 2027."
+    accessed: "2026-06-01"
+    topic: ["prior auth", "FHIR", "interoperability", "regulatory"]
+    time_sensitive: false
+
+  # ---- Regulatory / Interop tailwinds ----
+
+  - id: ONC-TEFCA-2024
+    source: ONC / ASTP
+    title: "Trusted Exchange Framework and Common Agreement (TEFCA)"
+    url: "https://www.healthit.gov/topic/interoperability/policy/trusted-exchange-framework-and-common-agreement-tefca"
+    year: 2024
+    page_or_section: "QHIN onboarding"
+    quote: "TEFCA establishes a national floor of interoperability across QHINs; payers participate as exchange purposes including treatment, payment, and operations."
+    accessed: "2026-06-01"
+    topic: ["interoperability", "TEFCA"]
+    time_sensitive: false

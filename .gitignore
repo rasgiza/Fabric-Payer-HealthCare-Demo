@@ -216,3 +216,40 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Project-specific (Fabric Payer Healthcare Demo) ---
+# Power BI binaries (we use TMDL/PBIR, not .pbix)
+*.pbix
+*.pbit
+*.pbids
+
+# Synthea generated data (regen, never commit)
+synthea/output/
+synthea-with-dependencies.jar
+data/raw/
+data/synthetic/
+
+# Fabric / OneLake local caches
+.fabric/
+*.parquet.crc
+_delta_log/
+
+# Local secrets / configs (defense in depth, .env already covered above)
+.env.*
+!.env.example
+local.settings.json
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+
+# Jupyter scratch
+*-checkpoint.ipynb
