@@ -1,0 +1,83 @@
+# Payer ontology — entity / relationship spec
+#
+# Used by:
+#   tools/build_graph.py   — builds a NetworkX MultiDiGraph from the gold lakehouse
+#   tools/audit_rels.py    — checks every relationship endpoint resolves
+#   PayerOntologyAgent     — Phase 5 graph-traversal Foundry agent
+#   Fabric Graph deployment — Phase 7
+#
+# Each entity declares its source gold table + primary key column.
+# Each relationship declares from/to entity, source table, and the join columns.
+
+entities:
+  Member:           { source: gold_dim_member,        pk: member_id }
+  Subscriber:       { source: gold_dim_member,        pk: subscriber_id }
+  EligibilitySpan:  { source: gold_fact_member_month, pk: [member_id, plan_year, month], synthetic: true }
+  Plan:             { source: gold_dim_member,        pk: plan_id, synthetic: true }
+  Product:          { source: gold_dim_product,       pk: product_id }
+  LOB:              { source: gold_dim_lob,           pk: lob_id }
+  Payer:            { source: gold_dim_payer,         pk: payer_id }
+  Provider:         { source: gold_dim_provider,      pk: provider_npi }
+  Claim:            { source: gold_fact_claim,        pk: claim_id, distinct: true }
+  ClaimLine:        { source: gold_fact_claim,        pk: [claim_id, line_no] }
+  RxClaim:          { source: gold_fact_rx_claim,     pk: rx_claim_id }
+  Authorization:    { source: gold_fact_auth,         pk: auth_id }
+  Appeal:           { source: gold_fact_appeal,       pk: appeal_id }
+  Diagnosis:        { source: gold_dim_diagnosis,     pk: dx_code }
+  Procedure:        { source: gold_dim_procedure,     pk: cpt_hcpcs }
+  Drug:             { source: gold_dim_drug,          pk: ndc_code }
+  HCC:              { source: gold_dim_hcc,           pk: hcc_id }
+  Condition:        { source: silver_conditions,      pk: [member_id, condition_code] }
+  HEDISMeasure:     { source: gold_fact_quality_event, pk: measure_id, distinct: true }
+  QualityEvent:     { source: gold_fact_quality_event, pk: [member_id, measure_id, plan_year] }
+  Premium:          { source: gold_fact_premium,      pk: [member_id, plan_year] }
+  RAFScore:         { source: gold_fact_raf_score,    pk: [member_id, plan_year] }
+  CARC:             { source: silver_claims_header,   pk: carc_code, distinct: true }
+  SDOHArea:         { source: gold_dim_member,        pk: zip3, distinct: true }
+
+relationships:
+  # member identity + enrollment
+  - { name: hasSubscriber,     from: Member,           to: Subscriber,      via: gold_dim_member, on: [member_id, subscriber_id], built: false }
+  - { name: enrolledIn,        from: Member,           to: EligibilitySpan, via: gold_fact_member_month, on: [member_id], built: false }
+  - { name: spanInPlan,        from: EligibilitySpan,  to: Plan,            via: gold_fact_member_month, on: [member_id], extra: plan_id, built: false }
+  - { name: planOfProduct,     from: Plan,             to: Product,         via: gold_dim_member, on: [plan_id, product], built: false }
+  - { name: productOfLOB,      from: Product,          to: LOB,             via: gold_dim_product, on: [product_id, lob] }
+  - { name: coversMember,      from: Payer,            to: Member,          via: gold_dim_member, on: [payer_id, member_id] }
+  - { name: paysPremium,       from: Member,           to: Premium,         via: gold_fact_premium, on: [member_id], built: false }
+  - { name: livesInArea,       from: Member,           to: SDOHArea,        via: gold_dim_member, on: [member_id, zip3] }
+
+  # claim flow
+  - { name: filedClaim,        from: Member,           to: Claim,           via: gold_fact_claim, on: [member_id, claim_id] }
+  - { name: billsClaim,        from: Provider,         to: Claim,           via: gold_fact_claim, on: [provider_npi, claim_id] }
+  - { name: claimAdjudicatedBy, from: Claim,           to: Payer,           via: gold_fact_claim, on: [claim_id, payer_id] }
+  - { name: claimHasLine,      from: Claim,            to: ClaimLine,       via: gold_fact_claim, on: [claim_id], built: false }
+  - { name: lineUsesProcedure, from: ClaimLine,        to: Procedure,       via: gold_fact_claim, on: [claim_id, line_no, cpt_hcpcs], built: false }
+  - { name: claimHasPrimaryDx, from: Claim,            to: Diagnosis,       via: gold_fact_claim, on: [claim_id, primary_dx_code] }
+  - { name: claimDeniedWith,   from: Claim,            to: CARC,            via: gold_fact_claim, on: [claim_id, carc_code], filter: "denied_int = 1" }
+  - { name: claimRequiresAuth, from: Claim,            to: Authorization,   via: gold_fact_auth, on: [linked_claim_id, auth_id], filter: "linked_claim_id IS NOT NULL" }
+  - { name: appealOf,          from: Appeal,           to: Claim,           via: gold_fact_appeal, on: [claim_id, appeal_id] }
+
+  # pharmacy
+  - { name: filledRx,          from: Member,           to: RxClaim,         via: gold_fact_rx_claim, on: [member_id, rx_claim_id] }
+  - { name: prescribedDrug,    from: RxClaim,          to: Drug,            via: gold_fact_rx_claim, on: [rx_claim_id, ndc_code] }
+  - { name: rxPrescribedBy,    from: Provider,         to: RxClaim,         via: gold_fact_rx_claim, on: [provider_npi, rx_claim_id], join_left: provider_npi, join_right: prescriber_npi }
+
+  # risk adjustment
+  # NOTE: Condition is collapsed into HCC for graph traversal (Condition→HCC join is 1:1 via hcc_v28 col).
+  - { name: memberHasCondition, from: Member,          to: HCC,             via: silver_conditions, on: [member_id, hcc_v28], filter: "hcc_v28 IS NOT NULL" }
+  - { name: conditionMapsHCC,  from: Condition,        to: HCC,             via: silver_conditions, on: [member_id, condition_code, hcc_v28], filter: "hcc_v28 IS NOT NULL", built: false }
+  - { name: memberHasRAF,      from: Member,           to: RAFScore,        via: gold_fact_raf_score, on: [member_id], built: false }
+
+  # quality / Stars
+  # NOTE: QualityEvent is collapsed into HEDISMeasure for graph traversal (compliant events only).
+  - { name: memberQualityEvent, from: Member,          to: HEDISMeasure,    via: gold_fact_quality_event, on: [member_id, measure_id], filter: "compliant" }
+  - { name: eventOfMeasure,    from: QualityEvent,     to: HEDISMeasure,    via: gold_fact_quality_event, on: [member_id, measure_id], built: false }
+
+  # provider relationships
+  - { name: providerInLOB,     from: Provider,         to: LOB,             via: gold_fact_claim, on: [provider_npi, lob], distinct: true, built: false }
+  - { name: pcpOfMember,       from: Provider,         to: Member,          via: gold_dim_member, on: [pcp_provider_id, member_id], join_left: provider_npi, join_right: pcp_provider_id }
+
+  # SIU / FWA traversal
+  - { name: providerToReferral, from: Provider,        to: Provider,        via: gold_fact_claim, on: [provider_npi], synthetic: true, comment: "computed via member co-visit graph in Phase 6" }
+
+# total: 25 entities, 27 first-class relationships (+ 1 synthetic provider-referral edge built in Phase 6)

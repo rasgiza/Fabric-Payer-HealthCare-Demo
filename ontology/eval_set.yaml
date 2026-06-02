@@ -1,0 +1,139 @@
+# Payer Ontology Eval Set
+#
+# 12 KPI ground-truth questions used to validate the PayerOntologyAgent's graph
+# traversal accuracy against the deterministic NetworkX graph.
+#
+# Each question has:
+#   - id           : Q-ONTO-NN
+#   - question     : natural-language question (verified routes through ontology)
+#   - traversal    : declarative spec of the path to walk on the graph
+#   - expected     : computed at eval time from the ground-truth graph (no hardcoded values)
+#   - tolerance    : optional; for count questions, allowed +/- delta as fraction
+#   - persona      : which persona this serves (CFO/Stars/RA/SIU/CareMgmt/Network/UM)
+#
+# 16 calibration pairs (yes/no) used to score precision/recall on factuality.
+# Format: { id: ..., question: ..., expected: yes|no, traversal: ... }
+
+eval_questions:
+
+  - id: Q-ONTO-01
+    persona: CFO
+    question: "How many claims were denied with a missing-information CARC family in plan year 2024?"
+    traversal:
+      type: count_edges
+      edge: claimDeniedWith
+      target_filter: { type: CARC, id_in: [16, 50, 197] }
+    tolerance: 0
+
+  - id: Q-ONTO-02
+    persona: CFO
+    question: "What share of denied claims have an associated appeal?"
+    traversal:
+      type: ratio
+      numerator:   { type: count_nodes_with_edge_in, edges: [appealOf] }
+      denominator: { type: count_edges, edge: claimDeniedWith }
+    tolerance: 0.001
+
+  - id: Q-ONTO-03
+    persona: Stars
+    question: "How many distinct HEDIS measures have at least one compliant member event?"
+    traversal:
+      type: count_distinct_targets
+      edge: memberQualityEvent
+    tolerance: 0
+
+  - id: Q-ONTO-04
+    persona: Stars
+    question: "Which member has the highest count of compliant HEDIS events?"
+    traversal:
+      type: argmax_outdegree
+      from_type: Member
+      edge: memberQualityEvent
+    tolerance: 0
+
+  - id: Q-ONTO-05
+    persona: RA
+    question: "How many distinct HCCs are attributed to members through conditions?"
+    traversal:
+      type: count_distinct_targets
+      edge: memberHasCondition
+    tolerance: 0
+
+  - id: Q-ONTO-06
+    persona: RA
+    question: "How many members have at least one HCC condition?"
+    traversal:
+      type: count_distinct_sources
+      edge: memberHasCondition
+    tolerance: 0
+
+  - id: Q-ONTO-07
+    persona: SIU
+    question: "How many providers billed claims that were denied?"
+    traversal:
+      type: count_distinct_path
+      path: [billsClaim, claimDeniedWith]
+      anchor: source
+    tolerance: 0
+
+  - id: Q-ONTO-08
+    persona: CareMgmt
+    question: "How many members have a PCP assigned?"
+    traversal:
+      type: count_distinct_targets
+      edge: pcpOfMember
+    tolerance: 0
+
+  - id: Q-ONTO-09
+    persona: Network
+    question: "How many distinct providers have at least one prescription on file?"
+    traversal:
+      type: count_distinct_sources
+      edge: rxPrescribedBy
+    tolerance: 0
+
+  - id: Q-ONTO-10
+    persona: UM
+    question: "What fraction of authorizations are linked to a claim (vs. orphan auths)?"
+    traversal:
+      type: ratio
+      numerator:   { type: count_edges, edge: claimRequiresAuth }
+      denominator: { type: count_nodes, node_type: Authorization }
+    tolerance: 0.001
+
+  - id: Q-ONTO-11
+    persona: CFO
+    question: "How many claims connect a member to the same payer that covers them (closed-loop)?"
+    traversal:
+      type: count_paths
+      path: [filedClaim, claimAdjudicatedBy]
+      verify_loop: { from: Member, to: Payer, via_edge: coversMember }
+    tolerance: 0
+
+  - id: Q-ONTO-12
+    persona: SIU
+    question: "How many distinct ZIP3 SDOH areas are represented in the member population?"
+    traversal:
+      type: count_nodes
+      node_type: SDOHArea
+    tolerance: 0
+
+# 16 yes/no calibration pairs
+calibration:
+
+  - { id: CAL-01, persona: CFO,      expected: yes, question: "Are there any denied claims in the graph?", traversal: { type: nonzero_edges, edge: claimDeniedWith } }
+  - { id: CAL-02, persona: CFO,      expected: yes, question: "Are there appeals filed against denied claims?", traversal: { type: nonzero_edges, edge: appealOf } }
+  - { id: CAL-03, persona: Stars,    expected: yes, question: "Are there compliant HEDIS events?", traversal: { type: nonzero_edges, edge: memberQualityEvent } }
+  - { id: CAL-04, persona: RA,       expected: yes, question: "Do any members have HCC conditions?", traversal: { type: nonzero_edges, edge: memberHasCondition } }
+  - { id: CAL-05, persona: SIU,      expected: yes, question: "Are there providers billing denied claims?", traversal: { type: nonzero_path, path: [billsClaim, claimDeniedWith] } }
+  - { id: CAL-06, persona: CareMgmt, expected: yes, question: "Are PCPs assigned to members?", traversal: { type: nonzero_edges, edge: pcpOfMember } }
+  - { id: CAL-07, persona: Network,  expected: yes, question: "Do providers prescribe drugs?", traversal: { type: nonzero_edges, edge: rxPrescribedBy } }
+  - { id: CAL-08, persona: UM,       expected: yes, question: "Are there authorizations linked to claims?", traversal: { type: nonzero_edges, edge: claimRequiresAuth } }
+  - { id: CAL-09, persona: CFO,      expected: no,  question: "Is there an enrolledIn edge in the graph?", traversal: { type: nonzero_edges, edge: enrolledIn } }
+  - { id: CAL-10, persona: CFO,      expected: no,  question: "Is there a hasSubscriber edge in the graph?", traversal: { type: nonzero_edges, edge: hasSubscriber } }
+  - { id: CAL-11, persona: RA,       expected: no,  question: "Is there a memberHasRAF edge in the graph?", traversal: { type: nonzero_edges, edge: memberHasRAF } }
+  - { id: CAL-12, persona: Stars,    expected: no,  question: "Is there an eventOfMeasure edge in the graph?", traversal: { type: nonzero_edges, edge: eventOfMeasure } }
+  - { id: CAL-13, persona: UM,       expected: no,  question: "Is there a planOfProduct edge in the graph?", traversal: { type: nonzero_edges, edge: planOfProduct } }
+  - { id: CAL-14, persona: Network,  expected: no,  question: "Is there a providerInLOB edge in the graph?", traversal: { type: nonzero_edges, edge: providerInLOB } }
+  - { id: CAL-15, persona: SIU,      expected: no,  question: "Is there a providerToReferral edge in the graph?", traversal: { type: nonzero_edges, edge: providerToReferral } }
+  - { id: CAL-16, persona: CFO,      expected: yes, question: "Are there claims billed by providers?", traversal: { type: nonzero_edges, edge: billsClaim } }
