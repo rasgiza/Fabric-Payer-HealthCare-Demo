@@ -1,0 +1,24 @@
+table dim_lob
+	lineageTag: dim_lob
+
+	column lob_id
+		dataType: string
+		lineageTag: dim_lob.lob_id
+		summarizeBy: none
+		sourceColumn: lob_id
+
+	column lob_name
+		dataType: string
+		lineageTag: dim_lob.lob_name
+		summarizeBy: none
+		sourceColumn: lob_name
+
+	partition dim_lob = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_lob.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

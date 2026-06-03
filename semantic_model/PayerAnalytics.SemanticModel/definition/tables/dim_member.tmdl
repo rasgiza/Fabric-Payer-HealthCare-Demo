@@ -1,0 +1,126 @@
+table dim_member
+	lineageTag: dim_member
+
+	column member_id
+		dataType: string
+		lineageTag: dim_member.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column mbi_hash
+		dataType: string
+		lineageTag: dim_member.mbi_hash
+		summarizeBy: none
+		sourceColumn: mbi_hash
+
+	column subscriber_id
+		dataType: string
+		lineageTag: dim_member.subscriber_id
+		summarizeBy: none
+		sourceColumn: subscriber_id
+
+	column lob
+		dataType: string
+		lineageTag: dim_member.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	column product
+		dataType: string
+		lineageTag: dim_member.product
+		summarizeBy: none
+		sourceColumn: product
+
+	column state
+		dataType: string
+		lineageTag: dim_member.state
+		summarizeBy: none
+		sourceColumn: state
+
+	column race_ethnicity
+		dataType: string
+		lineageTag: dim_member.race_ethnicity
+		summarizeBy: none
+		sourceColumn: race_ethnicity
+
+	column sex
+		dataType: string
+		lineageTag: dim_member.sex
+		summarizeBy: none
+		sourceColumn: sex
+
+	column age_at_year_end
+		dataType: int64
+		lineageTag: dim_member.age_at_year_end
+		summarizeBy: none
+		sourceColumn: age_at_year_end
+
+	column dob_year
+		dataType: int64
+		lineageTag: dim_member.dob_year
+		summarizeBy: none
+		sourceColumn: dob_year
+
+	column zip3
+		dataType: int64
+		lineageTag: dim_member.zip3
+		summarizeBy: none
+		sourceColumn: zip3
+
+	column payer_id
+		dataType: string
+		lineageTag: dim_member.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column plan_id
+		dataType: string
+		lineageTag: dim_member.plan_id
+		summarizeBy: none
+		sourceColumn: plan_id
+
+	column pcp_provider_id
+		dataType: string
+		lineageTag: dim_member.pcp_provider_id
+		summarizeBy: none
+		sourceColumn: pcp_provider_id
+
+	column effective_year
+		dataType: int64
+		lineageTag: dim_member.effective_year
+		summarizeBy: none
+		sourceColumn: effective_year
+
+	column sdoh_housing_unstable
+		dataType: boolean
+		lineageTag: dim_member.sdoh_housing_unstable
+		summarizeBy: none
+		sourceColumn: sdoh_housing_unstable
+
+	column sdoh_food_insecure
+		dataType: boolean
+		lineageTag: dim_member.sdoh_food_insecure
+		summarizeBy: none
+		sourceColumn: sdoh_food_insecure
+
+	column sdoh_transport_barrier
+		dataType: boolean
+		lineageTag: dim_member.sdoh_transport_barrier
+		summarizeBy: none
+		sourceColumn: sdoh_transport_barrier
+
+	column age_band
+		dataType: string
+		lineageTag: dim_member.age_band
+		summarizeBy: none
+		sourceColumn: age_band
+
+	partition dim_member = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_member.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

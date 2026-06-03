@@ -1,0 +1,406 @@
+table fact_claim
+	lineageTag: fact_claim
+
+	column claim_id
+		dataType: string
+		lineageTag: fact_claim.claim_id
+		summarizeBy: none
+		sourceColumn: claim_id
+
+	column line_no
+		dataType: int64
+		lineageTag: fact_claim.line_no
+		summarizeBy: none
+		sourceColumn: line_no
+
+	column member_id
+		dataType: string
+		lineageTag: fact_claim.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column provider_npi
+		dataType: string
+		lineageTag: fact_claim.provider_npi
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+	column payer_id
+		dataType: string
+		lineageTag: fact_claim.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column service_date
+		dataType: dateTime
+		lineageTag: fact_claim.service_date
+		summarizeBy: none
+		sourceColumn: service_date
+
+	column service_date_key
+		dataType: int64
+		lineageTag: fact_claim.service_date_key
+		summarizeBy: none
+		sourceColumn: service_date_key
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_claim.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column claim_type
+		dataType: string
+		lineageTag: fact_claim.claim_type
+		summarizeBy: none
+		sourceColumn: claim_type
+
+	column place_of_service
+		dataType: int64
+		lineageTag: fact_claim.place_of_service
+		summarizeBy: none
+		sourceColumn: place_of_service
+
+	column lob
+		dataType: string
+		lineageTag: fact_claim.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	column primary_dx_code
+		dataType: string
+		lineageTag: fact_claim.primary_dx_code
+		summarizeBy: none
+		sourceColumn: primary_dx_code
+
+	column cpt_hcpcs
+		dataType: string
+		lineageTag: fact_claim.cpt_hcpcs
+		summarizeBy: none
+		sourceColumn: cpt_hcpcs
+
+	column modifier
+		dataType: string
+		lineageTag: fact_claim.modifier
+		summarizeBy: none
+		sourceColumn: modifier
+
+	column units
+		dataType: int64
+		lineageTag: fact_claim.units
+		summarizeBy: none
+		sourceColumn: units
+
+	column billed_amount
+		dataType: double
+		lineageTag: fact_claim.billed_amount
+		summarizeBy: none
+		sourceColumn: billed_amount
+
+	column allowed_amount
+		dataType: double
+		lineageTag: fact_claim.allowed_amount
+		summarizeBy: none
+		sourceColumn: allowed_amount
+
+	column paid_amount
+		dataType: double
+		lineageTag: fact_claim.paid_amount
+		summarizeBy: none
+		sourceColumn: paid_amount
+
+	column member_liability
+		dataType: double
+		lineageTag: fact_claim.member_liability
+		summarizeBy: none
+		sourceColumn: member_liability
+
+	column denied_int
+		dataType: int64
+		lineageTag: fact_claim.denied_int
+		summarizeBy: none
+		sourceColumn: denied_int
+
+	column paid_int
+		dataType: int64
+		lineageTag: fact_claim.paid_int
+		summarizeBy: none
+		sourceColumn: paid_int
+
+	column carc_code
+		dataType: string
+		lineageTag: fact_claim.carc_code
+		summarizeBy: none
+		sourceColumn: carc_code
+
+	column pa_required_flag
+		dataType: boolean
+		lineageTag: fact_claim.pa_required_flag
+		summarizeBy: none
+		sourceColumn: pa_required_flag
+
+	measure TotalAllowedAmount = SUM('fact_claim'[allowed_amount])
+		displayFolder: Finance
+		formatString: "$"#,0
+		lineageTag: measure.TotalAllowedAmount
+
+		annotation Description = Sum of allowed amounts on adjudicated claims
+		annotation Persona = CFO
+
+	measure TotalPaidAmount = SUM('fact_claim'[paid_amount])
+		displayFolder: Finance
+		formatString: "$"#,0
+		lineageTag: measure.TotalPaidAmount
+
+		annotation Description = Sum of paid amounts
+		annotation Persona = CFO
+
+	measure TotalBilledAmount = SUM('fact_claim'[billed_amount])
+		displayFolder: Finance
+		formatString: "$"#,0
+		lineageTag: measure.TotalBilledAmount
+
+		annotation Description = Sum of provider billed amounts
+		annotation Persona = CFO
+
+	measure TotalPremiumRevenue = SUM('fact_premium'[premium_total])
+		displayFolder: Finance
+		formatString: "$"#,0
+		lineageTag: measure.TotalPremiumRevenue
+
+		annotation Description = Sum of plan premium revenue
+		annotation Persona = CFO
+
+	measure MedicalLossRatio = DIVIDE([TotalPaidAmount],[TotalPremiumRevenue])
+		displayFolder: Finance
+		formatString: 0.0%
+		lineageTag: measure.MedicalLossRatio
+
+		annotation Description = Medical Loss Ratio = paid claims / premium revenue
+		annotation Persona = CFO
+
+	measure PMPM = DIVIDE([TotalPaidAmount], [MemberMonths])
+		displayFolder: Finance
+		formatString: "$"#,0.00
+		lineageTag: measure.PMPM
+
+		annotation Description = Per-member-per-month claims spend
+		annotation Persona = CFO
+
+	measure ClaimCount = COUNTROWS('fact_claim')
+		displayFolder: Operations
+		formatString: #,0
+		lineageTag: measure.ClaimCount
+
+		annotation Description = Distinct adjudicated claims
+		annotation Persona = CFO
+
+	measure DeniedClaimCount = CALCULATE([ClaimCount], 'fact_claim'[denied_int]=1)
+		displayFolder: Operations
+		formatString: #,0
+		lineageTag: measure.DeniedClaimCount
+
+		annotation Description = Claims denied at first pass
+		annotation Persona = CFO
+
+	measure DenialRate = DIVIDE([DeniedClaimCount],[ClaimCount])
+		displayFolder: Operations
+		formatString: 0.0%
+		lineageTag: measure.DenialRate
+
+		annotation Description = Share of claims denied
+		annotation Persona = CFO
+
+	measure MissingInfoDenials = CALCULATE([DeniedClaimCount], 'fact_claim'[carc_code] IN {"16","50","197"})
+		displayFolder: Operations
+		formatString: #,0
+		lineageTag: measure.MissingInfoDenials
+
+		annotation Description = Denials in CARC family 16/50/197
+		annotation Persona = CFO
+
+	measure AppealCount = COUNTROWS('fact_appeal')
+		displayFolder: Operations
+		formatString: #,0
+		lineageTag: measure.AppealCount
+
+		annotation Description = Filed appeals
+		annotation Persona = CFO
+
+	measure AppealOverturnRate = DIVIDE(CALCULATE([AppealCount],'fact_appeal'[decision]="overturned"),[AppealCount])
+		displayFolder: Operations
+		formatString: 0.0%
+		lineageTag: measure.AppealOverturnRate
+
+		annotation Description = Share of appeals overturned
+		annotation Persona = CFO
+
+	measure HEDISMemberCount = DISTINCTCOUNT('fact_quality_event'[member_id])
+		displayFolder: Stars
+		formatString: #,0
+		lineageTag: measure.HEDISMemberCount
+
+		annotation Description = Members with at least one HEDIS measure
+		annotation Persona = Stars
+
+	measure HEDISCompliantEvents = CALCULATE(COUNTROWS('fact_quality_event'),'fact_quality_event'[compliant]=TRUE())
+		displayFolder: Stars
+		formatString: #,0
+		lineageTag: measure.HEDISCompliantEvents
+
+		annotation Description = Compliant numerator events
+		annotation Persona = Stars
+
+	measure HEDISCompliancePct = DIVIDE([HEDISCompliantEvents], COUNTROWS('fact_quality_event'))
+		displayFolder: Stars
+		formatString: 0.0%
+		lineageTag: measure.HEDISCompliancePct
+
+		annotation Description = Overall HEDIS numerator compliance
+		annotation Persona = Stars
+
+	measure StarsContractRating = AVERAGEX('agg_stars_compliance', 'agg_stars_compliance'[compliance_pct]) * 5
+		displayFolder: Stars
+		formatString: 0.00
+		lineageTag: measure.StarsContractRating
+
+		annotation Description = Average projected star score across measures
+		annotation Persona = Stars
+
+	measure RAFScoreAvg = AVERAGE('fact_raf_score'[raf_score])
+		displayFolder: Risk
+		formatString: 0.000
+		lineageTag: measure.RAFScoreAvg
+
+		annotation Description = Population-weighted average RAF
+		annotation Persona = RA
+
+	measure HCCMemberCount = DISTINCTCOUNT('fact_raf_score'[member_id])
+		displayFolder: Risk
+		formatString: #,0
+		lineageTag: measure.HCCMemberCount
+
+		annotation Description = Distinct members with at least one HCC
+		annotation Persona = RA
+
+	measure SuspectedHCCGap = CALCULATE([HCCMemberCount], 'fact_raf_score'[suspect_hcc_count] > 0)
+		displayFolder: Risk
+		formatString: #,0
+		lineageTag: measure.SuspectedHCCGap
+
+		annotation Description = Members with suspect-only HCC condition (no claim confirmation)
+		annotation Persona = RA
+
+	measure MemberMonths = COUNTROWS('fact_member_month')
+		displayFolder: Membership
+		formatString: #,0
+		lineageTag: measure.MemberMonths
+
+		annotation Description = Total exposure in member-months
+		annotation Persona = CFO
+
+	measure ActiveMembers = DISTINCTCOUNT('fact_member_month'[member_id])
+		displayFolder: Membership
+		formatString: #,0
+		lineageTag: measure.ActiveMembers
+
+		annotation Description = Distinct members with any enrollment
+		annotation Persona = CFO
+
+	measure RetentionRate = DIVIDE(CALCULATE(DISTINCTCOUNT('fact_member_month'[member_id]),'fact_member_month'[month]=12), CALCULATE(DISTINCTCOUNT('fact_member_month'[member_id]),'fact_member_month'[month]=1))
+		displayFolder: Membership
+		formatString: 0.0%
+		lineageTag: measure.RetentionRate
+
+		annotation Description = Members enrolled in month 12 vs month 1
+		annotation Persona = CareMgmt
+
+	measure AuthCount = COUNTROWS('fact_auth')
+		displayFolder: PriorAuth
+		formatString: #,0
+		lineageTag: measure.AuthCount
+
+		annotation Description = Total authorizations created
+		annotation Persona = UM
+
+	measure AuthApprovalRate = DIVIDE(CALCULATE([AuthCount],'fact_auth'[decision]="approved"),[AuthCount])
+		displayFolder: PriorAuth
+		formatString: 0.0%
+		lineageTag: measure.AuthApprovalRate
+
+		annotation Description = Share of auths approved
+		annotation Persona = UM
+
+	measure AuthSLAMetPct = DIVIDE(CALCULATE([AuthCount],'fact_auth'[sla_met]=TRUE()),[AuthCount])
+		displayFolder: PriorAuth
+		formatString: 0.0%
+		lineageTag: measure.AuthSLAMetPct
+
+		annotation Description = Share of auths decided within SLA window
+		annotation Persona = UM
+
+	measure AuthMedianTAT = MEDIANX('fact_auth','fact_auth'[tat_hours])
+		displayFolder: PriorAuth
+		formatString: 0.0
+		lineageTag: measure.AuthMedianTAT
+
+		annotation Description = Median turnaround time hours
+		annotation Persona = UM
+
+	measure HighDenialProviders = CALCULATE(DISTINCTCOUNT('fact_claim'[provider_npi]), 'fact_claim'[denied_int]=1)
+		displayFolder: PaymentIntegrity
+		formatString: #,0
+		lineageTag: measure.HighDenialProviders
+
+		annotation Description = Distinct providers with at least one denied claim
+		annotation Persona = SIU
+
+	measure ProviderDenialRate = DIVIDE([DeniedClaimCount],[ClaimCount])
+		displayFolder: PaymentIntegrity
+		formatString: 0.0%
+		lineageTag: measure.ProviderDenialRate
+
+		annotation Description = Provider-grain denial rate (filtered)
+		annotation Persona = SIU
+
+	measure InNetworkClaimsPct = DIVIDE(CALCULATE([ClaimCount], RELATED('dim_provider'[in_network_flag])=TRUE()),[ClaimCount])
+		displayFolder: Network
+		formatString: 0.0%
+		lineageTag: measure.InNetworkClaimsPct
+
+		annotation Description = Share of claims billed by in-network providers
+		annotation Persona = Network
+
+	measure APMTier3Plus = CALCULATE(DISTINCTCOUNT('dim_provider'[provider_npi]),'dim_provider'[apm_tier] IN {"3a","3b",4})
+		displayFolder: Network
+		formatString: #,0
+		lineageTag: measure.APMTier3Plus
+
+		annotation Description = Providers in advanced value-based tiers
+		annotation Persona = Network
+
+	measure RxClaimCount = COUNTROWS('fact_rx_claim')
+		displayFolder: Pharmacy
+		formatString: #,0
+		lineageTag: measure.RxClaimCount
+
+		annotation Description = Pharmacy claims
+		annotation Persona = CFO
+
+	measure RxAllowedAmount = SUM('fact_rx_claim'[paid_amount])
+		displayFolder: Pharmacy
+		formatString: "$"#,0
+		lineageTag: measure.RxAllowedAmount
+
+		annotation Description = Pharmacy allowed spend
+		annotation Persona = CFO
+
+	partition fact_claim = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_claim.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

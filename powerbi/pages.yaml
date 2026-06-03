@@ -1,0 +1,115 @@
+# PayerAnalytics PBI Report — page + visual spec
+#
+# Used by tools/build_pbi_report.py to emit PBIR JSON.
+# Phase 7 fabric-cicd deploys to Fabric workspace and binds to the deployed
+# PayerAnalytics semantic model.
+#
+# Page IDs follow naming convention: NN_ShortName
+
+dataset: PayerAnalytics
+
+pages:
+
+  - id: "01_Executive"
+    display: "Executive Overview"
+    persona: CFO
+    description: "Top-line MLR, denial rate, HEDIS, RAF, member growth"
+    visuals:
+      - { id: kpi_mlr,         type: card,        title: "MLR",                  measures: [MedicalLossRatio] }
+      - { id: kpi_denial,      type: card,        title: "Denial Rate",          measures: [DenialRate] }
+      - { id: kpi_hedis,       type: card,        title: "HEDIS Compliance",     measures: [HEDISCompliancePct] }
+      - { id: kpi_raf,         type: card,        title: "Avg RAF",              measures: [RAFScoreAvg] }
+      - { id: kpi_members,     type: card,        title: "Active Members",       measures: [ActiveMembers] }
+      - { id: trend_paid,      type: line_chart,  title: "Paid $ trend",         measures: [TotalPaidAmount], axis: dim_date.year_month }
+      - { id: bar_lob_mlr,     type: bar_chart,   title: "MLR by LOB",           measures: [MedicalLossRatio], axis: dim_lob.lob_id }
+      - { id: tbl_payer_mix,   type: table,       title: "Payer mix",            measures: [TotalPaidAmount, TotalPremiumRevenue, MedicalLossRatio], axis: dim_payer.payer_name }
+
+  - id: "02_DenialsAppeals"
+    display: "Denials & Appeals"
+    persona: CFO
+    description: "Denial-rate-by-CARC drilldown + appeal overturn rates"
+    visuals:
+      - { id: kpi_denials,     type: card,        title: "Denied Claims",        measures: [DeniedClaimCount] }
+      - { id: kpi_missing,     type: card,        title: "Missing-Info Denials", measures: [MissingInfoDenials] }
+      - { id: kpi_overturn,    type: card,        title: "Appeal Overturn %",    measures: [AppealOverturnRate] }
+      - { id: bar_carc,        type: bar_chart,   title: "Denials by CARC",      measures: [DeniedClaimCount], axis: fact_claim.carc_code }
+      - { id: bar_payer_dr,    type: bar_chart,   title: "Denial Rate by Payer", measures: [DenialRate], axis: dim_payer.payer_name }
+      - { id: trend_appeals,   type: line_chart,  title: "Appeals trend",        measures: [AppealCount, AppealOverturnRate], axis: dim_date.year_month }
+
+  - id: "03_StarsQuality"
+    display: "Stars & Quality"
+    persona: Stars
+    description: "HEDIS compliance by measure + projected Stars rating"
+    visuals:
+      - { id: kpi_stars,       type: card,        title: "Stars Rating (avg)",   measures: [StarsContractRating] }
+      - { id: kpi_hedis_pct,   type: card,        title: "HEDIS Compliance",     measures: [HEDISCompliancePct] }
+      - { id: bar_measure,     type: bar_chart,   title: "Compliance by Measure", measures: [HEDISCompliancePct], axis: fact_quality_event.measure_id }
+      - { id: bar_lob_stars,   type: bar_chart,   title: "Stars by LOB",         measures: [StarsContractRating], axis: dim_lob.lob_id }
+
+  - id: "04_RiskAdjustment"
+    display: "Risk Adjustment"
+    persona: RA
+    description: "RAF distribution + HCC gaps"
+    visuals:
+      - { id: kpi_raf,         type: card,        title: "Avg RAF",              measures: [RAFScoreAvg] }
+      - { id: kpi_hcc,         type: card,        title: "Members w/ HCC",       measures: [HCCMemberCount] }
+      - { id: kpi_gap,         type: card,        title: "Suspect HCC Gaps",     measures: [SuspectedHCCGap] }
+      - { id: bar_hcc,         type: bar_chart,   title: "Members by HCC",       measures: [HCCMemberCount], axis: dim_hcc.hcc_id }
+
+  - id: "05_PALifecycle"
+    display: "Prior Auth Lifecycle"
+    persona: UM
+    description: "PA volume, SLA, TAT, gold-card eligibility"
+    visuals:
+      - { id: kpi_auths,       type: card,        title: "Authorizations",       measures: [AuthCount] }
+      - { id: kpi_sla,         type: card,        title: "SLA Met %",            measures: [AuthSLAMetPct] }
+      - { id: kpi_tat,         type: card,        title: "Median TAT (hrs)",     measures: [AuthMedianTAT] }
+      - { id: bar_decision,    type: bar_chart,   title: "Auth Decisions",       measures: [AuthCount], axis: fact_auth.decision }
+      - { id: trend_sla,       type: line_chart,  title: "SLA trend",            measures: [AuthSLAMetPct], axis: dim_date.year_month }
+
+  # ---- Phase 4-add LOCKED pages (per MS payor AI use-case coverage) ----
+
+  - id: "06_Member360"
+    display: "Member 360"
+    persona: CareMgmt
+    description: "Single-member deep view: demographics, claims timeline, conditions, RAF, quality, auths. Locked Phase 4-add per MICROSOFT_USE_CASE_COVERAGE.md (B.3 member service)."
+    locked: true
+    page_filter: "dim_member.member_id"
+    visuals:
+      - { id: m360_header,      type: card_group,   title: "Member header",
+          fields: [dim_member.member_id, dim_member.lob, dim_member.product, dim_member.age_band, dim_member.zip3] }
+      - { id: m360_raf,         type: card,         title: "RAF",                 measures: [RAFScoreAvg] }
+      - { id: m360_hedis,       type: card,         title: "HEDIS Compliance",    measures: [HEDISCompliancePct] }
+      - { id: m360_paid,        type: card,         title: "YTD Paid",            measures: [TotalPaidAmount] }
+      - { id: m360_pmpm,        type: card,         title: "PMPM",                measures: [PMPM] }
+      - { id: m360_timeline,    type: timeline,     title: "Claims & events",     measures: [ClaimCount],
+          axis: dim_date.full_date, breakdown: [fact_claim.service_type, fact_auth.request_type, fact_quality_event.measure_id] }
+      - { id: m360_conditions,  type: table,        title: "HCC conditions",
+          fields: [dim_hcc.hcc_id, fact_raf_score.raf_score, fact_raf_score.suspect_hcc_count] }
+      - { id: m360_auths,       type: table,        title: "Authorizations",
+          fields: [fact_auth.auth_id, fact_auth.request_type, fact_auth.decision, fact_auth.tat_hours, fact_auth.sla_met] }
+      - { id: m360_pcp,         type: card_group,   title: "PCP / Network",
+          fields: [dim_provider.provider_name, dim_provider.specialty_type, dim_provider.in_network_flag, dim_provider.apm_tier] }
+
+  # ---- Phase 4-add LOCKED tooltip page ----
+
+  - id: "07_ClaimCaseSummary"
+    display: "Claim Case Summary"
+    persona: CFO
+    description: "Tooltip page for any claim_id-bound visual: shows full case context. Locked Phase 4-add per MICROSOFT_USE_CASE_COVERAGE.md (B.1 claims, B.5 payment integrity)."
+    locked: true
+    page_kind: tooltip
+    page_filter: "fact_claim.claim_id"
+    visuals:
+      - { id: cs_header,        type: card_group,   title: "Claim",
+          fields: [fact_claim.claim_id, fact_claim.service_date, fact_claim.allowed_amount, fact_claim.paid_amount, fact_claim.denied_int, fact_claim.carc_code] }
+      - { id: cs_member,        type: card_group,   title: "Member",
+          fields: [dim_member.member_id, dim_member.lob, dim_member.product] }
+      - { id: cs_provider,      type: card_group,   title: "Billing provider",
+          fields: [dim_provider.provider_npi, dim_provider.provider_name, dim_provider.specialty_type, dim_provider.in_network_flag] }
+      - { id: cs_dx,            type: card,         title: "Primary Dx",
+          fields: [fact_claim.primary_dx_code] }
+      - { id: cs_auth,          type: card_group,   title: "Linked auth",
+          fields: [fact_auth.auth_id, fact_auth.decision, fact_auth.sla_met] }
+      - { id: cs_appeal,        type: card_group,   title: "Appeal",
+          fields: [fact_appeal.appeal_id, fact_appeal.level, fact_appeal.decision] }

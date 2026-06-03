@@ -1,0 +1,22 @@
+{
+  "name": "02_DenialsAppeals",
+  "displayName": "Denials & Appeals",
+  "displayOption": 1,
+  "width": 1320,
+  "height": 720,
+  "pageType": "Standard",
+  "filters": [],
+  "annotations": {
+    "persona": "CFO",
+    "description": "Denial-rate-by-CARC drilldown + appeal overturn rates",
+    "locked": false
+  },
+  "visualOrder": [
+    "kpi_denials",
+    "kpi_missing",
+    "kpi_overturn",
+    "bar_carc",
+    "bar_payer_dr",
+    "trend_appeals"
+  ]
+}

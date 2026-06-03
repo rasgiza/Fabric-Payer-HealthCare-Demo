@@ -1,0 +1,18 @@
+table dim_procedure
+	lineageTag: dim_procedure
+
+	column cpt_hcpcs
+		dataType: string
+		lineageTag: dim_procedure.cpt_hcpcs
+		summarizeBy: none
+		sourceColumn: cpt_hcpcs
+
+	partition dim_procedure = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_procedure.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

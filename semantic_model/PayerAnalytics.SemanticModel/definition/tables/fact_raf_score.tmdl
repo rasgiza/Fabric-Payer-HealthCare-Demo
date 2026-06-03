@@ -1,0 +1,60 @@
+table fact_raf_score
+	lineageTag: fact_raf_score
+
+	column member_id
+		dataType: string
+		lineageTag: fact_raf_score.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_raf_score.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column demographic_raf
+		dataType: double
+		lineageTag: fact_raf_score.demographic_raf
+		summarizeBy: none
+		sourceColumn: demographic_raf
+
+	column coded_hcc_count
+		dataType: int64
+		lineageTag: fact_raf_score.coded_hcc_count
+		summarizeBy: none
+		sourceColumn: coded_hcc_count
+
+	column suspect_hcc_count
+		dataType: int64
+		lineageTag: fact_raf_score.suspect_hcc_count
+		summarizeBy: none
+		sourceColumn: suspect_hcc_count
+
+	column coded_hccs
+		dataType: string
+		lineageTag: fact_raf_score.coded_hccs
+		summarizeBy: none
+		sourceColumn: coded_hccs
+
+	column suspect_hccs
+		dataType: string
+		lineageTag: fact_raf_score.suspect_hccs
+		summarizeBy: none
+		sourceColumn: suspect_hccs
+
+	column raf_score
+		dataType: double
+		lineageTag: fact_raf_score.raf_score
+		summarizeBy: none
+		sourceColumn: raf_score
+
+	partition fact_raf_score = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_raf_score.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,48 @@
+table dim_date
+	lineageTag: dim_date
+
+	column date_key
+		dataType: int64
+		lineageTag: dim_date.date_key
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column full_date
+		dataType: dateTime
+		lineageTag: dim_date.full_date
+		summarizeBy: none
+		sourceColumn: full_date
+
+	column year
+		dataType: int64
+		lineageTag: dim_date.year
+		summarizeBy: none
+		sourceColumn: year
+
+	column month
+		dataType: int64
+		lineageTag: dim_date.month
+		summarizeBy: none
+		sourceColumn: month
+
+	column quarter
+		dataType: int64
+		lineageTag: dim_date.quarter
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column year_month
+		dataType: string
+		lineageTag: dim_date.year_month
+		summarizeBy: none
+		sourceColumn: year_month
+
+	partition dim_date = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_date.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

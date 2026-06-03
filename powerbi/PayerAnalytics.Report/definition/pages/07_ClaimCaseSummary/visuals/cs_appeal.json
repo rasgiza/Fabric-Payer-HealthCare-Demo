@@ -1,0 +1,22 @@
+{
+  "name": "cs_appeal",
+  "visualType": "card_group",
+  "title": "Appeal",
+  "position": {
+    "x": 340,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [],
+    "axis": null,
+    "legend": null,
+    "rows": [
+      "fact_appeal.appeal_id",
+      "fact_appeal.level",
+      "fact_appeal.decision"
+    ],
+    "breakdown": []
+  }
+}

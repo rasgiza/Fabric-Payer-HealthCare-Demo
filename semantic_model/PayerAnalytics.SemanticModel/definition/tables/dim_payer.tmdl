@@ -1,0 +1,42 @@
+table dim_payer
+	lineageTag: dim_payer
+
+	column payer_id
+		dataType: string
+		lineageTag: dim_payer.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column payer_name
+		dataType: string
+		lineageTag: dim_payer.payer_name
+		summarizeBy: none
+		sourceColumn: payer_name
+
+	column lob
+		dataType: string
+		lineageTag: dim_payer.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	column parent_org
+		dataType: string
+		lineageTag: dim_payer.parent_org
+		summarizeBy: none
+		sourceColumn: parent_org
+
+	column market_states
+		dataType: string
+		lineageTag: dim_payer.market_states
+		summarizeBy: none
+		sourceColumn: market_states
+
+	partition dim_payer = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_payer.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

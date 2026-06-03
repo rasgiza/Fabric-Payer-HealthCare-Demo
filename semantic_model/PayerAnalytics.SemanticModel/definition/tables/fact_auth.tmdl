@@ -1,0 +1,96 @@
+table fact_auth
+	lineageTag: fact_auth
+
+	column auth_id
+		dataType: string
+		lineageTag: fact_auth.auth_id
+		summarizeBy: none
+		sourceColumn: auth_id
+
+	column member_id
+		dataType: string
+		lineageTag: fact_auth.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column provider_npi
+		dataType: string
+		lineageTag: fact_auth.provider_npi
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+	column payer_id
+		dataType: string
+		lineageTag: fact_auth.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_auth.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column submitted_at
+		dataType: dateTime
+		lineageTag: fact_auth.submitted_at
+		summarizeBy: none
+		sourceColumn: submitted_at
+
+	column decision_at
+		dataType: dateTime
+		lineageTag: fact_auth.decision_at
+		summarizeBy: none
+		sourceColumn: decision_at
+
+	column decision
+		dataType: string
+		lineageTag: fact_auth.decision
+		summarizeBy: none
+		sourceColumn: decision
+
+	column request_type
+		dataType: string
+		lineageTag: fact_auth.request_type
+		summarizeBy: none
+		sourceColumn: request_type
+
+	column tat_hours
+		dataType: double
+		lineageTag: fact_auth.tat_hours
+		summarizeBy: none
+		sourceColumn: tat_hours
+
+	column sla_hours
+		dataType: int64
+		lineageTag: fact_auth.sla_hours
+		summarizeBy: none
+		sourceColumn: sla_hours
+
+	column sla_met
+		dataType: boolean
+		lineageTag: fact_auth.sla_met
+		summarizeBy: none
+		sourceColumn: sla_met
+
+	column submitted_via_fhir
+		dataType: boolean
+		lineageTag: fact_auth.submitted_via_fhir
+		summarizeBy: none
+		sourceColumn: submitted_via_fhir
+
+	column linked_claim_id
+		dataType: string
+		lineageTag: fact_auth.linked_claim_id
+		summarizeBy: none
+		sourceColumn: linked_claim_id
+
+	partition fact_auth = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_auth.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

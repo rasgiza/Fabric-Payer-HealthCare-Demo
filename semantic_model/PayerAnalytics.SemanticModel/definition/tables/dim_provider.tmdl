@@ -1,0 +1,60 @@
+table dim_provider
+	lineageTag: dim_provider
+
+	column provider_npi
+		dataType: string
+		lineageTag: dim_provider.provider_npi
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+	column provider_name
+		dataType: string
+		lineageTag: dim_provider.provider_name
+		summarizeBy: none
+		sourceColumn: provider_name
+
+	column specialty_type
+		dataType: string
+		lineageTag: dim_provider.specialty_type
+		summarizeBy: none
+		sourceColumn: specialty_type
+
+	column is_pcp
+		dataType: boolean
+		lineageTag: dim_provider.is_pcp
+		summarizeBy: none
+		sourceColumn: is_pcp
+
+	column state
+		dataType: string
+		lineageTag: dim_provider.state
+		summarizeBy: none
+		sourceColumn: state
+
+	column in_network_flag
+		dataType: boolean
+		lineageTag: dim_provider.in_network_flag
+		summarizeBy: none
+		sourceColumn: in_network_flag
+
+	column apm_tier
+		dataType: string
+		lineageTag: dim_provider.apm_tier
+		summarizeBy: none
+		sourceColumn: apm_tier
+
+	column gold_carded_flag
+		dataType: boolean
+		lineageTag: dim_provider.gold_carded_flag
+		summarizeBy: none
+		sourceColumn: gold_carded_flag
+
+	partition dim_provider = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_provider.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

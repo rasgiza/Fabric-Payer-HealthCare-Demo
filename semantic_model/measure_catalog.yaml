@@ -1,0 +1,98 @@
+# PayerAnalytics Semantic Model — Measure Catalog
+#
+# Used by tools/build_semantic_model.py to emit TMDL.
+#
+# Each measure declares:
+#   - name        : DAX-friendly name (no spaces; PascalCase)
+#   - display     : Display name for visuals
+#   - folder      : Display folder in semantic model
+#   - persona     : owning persona (CFO, Stars, RA, SIU, CareMgmt, Network, UM)
+#   - dax         : DAX expression
+#   - format      : Power BI format string
+#   - description : One-line tooltip
+#
+# Phase 5 data agents reference these by name; Phase 4 PBI report visualizes them.
+
+measures:
+
+  # ------------ CFO / Finance ------------
+  - { name: TotalAllowedAmount,       display: "Total Allowed $",        folder: Finance,    persona: CFO,
+      dax: "SUM('fact_claim'[allowed_amount])",                                                   format: "\"$\"#,0",          description: "Sum of allowed amounts on adjudicated claims" }
+  - { name: TotalPaidAmount,          display: "Total Paid $",            folder: Finance,    persona: CFO,
+      dax: "SUM('fact_claim'[paid_amount])",                                                      format: "\"$\"#,0",          description: "Sum of paid amounts" }
+  - { name: TotalBilledAmount,        display: "Total Billed $",          folder: Finance,    persona: CFO,
+      dax: "SUM('fact_claim'[billed_amount])",                                                    format: "\"$\"#,0",          description: "Sum of provider billed amounts" }
+  - { name: TotalPremiumRevenue,      display: "Total Premium Revenue",   folder: Finance,    persona: CFO,
+      dax: "SUM('fact_premium'[premium_total])",                                                 format: "\"$\"#,0",          description: "Sum of plan premium revenue" }
+  - { name: MedicalLossRatio,         display: "MLR %",                   folder: Finance,    persona: CFO,
+      dax: "DIVIDE([TotalPaidAmount],[TotalPremiumRevenue])",                                     format: "0.0%",              description: "Medical Loss Ratio = paid claims / premium revenue" }
+  - { name: PMPM,                     display: "PMPM $",                  folder: Finance,    persona: CFO,
+      dax: "DIVIDE([TotalPaidAmount], [MemberMonths])",                                           format: "\"$\"#,0.00",       description: "Per-member-per-month claims spend" }
+
+  # ------------ Denials & Appeals ------------
+  - { name: ClaimCount,               display: "Claims",                  folder: Operations, persona: CFO,
+      dax: "COUNTROWS('fact_claim')",                                                             format: "#,0",               description: "Distinct adjudicated claims" }
+  - { name: DeniedClaimCount,         display: "Denied Claims",           folder: Operations, persona: CFO,
+      dax: "CALCULATE([ClaimCount], 'fact_claim'[denied_int]=1)",                                 format: "#,0",               description: "Claims denied at first pass" }
+  - { name: DenialRate,               display: "Denial Rate %",           folder: Operations, persona: CFO,
+      dax: "DIVIDE([DeniedClaimCount],[ClaimCount])",                                             format: "0.0%",              description: "Share of claims denied" }
+  - { name: MissingInfoDenials,       display: "Missing-Info Denials",    folder: Operations, persona: CFO,
+      dax: "CALCULATE([DeniedClaimCount], 'fact_claim'[carc_code] IN {\"16\",\"50\",\"197\"})",   format: "#,0",               description: "Denials in CARC family 16/50/197" }
+  - { name: AppealCount,              display: "Appeals",                 folder: Operations, persona: CFO,
+      dax: "COUNTROWS('fact_appeal')",                                                            format: "#,0",               description: "Filed appeals" }
+  - { name: AppealOverturnRate,       display: "Appeal Overturn %",       folder: Operations, persona: CFO,
+      dax: "DIVIDE(CALCULATE([AppealCount],'fact_appeal'[decision]=\"overturned\"),[AppealCount])", format: "0.0%",            description: "Share of appeals overturned" }
+
+  # ------------ Stars / Quality ------------
+  - { name: HEDISMemberCount,         display: "HEDIS-Eligible Members",  folder: Stars,      persona: Stars,
+      dax: "DISTINCTCOUNT('fact_quality_event'[member_id])",                                      format: "#,0",               description: "Members with at least one HEDIS measure" }
+  - { name: HEDISCompliantEvents,     display: "Compliant Events",        folder: Stars,      persona: Stars,
+      dax: "CALCULATE(COUNTROWS('fact_quality_event'),'fact_quality_event'[compliant]=TRUE())",   format: "#,0",               description: "Compliant numerator events" }
+  - { name: HEDISCompliancePct,       display: "HEDIS Compliance %",      folder: Stars,      persona: Stars,
+      dax: "DIVIDE([HEDISCompliantEvents], COUNTROWS('fact_quality_event'))",                     format: "0.0%",              description: "Overall HEDIS numerator compliance" }
+  - { name: StarsContractRating,      display: "Stars Rating (avg)",      folder: Stars,      persona: Stars,
+      dax: "AVERAGEX('agg_stars_compliance', 'agg_stars_compliance'[compliance_pct]) * 5",                format: "0.00",              description: "Average projected star score across measures" }
+
+  # ------------ Risk Adjustment ------------
+  - { name: RAFScoreAvg,              display: "Avg RAF",                 folder: Risk,       persona: RA,
+      dax: "AVERAGE('fact_raf_score'[raf_score])",                                                format: "0.000",             description: "Population-weighted average RAF" }
+  - { name: HCCMemberCount,           display: "Members w/ HCC",          folder: Risk,       persona: RA,
+      dax: "DISTINCTCOUNT('fact_raf_score'[member_id])",                                          format: "#,0",               description: "Distinct members with at least one HCC" }
+  - { name: SuspectedHCCGap,          display: "Suspect HCC Gaps",        folder: Risk,       persona: RA,
+      dax: "CALCULATE([HCCMemberCount], 'fact_raf_score'[suspect_hcc_count] > 0)",                format: "#,0",               description: "Members with suspect-only HCC condition (no claim confirmation)" }
+
+  # ------------ Member-month / Enrollment ------------
+  - { name: MemberMonths,             display: "Member Months",           folder: Membership, persona: CFO,
+      dax: "COUNTROWS('fact_member_month')",                                                      format: "#,0",               description: "Total exposure in member-months" }
+  - { name: ActiveMembers,            display: "Active Members",          folder: Membership, persona: CFO,
+      dax: "DISTINCTCOUNT('fact_member_month'[member_id])",                                       format: "#,0",               description: "Distinct members with any enrollment" }
+  - { name: RetentionRate,            display: "Retention %",             folder: Membership, persona: CareMgmt,
+      dax: "DIVIDE(CALCULATE(DISTINCTCOUNT('fact_member_month'[member_id]),'fact_member_month'[month]=12), CALCULATE(DISTINCTCOUNT('fact_member_month'[member_id]),'fact_member_month'[month]=1))", format: "0.0%", description: "Members enrolled in month 12 vs month 1" }
+
+  # ------------ Prior Auth / UM ------------
+  - { name: AuthCount,                display: "Authorizations",          folder: PriorAuth,  persona: UM,
+      dax: "COUNTROWS('fact_auth')",                                                              format: "#,0",               description: "Total authorizations created" }
+  - { name: AuthApprovalRate,         display: "Auth Approval %",         folder: PriorAuth,  persona: UM,
+      dax: "DIVIDE(CALCULATE([AuthCount],'fact_auth'[decision]=\"approved\"),[AuthCount])",       format: "0.0%",              description: "Share of auths approved" }
+  - { name: AuthSLAMetPct,            display: "Auth SLA Met %",          folder: PriorAuth,  persona: UM,
+      dax: "DIVIDE(CALCULATE([AuthCount],'fact_auth'[sla_met]=TRUE()),[AuthCount])",              format: "0.0%",              description: "Share of auths decided within SLA window" }
+  - { name: AuthMedianTAT,            display: "Auth Median TAT (hrs)",   folder: PriorAuth,  persona: UM,
+      dax: "MEDIANX('fact_auth','fact_auth'[tat_hours])",                                         format: "0.0",               description: "Median turnaround time hours" }
+
+  # ------------ SIU / Payment Integrity ------------
+  - { name: HighDenialProviders,      display: "Outlier Providers",       folder: PaymentIntegrity, persona: SIU,
+      dax: "CALCULATE(DISTINCTCOUNT('fact_claim'[provider_npi]), 'fact_claim'[denied_int]=1)",    format: "#,0",               description: "Distinct providers with at least one denied claim" }
+  - { name: ProviderDenialRate,       display: "Provider Denial %",       folder: PaymentIntegrity, persona: SIU,
+      dax: "DIVIDE([DeniedClaimCount],[ClaimCount])",                                             format: "0.0%",              description: "Provider-grain denial rate (filtered)" }
+
+  # ------------ Network ------------
+  - { name: InNetworkClaimsPct,       display: "In-Network Claims %",     folder: Network,    persona: Network,
+      dax: "DIVIDE(CALCULATE([ClaimCount], RELATED('dim_provider'[in_network_flag])=TRUE()),[ClaimCount])", format: "0.0%", description: "Share of claims billed by in-network providers" }
+  - { name: APMTier3Plus,             display: "APM Tier 3+ Providers",   folder: Network,    persona: Network,
+      dax: "CALCULATE(DISTINCTCOUNT('dim_provider'[provider_npi]),'dim_provider'[apm_tier] IN {\"3a\",\"3b\",4})", format: "#,0", description: "Providers in advanced value-based tiers" }
+
+  # ------------ Pharmacy ------------
+  - { name: RxClaimCount,             display: "Rx Claims",               folder: Pharmacy,   persona: CFO,
+      dax: "COUNTROWS('fact_rx_claim')",                                                          format: "#,0",               description: "Pharmacy claims" }
+  - { name: RxAllowedAmount,          display: "Rx Allowed $",            folder: Pharmacy,   persona: CFO,
+      dax: "SUM('fact_rx_claim'[paid_amount])",                                                format: "\"$\"#,0",          description: "Pharmacy allowed spend" }

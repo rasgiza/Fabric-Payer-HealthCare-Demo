@@ -1,0 +1,66 @@
+table fact_appeal
+	lineageTag: fact_appeal
+
+	column appeal_id
+		dataType: string
+		lineageTag: fact_appeal.appeal_id
+		summarizeBy: none
+		sourceColumn: appeal_id
+
+	column claim_id
+		dataType: string
+		lineageTag: fact_appeal.claim_id
+		summarizeBy: none
+		sourceColumn: claim_id
+
+	column member_id
+		dataType: string
+		lineageTag: fact_appeal.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column level
+		dataType: int64
+		lineageTag: fact_appeal.level
+		summarizeBy: none
+		sourceColumn: level
+
+	column carc_code
+		dataType: string
+		lineageTag: fact_appeal.carc_code
+		summarizeBy: none
+		sourceColumn: carc_code
+
+	column filed_date
+		dataType: dateTime
+		lineageTag: fact_appeal.filed_date
+		summarizeBy: none
+		sourceColumn: filed_date
+
+	column decision
+		dataType: string
+		lineageTag: fact_appeal.decision
+		summarizeBy: none
+		sourceColumn: decision
+
+	column peer_to_peer_flag
+		dataType: boolean
+		lineageTag: fact_appeal.peer_to_peer_flag
+		summarizeBy: none
+		sourceColumn: peer_to_peer_flag
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_appeal.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	partition fact_appeal = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_appeal.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

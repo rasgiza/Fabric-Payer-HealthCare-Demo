@@ -1,0 +1,23 @@
+{
+  "name": "m360_pcp",
+  "visualType": "card_group",
+  "title": "PCP / Network",
+  "position": {
+    "x": 20,
+    "y": 420,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [],
+    "axis": null,
+    "legend": null,
+    "rows": [
+      "dim_provider.provider_name",
+      "dim_provider.specialty_type",
+      "dim_provider.in_network_flag",
+      "dim_provider.apm_tier"
+    ],
+    "breakdown": []
+  }
+}

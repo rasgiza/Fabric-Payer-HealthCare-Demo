@@ -1,0 +1,54 @@
+table agg_mlr_monthly
+	lineageTag: agg_mlr_monthly
+
+	column payer_id
+		dataType: string
+		lineageTag: agg_mlr_monthly.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: agg_mlr_monthly.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column month
+		dataType: int64
+		lineageTag: agg_mlr_monthly.month
+		summarizeBy: none
+		sourceColumn: month
+
+	column medical_paid
+		dataType: double
+		lineageTag: agg_mlr_monthly.medical_paid
+		summarizeBy: none
+		sourceColumn: medical_paid
+
+	column premium_total
+		dataType: double
+		lineageTag: agg_mlr_monthly.premium_total
+		summarizeBy: none
+		sourceColumn: premium_total
+
+	column mm
+		dataType: double
+		lineageTag: agg_mlr_monthly.mm
+		summarizeBy: none
+		sourceColumn: mm
+
+	column mlr_monthly_est
+		dataType: double
+		lineageTag: agg_mlr_monthly.mlr_monthly_est
+		summarizeBy: none
+		sourceColumn: mlr_monthly_est
+
+	partition agg_mlr_monthly = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/agg_mlr_monthly.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,20 @@
+{
+  "name": "04_RiskAdjustment",
+  "displayName": "Risk Adjustment",
+  "displayOption": 1,
+  "width": 1320,
+  "height": 720,
+  "pageType": "Standard",
+  "filters": [],
+  "annotations": {
+    "persona": "RA",
+    "description": "RAF distribution + HCC gaps",
+    "locked": false
+  },
+  "visualOrder": [
+    "kpi_raf",
+    "kpi_hcc",
+    "kpi_gap",
+    "bar_hcc"
+  ]
+}

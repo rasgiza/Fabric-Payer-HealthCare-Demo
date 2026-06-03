@@ -1,0 +1,30 @@
+table dim_drug
+	lineageTag: dim_drug
+
+	column ndc_code
+		dataType: string
+		lineageTag: dim_drug.ndc_code
+		summarizeBy: none
+		sourceColumn: ndc_code
+
+	column drug_name
+		dataType: string
+		lineageTag: dim_drug.drug_name
+		summarizeBy: none
+		sourceColumn: drug_name
+
+	column drug_class
+		dataType: string
+		lineageTag: dim_drug.drug_class
+		summarizeBy: none
+		sourceColumn: drug_class
+
+	partition dim_drug = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_drug.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

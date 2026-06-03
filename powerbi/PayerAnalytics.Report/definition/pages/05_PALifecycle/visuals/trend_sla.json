@@ -1,0 +1,20 @@
+{
+  "name": "trend_sla",
+  "visualType": "line_chart",
+  "title": "SLA trend",
+  "position": {
+    "x": 20,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "AuthSLAMetPct"
+    ],
+    "axis": "dim_date.year_month",
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

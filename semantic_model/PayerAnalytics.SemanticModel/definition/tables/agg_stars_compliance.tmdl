@@ -1,0 +1,48 @@
+table agg_stars_compliance
+	lineageTag: agg_stars_compliance
+
+	column measure_id
+		dataType: string
+		lineageTag: agg_stars_compliance.measure_id
+		summarizeBy: none
+		sourceColumn: measure_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: agg_stars_compliance.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column lob
+		dataType: string
+		lineageTag: agg_stars_compliance.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	column denominator
+		dataType: double
+		lineageTag: agg_stars_compliance.denominator
+		summarizeBy: none
+		sourceColumn: denominator
+
+	column numerator
+		dataType: double
+		lineageTag: agg_stars_compliance.numerator
+		summarizeBy: none
+		sourceColumn: numerator
+
+	column compliance_pct
+		dataType: double
+		lineageTag: agg_stars_compliance.compliance_pct
+		summarizeBy: none
+		sourceColumn: compliance_pct
+
+	partition agg_stars_compliance = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/agg_stars_compliance.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

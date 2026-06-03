@@ -1,0 +1,102 @@
+table fact_rx_claim
+	lineageTag: fact_rx_claim
+
+	column rx_claim_id
+		dataType: string
+		lineageTag: fact_rx_claim.rx_claim_id
+		summarizeBy: none
+		sourceColumn: rx_claim_id
+
+	column member_id
+		dataType: string
+		lineageTag: fact_rx_claim.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column ndc_code
+		dataType: string
+		lineageTag: fact_rx_claim.ndc_code
+		summarizeBy: none
+		sourceColumn: ndc_code
+
+	column drug_name
+		dataType: string
+		lineageTag: fact_rx_claim.drug_name
+		summarizeBy: none
+		sourceColumn: drug_name
+
+	column drug_class
+		dataType: string
+		lineageTag: fact_rx_claim.drug_class
+		summarizeBy: none
+		sourceColumn: drug_class
+
+	column fill_date
+		dataType: dateTime
+		lineageTag: fact_rx_claim.fill_date
+		summarizeBy: none
+		sourceColumn: fill_date
+
+	column days_supply
+		dataType: int64
+		lineageTag: fact_rx_claim.days_supply
+		summarizeBy: none
+		sourceColumn: days_supply
+
+	column quantity_dispensed
+		dataType: int64
+		lineageTag: fact_rx_claim.quantity_dispensed
+		summarizeBy: none
+		sourceColumn: quantity_dispensed
+
+	column prescriber_npi
+		dataType: string
+		lineageTag: fact_rx_claim.prescriber_npi
+		summarizeBy: none
+		sourceColumn: prescriber_npi
+
+	column billed_amount
+		dataType: double
+		lineageTag: fact_rx_claim.billed_amount
+		summarizeBy: none
+		sourceColumn: billed_amount
+
+	column paid_amount
+		dataType: double
+		lineageTag: fact_rx_claim.paid_amount
+		summarizeBy: none
+		sourceColumn: paid_amount
+
+	column formulary_tier
+		dataType: int64
+		lineageTag: fact_rx_claim.formulary_tier
+		summarizeBy: none
+		sourceColumn: formulary_tier
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_rx_claim.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column payer_id
+		dataType: string
+		lineageTag: fact_rx_claim.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column fill_date_key
+		dataType: int64
+		lineageTag: fact_rx_claim.fill_date_key
+		summarizeBy: none
+		sourceColumn: fill_date_key
+
+	partition fact_rx_claim = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_rx_claim.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

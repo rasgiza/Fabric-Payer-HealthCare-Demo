@@ -1,0 +1,48 @@
+table fact_quality_event
+	lineageTag: fact_quality_event
+
+	column member_id
+		dataType: string
+		lineageTag: fact_quality_event.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column measure_id
+		dataType: string
+		lineageTag: fact_quality_event.measure_id
+		summarizeBy: none
+		sourceColumn: measure_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_quality_event.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column eligible
+		dataType: boolean
+		lineageTag: fact_quality_event.eligible
+		summarizeBy: none
+		sourceColumn: eligible
+
+	column compliant
+		dataType: boolean
+		lineageTag: fact_quality_event.compliant
+		summarizeBy: none
+		sourceColumn: compliant
+
+	column lob
+		dataType: string
+		lineageTag: fact_quality_event.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	partition fact_quality_event = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_quality_event.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

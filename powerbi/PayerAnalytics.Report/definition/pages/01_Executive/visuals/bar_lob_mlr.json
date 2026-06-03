@@ -1,0 +1,20 @@
+{
+  "name": "bar_lob_mlr",
+  "visualType": "bar_chart",
+  "title": "MLR by LOB",
+  "position": {
+    "x": 660,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "MedicalLossRatio"
+    ],
+    "axis": "dim_lob.lob_id",
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

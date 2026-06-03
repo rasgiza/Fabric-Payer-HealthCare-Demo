@@ -1,0 +1,20 @@
+{
+  "name": "m360_pmpm",
+  "visualType": "card",
+  "title": "PMPM",
+  "position": {
+    "x": 20,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "PMPM"
+    ],
+    "axis": null,
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

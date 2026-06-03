@@ -1,0 +1,69 @@
+model Model
+	culture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+	annotation PBI_QueryOrder = []
+
+relationship rel_fact_claim_member_id_dim_member
+	fromColumn: fact_claim.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_claim_provider_npi_dim_provider
+	fromColumn: fact_claim.provider_npi
+	toColumn: dim_provider.provider_npi
+relationship rel_fact_claim_payer_id_dim_payer
+	fromColumn: fact_claim.payer_id
+	toColumn: dim_payer.payer_id
+relationship rel_fact_claim_primary_dx_code_dim_diagnosis
+	fromColumn: fact_claim.primary_dx_code
+	toColumn: dim_diagnosis.dx_code
+relationship rel_fact_claim_service_date_dim_date
+	fromColumn: fact_claim.service_date
+	toColumn: dim_date.date
+	joinOnDateBehavior: datePartOnly
+relationship rel_fact_rx_claim_member_id_dim_member
+	fromColumn: fact_rx_claim.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_rx_claim_ndc_code_dim_drug
+	fromColumn: fact_rx_claim.ndc_code
+	toColumn: dim_drug.ndc_code
+relationship rel_fact_rx_claim_fill_date_dim_date
+	fromColumn: fact_rx_claim.fill_date
+	toColumn: dim_date.date
+	joinOnDateBehavior: datePartOnly
+relationship rel_fact_auth_member_id_dim_member
+	fromColumn: fact_auth.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_auth_request_date_dim_date
+	fromColumn: fact_auth.request_date
+	toColumn: dim_date.date
+	joinOnDateBehavior: datePartOnly
+relationship rel_fact_appeal_claim_id_fact_claim
+	fromColumn: fact_appeal.claim_id
+	toColumn: fact_claim.claim_id
+relationship rel_fact_member_month_member_id_dim_member
+	fromColumn: fact_member_month.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_member_month_month_start_dim_date
+	fromColumn: fact_member_month.month_start
+	toColumn: dim_date.date
+	joinOnDateBehavior: datePartOnly
+relationship rel_fact_premium_member_id_dim_member
+	fromColumn: fact_premium.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_quality_event_member_id_dim_member
+	fromColumn: fact_quality_event.member_id
+	toColumn: dim_member.member_id
+relationship rel_fact_raf_score_member_id_dim_member
+	fromColumn: fact_raf_score.member_id
+	toColumn: dim_member.member_id
+relationship rel_dim_member_payer_id_dim_payer
+	fromColumn: dim_member.payer_id
+	toColumn: dim_payer.payer_id
+relationship rel_dim_member_lob_dim_lob
+	fromColumn: dim_member.lob
+	toColumn: dim_lob.lob_id
+relationship rel_dim_product_lob_dim_lob
+	fromColumn: dim_product.lob
+	toColumn: dim_lob.lob_id

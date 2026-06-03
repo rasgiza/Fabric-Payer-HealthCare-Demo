@@ -1,0 +1,22 @@
+{
+  "name": "cs_auth",
+  "visualType": "card_group",
+  "title": "Linked auth",
+  "position": {
+    "x": 20,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [],
+    "axis": null,
+    "legend": null,
+    "rows": [
+      "fact_auth.auth_id",
+      "fact_auth.decision",
+      "fact_auth.sla_met"
+    ],
+    "breakdown": []
+  }
+}

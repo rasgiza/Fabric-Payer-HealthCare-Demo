@@ -1,0 +1,20 @@
+{
+  "name": "kpi_stars",
+  "visualType": "card",
+  "title": "Stars Rating (avg)",
+  "position": {
+    "x": 20,
+    "y": 20,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "StarsContractRating"
+    ],
+    "axis": null,
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

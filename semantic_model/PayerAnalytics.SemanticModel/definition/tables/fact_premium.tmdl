@@ -1,0 +1,54 @@
+table fact_premium
+	lineageTag: fact_premium
+
+	column member_id
+		dataType: string
+		lineageTag: fact_premium.member_id
+		summarizeBy: none
+		sourceColumn: member_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: fact_premium.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column lob
+		dataType: string
+		lineageTag: fact_premium.lob
+		summarizeBy: none
+		sourceColumn: lob
+
+	column payer_id
+		dataType: string
+		lineageTag: fact_premium.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column member_months
+		dataType: int64
+		lineageTag: fact_premium.member_months
+		summarizeBy: none
+		sourceColumn: member_months
+
+	column premium_pmpm
+		dataType: double
+		lineageTag: fact_premium.premium_pmpm
+		summarizeBy: none
+		sourceColumn: premium_pmpm
+
+	column premium_total
+		dataType: double
+		lineageTag: fact_premium.premium_total
+		summarizeBy: none
+		sourceColumn: premium_total
+
+	partition fact_premium = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/fact_premium.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

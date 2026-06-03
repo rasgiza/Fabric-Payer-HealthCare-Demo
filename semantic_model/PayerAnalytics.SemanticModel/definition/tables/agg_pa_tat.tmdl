@@ -1,0 +1,54 @@
+table agg_pa_tat
+	lineageTag: agg_pa_tat
+
+	column payer_id
+		dataType: string
+		lineageTag: agg_pa_tat.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: agg_pa_tat.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column request_type
+		dataType: string
+		lineageTag: agg_pa_tat.request_type
+		summarizeBy: none
+		sourceColumn: request_type
+
+	column pa_count
+		dataType: int64
+		lineageTag: agg_pa_tat.pa_count
+		summarizeBy: none
+		sourceColumn: pa_count
+
+	column tat_median_hrs
+		dataType: double
+		lineageTag: agg_pa_tat.tat_median_hrs
+		summarizeBy: none
+		sourceColumn: tat_median_hrs
+
+	column tat_p95_hrs
+		dataType: double
+		lineageTag: agg_pa_tat.tat_p95_hrs
+		summarizeBy: none
+		sourceColumn: tat_p95_hrs
+
+	column sla_compliance_pct
+		dataType: double
+		lineageTag: agg_pa_tat.sla_compliance_pct
+		summarizeBy: none
+		sourceColumn: sla_compliance_pct
+
+	partition agg_pa_tat = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/agg_pa_tat.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

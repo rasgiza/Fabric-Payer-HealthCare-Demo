@@ -1,0 +1,20 @@
+{
+  "name": "kpi_missing",
+  "visualType": "card",
+  "title": "Missing-Info Denials",
+  "position": {
+    "x": 340,
+    "y": 20,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "MissingInfoDenials"
+    ],
+    "axis": null,
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

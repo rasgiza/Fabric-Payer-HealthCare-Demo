@@ -1,0 +1,60 @@
+table agg_denial_by_payer
+	lineageTag: agg_denial_by_payer
+
+	column payer_id
+		dataType: string
+		lineageTag: agg_denial_by_payer.payer_id
+		summarizeBy: none
+		sourceColumn: payer_id
+
+	column plan_year
+		dataType: int64
+		lineageTag: agg_denial_by_payer.plan_year
+		summarizeBy: none
+		sourceColumn: plan_year
+
+	column claims
+		dataType: int64
+		lineageTag: agg_denial_by_payer.claims
+		summarizeBy: none
+		sourceColumn: claims
+
+	column denied_claims
+		dataType: double
+		lineageTag: agg_denial_by_payer.denied_claims
+		summarizeBy: none
+		sourceColumn: denied_claims
+
+	column denial_rate
+		dataType: double
+		lineageTag: agg_denial_by_payer.denial_rate
+		summarizeBy: none
+		sourceColumn: denial_rate
+
+	column billed_total
+		dataType: double
+		lineageTag: agg_denial_by_payer.billed_total
+		summarizeBy: none
+		sourceColumn: billed_total
+
+	column allowed_total
+		dataType: double
+		lineageTag: agg_denial_by_payer.allowed_total
+		summarizeBy: none
+		sourceColumn: allowed_total
+
+	column paid_total
+		dataType: double
+		lineageTag: agg_denial_by_payer.paid_total
+		summarizeBy: none
+		sourceColumn: paid_total
+
+	partition agg_denial_by_payer = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/agg_denial_by_payer.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

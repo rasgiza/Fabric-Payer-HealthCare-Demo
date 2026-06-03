@@ -1,0 +1,18 @@
+table dim_diagnosis
+	lineageTag: dim_diagnosis
+
+	column dx_code
+		dataType: string
+		lineageTag: dim_diagnosis.dx_code
+		summarizeBy: none
+		sourceColumn: dx_code
+
+	partition dim_diagnosis = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_diagnosis.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table

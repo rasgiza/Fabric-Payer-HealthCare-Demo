@@ -1,0 +1,20 @@
+{
+  "name": "bar_payer_dr",
+  "visualType": "bar_chart",
+  "title": "Denial Rate by Payer",
+  "position": {
+    "x": 20,
+    "y": 220,
+    "width": 304,
+    "height": 184
+  },
+  "fields": {
+    "measures": [
+      "DenialRate"
+    ],
+    "axis": "dim_payer.payer_name",
+    "legend": null,
+    "rows": [],
+    "breakdown": []
+  }
+}

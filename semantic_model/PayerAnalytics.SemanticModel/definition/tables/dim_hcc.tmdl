@@ -1,0 +1,18 @@
+table dim_hcc
+	lineageTag: dim_hcc
+
+	column hcc_id
+		dataType: string
+		lineageTag: dim_hcc.hcc_id
+		summarizeBy: none
+		sourceColumn: hcc_id
+
+	partition dim_hcc = m
+		mode: import
+		source = 
+			let
+			  Source = Parquet.Document(File.Contents("C:/Users/kwamesefah/Fabric-Payer-HealthCare-Demo/data/lakehouse/smoke/gold/dim_hcc.parquet"))
+			in
+			  Source
+
+	annotation PBI_ResultType = Table
