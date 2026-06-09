@@ -1,0 +1,36 @@
+agent: CFOAgent
+display_name: CFO Agent
+persona: CFO_RevenueCycle
+personas_owned:
+- CFO
+- RevenueCycle
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_claim
+  - fact_appeal
+  - fact_premium
+  - fact_member_month
+  - agg_mlr_monthly
+  - agg_denial_by_payer
+  - dim_member
+  - dim_payer
+  - dim_product
+  - dim_lob
+  - dim_provider
+  - dim_date
+  measure_folders:
+  - Finance
+  - Operations
+  - PaymentIntegrity
+  - Pharmacy
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/carc_reference.md
+- payer_knowledge/hfma_glossary.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini

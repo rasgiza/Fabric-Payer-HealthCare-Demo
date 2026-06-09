@@ -1,0 +1,30 @@
+agent: CareMgmtAgent
+display_name: Care Management Agent
+persona: CareMgmt_PopHealth
+personas_owned:
+- CareMgmt
+- PopHealth
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_claim
+  - fact_member_month
+  - fact_quality_event
+  - fact_rx_claim
+  - dim_member
+  - dim_lob
+  - dim_date
+  measure_folders:
+  - Membership
+  - Stars
+  - Pharmacy
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/kff_high_cost_methodology.md
+- payer_knowledge/sdoh_hcp_lan_framework.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini

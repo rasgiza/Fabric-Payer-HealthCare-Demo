@@ -1,0 +1,29 @@
+agent: RiskAdjustmentAgent
+display_name: Risk Adjustment Agent
+persona: RiskAdjustment
+personas_owned:
+- RiskAdjustment
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_raf_score
+  - fact_claim
+  - fact_member_month
+  - dim_member
+  - dim_hcc
+  - dim_diagnosis
+  - dim_provider
+  - dim_date
+  measure_folders:
+  - Risk
+  - Membership
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/hcc_v28_weights.md
+- payer_knowledge/oig_radv_audit_guidance.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini

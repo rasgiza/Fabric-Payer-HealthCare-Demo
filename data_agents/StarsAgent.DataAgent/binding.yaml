@@ -1,0 +1,28 @@
+agent: StarsAgent
+display_name: Stars/Quality Agent
+persona: Stars_Quality
+personas_owned:
+- Stars
+- Quality
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_quality_event
+  - fact_member_month
+  - agg_stars_compliance
+  - dim_member
+  - dim_lob
+  - dim_payer
+  - dim_date
+  measure_folders:
+  - Stars
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/hedis_my2026_measures.md
+- payer_knowledge/stars_2026_cutpoints.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini

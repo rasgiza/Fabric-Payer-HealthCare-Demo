@@ -1,0 +1,29 @@
+agent: SIUAgent
+display_name: SIU/FWA Agent
+persona: SIU_FWA
+personas_owned:
+- SIU
+- FWA
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_claim
+  - fact_appeal
+  - fact_rx_claim
+  - dim_member
+  - dim_provider
+  - dim_payer
+  - dim_date
+  measure_folders:
+  - PaymentIntegrity
+  - Operations
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/nhcaa_fraud_schemes.md
+- payer_knowledge/carc_reference.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini

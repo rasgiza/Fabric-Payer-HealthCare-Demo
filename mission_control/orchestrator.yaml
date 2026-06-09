@@ -1,0 +1,145 @@
+# MissionControlOrchestrator - Phase 5 routing config.
+#
+# Each subagent is wrapped as a function tool the orchestrator calls.
+# Foundry MCPTool require_approval is forced to "never" to avoid demo-time prompts
+# (per repo memory - the `always` default blocks unattended demos).
+#
+# Routing is keyword-first (deterministic, auditable). The orchestrator falls
+# back to the LLM only when no persona keyword fires.
+
+orchestrator:
+  name: MissionControlOrchestrator
+  display_name: Mission Control
+  model: gpt-4.1-mini
+  api_version: "2026-04-01-preview"
+  mcp_tool:
+    require_approval: never
+  identity:
+    auth: project_msi          # project-scoped managed identity (NOT workspace MSI)
+    scope: foundry_project
+
+subagents:
+  - { name: CFOAgent,            function_tool: ask_cfo_agent,        max_items: 1 }
+  - { name: StarsAgent,          function_tool: ask_stars_agent,      max_items: 1 }
+  - { name: RiskAdjustmentAgent, function_tool: ask_risk_agent,       max_items: 1 }
+  - { name: SIUAgent,            function_tool: ask_siu_agent,        max_items: 1 }
+  - { name: CareMgmtAgent,       function_tool: ask_caremgmt_agent,   max_items: 1 }
+  - { name: NetworkAgent,        function_tool: ask_network_agent,    max_items: 1 }
+  - { name: UMAgent,             function_tool: ask_um_agent,         max_items: 1 }
+
+# Keyword routing (lowercased question must contain one keyword to fire).
+# Order = priority. First match wins. Multi-fire goes to highest-confidence.
+routing:
+  CFOAgent:
+    - denial
+    - mlr
+    - medical loss ratio
+    - ar days
+    - pmpm
+    - premium
+    - rebate
+    - allowed amount
+    - paid amount
+    - carc
+    - missing-info
+    - missing info
+    - rework
+    - nsa
+    - idr
+  StarsAgent:
+    - stars
+    - hedis
+    - cahps
+    - cut-point
+    - cut point
+    - pdc
+    - mtm
+    - col
+    - bcs
+    - ccs
+    - supd
+    - quality measure
+    - gap closure
+    - star rating
+  RiskAdjustmentAgent:
+    - raf
+    - hcc
+    - v28
+    - v24
+    - radv
+    - suspect
+    - recapture
+    - risk adjust
+    - improper payment
+  SIUAgent:
+    - fwa
+    - fraud
+    - upcoding
+    - phantom billing
+    - kickback
+    - billing velocity
+    - outlier provider
+    - outlier providers
+    - aberrant
+    - providers with the highest denial
+    - high denial rate
+    - appeal overturn outlier
+    - overturn outliers
+    - upcoding signal
+    - abnormal billing
+  CareMgmtAgent:
+    - rising risk
+    - rising-risk
+    - super-utilizer
+    - super utilizer
+    - high-cost
+    - high cost
+    - care management
+    - readmission
+    - sdoh
+    - housing
+    - food insecur
+    - retention
+    - ed super-utilizer
+    - chronic-condition cohort
+    - high-cost trajectory
+  NetworkAgent:
+    - network adequacy
+    - apm
+    - hcp-lan
+    - hcp lan
+    - in-network
+    - out-of-network
+    - oon
+    - leakage
+    - vbc
+    - value-based
+    - time-and-distance
+    - two-sided risk
+    - upside-only
+    - upside only
+    - hcp-lan category
+    - service area
+  UMAgent:
+    - prior auth
+    - prior-auth
+    - pa tat
+    - pa volume
+    - sla
+    - cms-0057
+    - peer-to-peer
+    - p2p
+    - turnaround
+    - authorization
+    - gold-card
+    - gold card
+    - gold-carding
+
+# Refusal patterns - any orchestrator-level refusal short-circuits routing.
+refusal_patterns:
+  - phi: ["ssn", "social security", "home address", "phone number", "full clinical notes", "home phone"]
+  - hallucination_bait: ["just guess", "just estimate without", "estimate adequacy without"]
+  - decision_authority: ["auto-deny", "auto deny", "confirm.*committing fraud", "auto-deny all"]
+  - coding_violations: ["add hcc.*regardless", "without documentation"]
+  - clinical_diagnosis: ["diagnose member", "diagnose .* depression", "likely to die", "who is likely to die", "will die"]
+  - out_of_scope: ["credit-card processing", "credit card processing", "competitor.*rates", "competitor.*network", "which clinical criteria to use", "clinical criteria for service"]

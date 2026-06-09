@@ -1,0 +1,28 @@
+agent: UMAgent
+display_name: UM/Prior Auth Agent
+persona: UM_PriorAuth
+personas_owned:
+- UM
+- PriorAuth
+fabric_data_agent:
+  semantic_model: PayerAnalytics
+  max_items: 1
+  table_allowlist:
+  - fact_auth
+  - fact_appeal
+  - agg_pa_tat
+  - dim_member
+  - dim_provider
+  - dim_date
+  measure_folders:
+  - PriorAuth
+  - Operations
+mcp_tool:
+  require_approval: never
+knowledge_sources:
+- payer_knowledge/cms_0057_f_pa_rule.md
+- payer_knowledge/ama_prior_auth_survey.md
+ai_instructions: aiInstructions.md
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini
