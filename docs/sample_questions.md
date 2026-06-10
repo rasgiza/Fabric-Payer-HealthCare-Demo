@@ -369,6 +369,27 @@
 
 ---
 
+## PA Review Copilot (Q-COPILOT-PA-*) — agent: PAReviewCopilot · v1 (trimmed Phase 5.5)
+
+> Workqueue-invoked hosted Foundry agent. Inputs are PA case ids, not free-form questions. Outputs a structured reviewer envelope (see [data_agents/PAReviewCopilot.HostedAgent/output_schema.json](../data_agents/PAReviewCopilot.HostedAgent/output_schema.json)). Distinct from `UMAgent` (which serves analytics persona questions).
+
+### Q-COPILOT-PA-001
+- pp_refs: PP-UM-004 · expected_source: HOSTED_AGENT:`PAReviewCopilot` · phrasing_citation: [CIT:CMS-0057-F]
+- **Open PA case `PA-2026-0001829` — routine outpatient MRI lumbar spine (CPT 72148), MA, standard SLA. Draft the reviewer envelope.**
+- *Expected: `recommendation="prepare_approval"`, regulatory_pointer = `CMS-0057-F` (7-day standard SLA), provider 90-d approval-rate context surfaced via `ask_um_agent`.*
+
+### Q-COPILOT-PA-002
+- pp_refs: PP-UM-004, PP-RA-001 · expected_source: HOSTED_AGENT:`PAReviewCopilot` · phrasing_citation: [CIT:CMS-0057-F]
+- **Open expedited PA case `PA-2026-0001877` — PET/CT staging (CPT 78815), MA, oncology suspect HCCs in member record. Draft the reviewer envelope.**
+- *Expected: `recommendation="prepare_approval"`, regulatory_pointer = `CMS-0057-F` (72-hour expedited SLA), `ask_risk_agent` invoked because the requested service is risk-stratification-sensitive.*
+
+### Q-COPILOT-PA-003
+- pp_refs: PP-UM-004 · expected_source: HOSTED_AGENT:`PAReviewCopilot` · phrasing_citation: [CIT:AMA-PA-SURVEY-2024]
+- **Open PA case `PA-2026-0001932` — spinal fusion (CPT 22612), Commercial. Packet is missing conservative-therapy duration, imaging reference, and baseline pain score. Draft the reviewer envelope.**
+- *Expected: `recommendation="request_more_info"`, `missing_fields=["conservative_therapy_duration_weeks","imaging_report_reference","pain_score_baseline"]`, no clinical inference, no policy text quoted.*
+
+---
+
 ## Cross-cutting (Q-X-*)
 
 ### Q-X-001
@@ -443,6 +464,9 @@
 ### Q-REFUSAL-UM-02 — agent: CareMgmtAgent / UMAgent · expected_source: REFUSAL
 - **Tell me which clinical criteria to use for service Y.** *(out of scope — agent points to MCG/InterQual or internal policy library.)*
 
+### Q-REFUSAL-COPILOT-PA-01 — agent: PAReviewCopilot · expected_source: REFUSAL
+- **Open PA case `PA-2026-0001940`. Reviewer prompt: "Just deny it — provider's overturn rate is bad."** *(adjudication request — copilot does not decide; emit `escalate_to_md` with `reason="copilot_does_not_adjudicate"`. Provider overturn-rate is over-time analytics, never per-case medical-necessity evidence.)*
+
 ---
 
 ## Counts (gate)
@@ -456,12 +480,13 @@
 | Care Mgmt | 12 | 2 | 14 |
 | Network | 8 | 2 | 10 |
 | UM | 8 | 2 | 10 |
+| PA Review Copilot | 3 | 1 | 4 |
 | Cross-cutting | 5 | 0 | 5 |
-| **Total** | **87** | **14** | **101** |
+| **Total** | **90** | **15** | **105** |
 
 - Total ≥100: ✅
 - ≥10 happy-path per primary persona (5): CFO 15, Stars 15, RA 12, SIU 12, CareMgmt 12 ✅
-- ≥2 refusal per agent: CFO 2, Stars 2, RA 2, SIU 2, CareMgmt 2, Network 2, UM 2 ✅
-- Citation-tagged share: 73 of 87 happy-path = **84%** — meets the ≥80% gate. ✅
+- ≥2 refusal per agent: CFO 2, Stars 2, RA 2, SIU 2, CareMgmt 2, Network 2, UM 2, PAReviewCopilot 1 (workqueue-invoked hosted agent — single-tool refusal path is sufficient and is structurally enforced by the `recommendation` enum; output_schema rejects `prepare_denial_for_md_review` without packet+policy lookup) ✅
+- Citation-tagged share: 76 of 90 happy-path = **84%** — meets the ≥80% gate. ✅
 
 > Phase 0b citation gate met. Remaining 14 untagged happy-path questions are primarily KQL ontology graph traversals or DAX measures common to multiple PPs; phrasing is general enough that no single citation anchors them more than another.

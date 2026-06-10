@@ -1,0 +1,56 @@
+[
+  {
+    "type": "function",
+    "name": "get_pa_packet",
+    "description": "Fetch a prior-authorization packet by PA id. Returns the structured packet (service code, requested setting, clinical fields, member context) the reviewer must read before deciding. Does NOT return PHI beyond age band, sex, LOB, market.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "pa_id": { "type": "string", "description": "PA case id, e.g., PA-2026-0001829" }
+      },
+      "required": ["pa_id"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "lookup_policy_citation",
+    "description": "Resolve the governing medical-policy or licensed-criteria pointer for a service code under the requested LOB and setting. Returns policy_id + version + section anchor — NOT licensed-criteria text. Caller is expected to open the pointed source itself.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "service_code":      { "type": "string", "description": "CPT or HCPCS code" },
+        "lob":               { "type": "string", "enum": ["MA", "Medicaid", "Commercial", "ACA", "Dual"] },
+        "requested_setting": { "type": "string", "enum": ["inpatient", "outpatient", "office", "asc", "home", "telehealth"] }
+      },
+      "required": ["service_code", "lob", "requested_setting"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "ask_um_agent",
+    "description": "Delegate an analytics question to the UMAgent Fabric data agent. Used here only for provider 90-day approval rate and service-line peer-to-peer overturn rate. Never used for case-level decisions.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" }
+      },
+      "required": ["question"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "ask_risk_agent",
+    "description": "Delegate an analytics question to the RiskAdjustmentAgent Fabric data agent. Used here only when the requested service is risk-stratification-sensitive (oncology, advanced cardiac, specialty pharmacy).",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" }
+      },
+      "required": ["question"]
+    },
+    "max_items": 1
+  }
+]

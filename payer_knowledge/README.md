@@ -24,7 +24,8 @@ agents need at narration time.
 | sdoh_hcp_lan_framework.md | CareMgmtAgent | HCP-LAN APM framework + SDOH integration |
 | hcp_lan_apm_framework.md | NetworkAgent | HCP-LAN APM categories [CIT:HCP-LAN-APM-2024] |
 | cms_network_adequacy.md | NetworkAgent | CMS time-and-distance standards |
-| cms_0057_f_pa_rule.md | UMAgent | CMS-0057-F PA Interop Final Rule [CIT:CMS-0057-F] |
-| ama_prior_auth_survey.md | UMAgent | AMA prior-auth survey [CIT:AMA-PA-SURVEY-2024] |
+| cms_0057_f_pa_rule.md | UMAgent, PAReviewCopilot | CMS-0057-F PA Interop Final Rule [CIT:CMS-0057-F] |
+| ama_prior_auth_survey.md | UMAgent, PAReviewCopilot | AMA prior-auth survey [CIT:AMA-PA-SURVEY-2024] |
+| policy_citation_pattern.md | PAReviewCopilot | Internal pattern doc — pointer-not-text discipline for licensed criteria (MCG/InterQual) and internal medical-policy library |
 
 All citation IDs resolve to entries in `citations.yaml` at the repo root.

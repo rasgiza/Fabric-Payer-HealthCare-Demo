@@ -238,6 +238,13 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **confidence**: medium
 - **open_questions**: OQ-006 (overturn-rate benchmarks vary by service line)
 
+### PP-UM-004 — PA packet completeness gates reviewer throughput and reversal risk
+- **data_point**: Incomplete PA packets are a leading driver of nurse-reviewer rework, peer-to-peer escalation, and SLA breach risk under CMS-0057-F decision-time rules [CIT:CMS-0057-F] [CIT:AMA-PA-SURVEY-2024]. Missing fields most commonly cited: conservative-therapy duration, prior imaging reference, baseline pain/function scores, contraindication checklist.
+- **financial_impact**: Each rework cycle adds reviewer minutes (operating cost) AND moves the case closer to the 7-day standard / 72-hour expedited SLA breach. Packets with ≥3 missing required fields show materially elevated peer-to-peer overturn rates, doubling per-decision cost.
+- **agent_owner**: PAReviewCopilot (hosted Foundry agent — v1 trimmed Phase 5.5; distinct from analytical UMAgent)
+- **confidence**: high
+- **open_questions**: OQ-007 (per-service-line minimum-required-field lists vary by medical-policy library; we ship the *pattern* in v1, the customer's policy library hydrates the per-code minima at deploy time)
+
 ---
 
 ## Cross-cutting / regulatory (PP-X-*)
@@ -261,9 +268,9 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 | SIU / FWA | 4 |
 | Care Management | 4 |
 | Network & Contracting | 3 |
-| UM / Prior Auth | 3 |
+| UM / Prior Auth | 4 |
 | Cross-cutting | 1 |
-| **Total** | **29** |
+| **Total** | **30** |
 
 Per gate (≥30, each persona ≥3): meeting the per-persona floor; one additional cross-persona pain point added below to clear the count.
 
@@ -274,4 +281,4 @@ Per gate (≥30, each persona ≥3): meeting the per-persona floor; one addition
 - **confidence**: medium
 - **open_questions**: —
 
-**Final count: 30 pain points.**
+**Final count: 31 pain points.**

@@ -29,9 +29,9 @@ Legend:
 |---|---|---|
 | Denial trend + root-cause analytics | ✅ | PP-CFO-001..005; Q-CFO-001/002/004/005/006/007/009/013/015; CFOAgent. |
 | Appeal overturn analytics | ✅ | Q-CFO-009 (overturn rate), Q-CFO-013 (appeal aging); CFOAgent + UMAgent. |
-| **Document classification on intake** | ❌ | **GAP** — propose Phase 5.5 add: Azure Document Intelligence pre-receipt model + Foundry hosted-agent classification step. |
+| **Document classification on intake** | ❌ → v1.1 | Pattern established by `PAReviewCopilot` (hosted Foundry agent, structured output, function-tool delegation). v1.1 reuses it for `DocIntakeAgent` with Doc Intelligence + LLM extractor; pointer for now: PP-UM-004 + reviewer envelope shows the architecture. |
 | **Auto-summarize a denied claim's case history** | 🟡 | Foundry agent can answer Q&A on a claim; but no scripted "case-summary card" UI yet. Proposed: **Power BI tooltip page driven by an agent prompt template** (see C.2). |
-| Identify missing information on a claim | ❌ | **GAP** — propose new pain point PP-CFO-006 *"X% of denials are 'missing/invalid info' CARC family — addressable by intake-side AI."* Anchor citation: CARC 16/18/22 distribution from synth + AHIP report. |
+| Identify missing information on a claim | 🟡 → v1.1 | Phase 4 ships `MissingInfoDenials` measure (CARC 16/50/197 family); v1.1 adds dedicated `DocIntakeAgent` ownership of PP-CFO-006 once Doc Intelligence wiring is live. |
 
 ### B.2 Prior authorization
 *MS: automate intake, document extraction, case summaries, status visibility, next actions.*
@@ -42,8 +42,8 @@ Legend:
 | TAT median + p95 + CMS-0057-F SLA compliance | ✅ | PP-UM-002; Q-UM-002/003/006; UMAgent. |
 | Peer-to-peer overturn analytics | ✅ | PP-UM-003; Q-UM-004/007; UMAgent. |
 | FHIR PA API adoption | ✅ | Q-UM-005; UMAgent. |
-| **PA intake doc extraction** | ❌ | **GAP** — propose Phase 5.5 add: Doc Intelligence custom-form extractor + nurse-reviewer Foundry agent that pre-summarizes the PA packet. |
-| **Reviewer case-summary copilot** | ❌ | **GAP** — same Phase 5.5 scope: a hosted Foundry agent invoked from the PA workqueue (D365 / Copilot Studio integration), not a data agent. Distinct from UMAgent. |
+| **PA intake doc extraction** | ❌ → v1.1 | Same hosted-agent pattern as `PAReviewCopilot`; `DocIntakeAgent` is the v1.1 extension. |
+| **Reviewer case-summary copilot** | ✅ | `PAReviewCopilot.HostedAgent` ([data_agents/PAReviewCopilot.HostedAgent/](../data_agents/PAReviewCopilot.HostedAgent/)) — workqueue-invoked, structured envelope, function tools `get_pa_packet` / `lookup_policy_citation` / `ask_um_agent` / `ask_risk_agent`. Distinct from analytical `UMAgent`. PP-UM-004. |
 | Status visibility / next-action visibility | ✅ | RTI Phase 6 Activator alerts on `pa_lifecycle_events`; Q-UM-006. |
 
 ### B.3 Member and provider service
@@ -74,7 +74,7 @@ Legend:
 | Member doctor-shopping / opioid patterns | ✅ | PP-SIU-002; Q-SIU-005. |
 | Regional cluster / referral graph traversal | ✅ | Q-SIU-011; PayerOntologyAgent (Phase 3). |
 | Live FWA-signal detection | ✅ | PP-SIU-004; Phase 6 RTI `fwa_signal_events` + KQL update policy + Activator. |
-| **Investigator case summary copilot** | ❌ | **GAP** — Foundry hosted agent for SIU investigator workqueue. Propose Phase 5.5 add. |
+| **Investigator case summary copilot** | ❌ → v1.1 | Same hosted-agent pattern as `PAReviewCopilot`; `SIUCaseCopilot` is the v1.1 extension. |
 
 ---
 
@@ -84,12 +84,16 @@ The 7-agent analytics core stands. The MS page expands the demo into **front-doo
 
 ### C.1 Phase 5.5 — *Document & Service Copilots* (additive to current plan)
 
-New artifacts:
-- **DocIntakeAgent** (Foundry hosted agent, not data agent) — wraps Azure Document Intelligence + LLM extractor for inbound claim attachments and PA packets. Tools: `extract_form_fields`, `classify_claim_type`, `flag_missing_fields`. Approval: never.
-- **PAReviewCopilot** (Foundry hosted agent) — invoked from a PA workqueue stub. Inputs: extracted PA packet + member history pulled via UMAgent + RiskAdjustmentAgent. Output: nurse-reviewer adaptive card with pre-filled MCG/InterQual citation hints.
-- **SIUCaseCopilot** (Foundry hosted agent) — case-summary generator over SIUAgent + PayerOntologyAgent.
-- 3 new pain-point rows: PP-CFO-006 (missing-info CARC family), PP-UM-004 (PA-packet completeness), PP-SIU-005 (case-summary cycle time).
-- 6 new sample questions tagged `Q-DOC-*` (3) and `Q-COPILOT-*` (3).
+> **Scope decision (2026-06):** Phase 5.5 ships **trimmed** — only `PAReviewCopilot` (one hosted Foundry agent). `DocIntakeAgent` and `SIUCaseCopilot` are deferred to **v1.1** so the demo establishes the production hosted-agent pattern (function-tool calls into existing data agents + structured-output envelope + KB-grounded policy pointers) without overbuilding three near-identical agents on synthetic data. Customers extend the same pattern to intake-extraction and SIU narrative when they hydrate against real PA packets and SIU signals.
+
+**v1 (shipped in Phase 5.5):**
+- **PAReviewCopilot** ([data_agents/PAReviewCopilot.HostedAgent/](../data_agents/PAReviewCopilot.HostedAgent/)) — hosted Foundry agent invoked from a PA workqueue. Tools: `get_pa_packet`, `lookup_policy_citation`, `ask_um_agent`, `ask_risk_agent`. MCPTool `require_approval=never`, project-scoped MSI. Structured output ([output_schema.json](../data_agents/PAReviewCopilot.HostedAgent/output_schema.json)) with four-value `recommendation` enum (`prepare_approval` / `request_more_info` / `escalate_to_md` / `prepare_denial_for_md_review`). Pointer-not-text discipline for licensed criteria via [payer_knowledge/policy_citation_pattern.md](../payer_knowledge/policy_citation_pattern.md).
+- **PP-UM-004** added to [pain_points.md](pain_points.md): PA packet completeness gates reviewer throughput and reversal risk.
+- 4 questions added to [sample_questions.md](sample_questions.md): `Q-COPILOT-PA-001..003` (happy-path) + `Q-REFUSAL-COPILOT-PA-01`.
+
+**v1.1 (deferred — pattern is in place; customers/we extend):**
+- **DocIntakeAgent** — Doc Intelligence + LLM extractor for inbound claim attachments and PA packets. Reuses the `PAReviewCopilot` hosted-agent pattern; new tools: `extract_form_fields`, `classify_claim_type`, `flag_missing_fields`. PP-CFO-006 (missing-info CARC family — already partially covered by the `MissingInfoDenials` measure in Phase 4) gets dedicated agent ownership in v1.1.
+- **SIUCaseCopilot** — case-summary narrative generator over SIUAgent + PayerOntologyAgent. Reuses the same pattern; new tools: `assemble_provider_dossier`, `summarize_signal_cluster`. PP-SIU-005 (case-summary cycle time) added in v1.1.
 
 ### C.2 Phase 4 add — *Member 360 + claim case-summary tooltip*
 
@@ -110,13 +114,19 @@ New artifacts:
 
 ## D. Recommendation
 
-Adopt **C.1 (Phase 5.5)**, **C.2 (Phase 4 add)**, and **C.3 (Phase 7 stub)**. Do not adopt C.4. This brings the demo to **green ✅ on every bullet** of the Microsoft payors AI page while keeping scope contained.
+**Adopted (2026-06):** **C.1 trimmed** (PAReviewCopilot only — one hosted Foundry agent that establishes the production reference pattern), **C.2** (Phase 4 Member 360 + claim case-summary tooltip), **C.3** (Phase 7 MemberServiceCopilot Copilot Studio stub). Not adopted: **C.4**. Deferred to v1.1: DocIntakeAgent + SIUCaseCopilot.
 
-Estimated artifact deltas if approved:
-- +3 hosted Foundry agents (DocIntake, PAReview, SIUCase)
-- +3 pain points, +14 sample questions (3 doc + 3 copilot + 5 member-svc + 3 case-summary)
-- +1 persona card (Member Services)
-- +1 Power BI page (Member 360) + 1 tooltip (Claim Case Summary)
-- +1 Copilot Studio agent stub
+Rationale: with Phase 5 already grounding 7 Fabric data agents on the semantic model (Fabric IQ best practice — model-grounded, not raw lakehouse, table allowlists, max_items=1, MCPTool `require_approval=never`, project-scoped MSI), the architectural gap was the **hosted-agent surface** for unstructured-document workflows. Shipping one well-built hosted agent (`PAReviewCopilot`) demonstrates the production pattern customers replicate; shipping three near-identical agents on synthetic PA packets adds repository surface area without proportional architectural learning. CMS-0057-F's PA decision-time SLAs are the loudest current regulatory pressure, making PAReviewCopilot the strongest single-agent choice.
+
+Final artifact deltas adopted in v1:
+- +1 hosted Foundry agent (PAReviewCopilot)
+- +1 pain point (PP-UM-004), +4 sample questions (3 happy + 1 refusal)
+- +1 KB doc (policy_citation_pattern.md — pointer-not-text discipline for licensed criteria)
+- +1 Power BI page (Member 360) + 1 tooltip (Claim Case Summary) — Phase 4 follow-up
+- +1 Copilot Studio agent stub (Phase 7 MemberServiceCopilot)
+
+Deferred to v1.1 (pattern is in place; lift-and-extend):
+- DocIntakeAgent (PP-CFO-006)
+- SIUCaseCopilot (PP-SIU-005)
 
 Citation linter and CI gates remain green throughout — all new questions cite already-defined IDs in `citations.yaml` (no new citations needed for this expansion; everything is grounded in CHC-DENIAL-INDEX-2025, AMA-PA-SURVEY-2024, OIG-WORKPLAN-2025, KFF-HIGH-COST-2024, NHCAA-FRAUD-COST, CMS-0057-F).

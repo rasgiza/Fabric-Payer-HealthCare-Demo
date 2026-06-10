@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PAReviewEnvelope",
+  "description": "Structured-outputs schema for the PAReviewCopilot reviewer envelope. Enforced via Foundry structured-outputs mode.",
+  "type": "object",
+  "required": ["pa_id", "recommendation", "confidence", "policy_pointers", "regulatory_pointers", "context"],
+  "additionalProperties": false,
+  "properties": {
+    "pa_id": { "type": "string" },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "prepare_approval",
+        "request_more_info",
+        "escalate_to_md",
+        "prepare_denial_for_md_review"
+      ]
+    },
+    "confidence": { "type": "string", "enum": ["low", "medium", "high"] },
+    "missing_fields": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "policy_pointers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["policy_id", "policy_version", "cited_section_anchor"],
+        "additionalProperties": false,
+        "properties": {
+          "policy_id":             { "type": "string" },
+          "policy_version":        { "type": "string" },
+          "cited_section_anchor":  { "type": "string" },
+          "link_token":            { "type": "string" }
+        }
+      }
+    },
+    "regulatory_pointers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation_id", "relevance"],
+        "additionalProperties": false,
+        "properties": {
+          "citation_id": { "type": "string", "description": "Must resolve in citations.yaml" },
+          "relevance":   { "type": "string" }
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_90d_approval_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "service_line_overturn_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "member_age_band":            { "type": "string" },
+        "member_lob":                 { "type": "string" },
+        "member_market":              { "type": "string" },
+        "risk_stratification_note":   { "type": "string" }
+      }
+    },
+    "rationale_snippets": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Short bullet pointers back into the packet — never licensed-criteria text"
+    },
+    "reason": { "type": "string", "description": "Required when recommendation is escalate_to_md or request_more_info" },
+    "note":   { "type": "string" }
+  }
+}

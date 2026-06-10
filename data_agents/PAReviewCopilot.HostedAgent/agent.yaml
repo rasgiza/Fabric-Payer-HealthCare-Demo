@@ -1,0 +1,45 @@
+agent: PAReviewCopilot
+display_name: PA Review Copilot
+kind: foundry_hosted_agent
+persona: UM_PriorAuth
+personas_owned:
+- UM
+- PriorAuth
+# Distinct from UMAgent (analytics): this is the *reviewer-side* hosted Foundry
+# agent invoked from the PA workqueue at decision time. It does not query the
+# semantic model directly — it composes a pre-review packet by calling
+# UMAgent + RiskAdjustmentAgent as function tools and grounds reviewer
+# guidance against the policy KB.
+pain_points_owned:
+- PP-UM-004
+foundry:
+  api_version: 2026-04-01-preview
+  model: gpt-4.1-mini
+  auth: project_msi
+mcp_tool:
+  require_approval: never
+tools:
+- name: ask_um_agent           # delegates analytics (TAT, SLA, peer-to-peer history) to UMAgent
+  type: function
+  upstream_agent: UMAgent
+  max_items: 1
+- name: ask_risk_agent         # member RAF context for medical-necessity framing
+  type: function
+  upstream_agent: RiskAdjustmentAgent
+  max_items: 1
+- name: lookup_policy_citation # KB grounded retrieval — returns *citation pointers*, not licensed criteria text
+  type: function
+  schema: tool_schemas.json
+- name: get_pa_packet
+  type: function
+  schema: tool_schemas.json
+knowledge_sources:
+- payer_knowledge/cms_0057_f_pa_rule.md
+- payer_knowledge/ama_prior_auth_survey.md
+- payer_knowledge/policy_citation_pattern.md
+output_schema: output_schema.json
+ai_instructions: aiInstructions.md
+governance:
+  phi_minimization: required
+  decision_authority: deny     # copilot drafts a recommendation envelope; never auto-decides
+  audit_log: required

@@ -150,6 +150,38 @@ def deploy_orchestrator(orch_cfg: dict, function_tools: list[dict], *, dry_run: 
     raise RuntimeError("Live deploy requires Foundry project credentials.")
 
 
+def deploy_hosted_agent(agent_dir: Path, *, dry_run: bool) -> dict:
+    """
+    Deploy a workqueue-invoked hosted Foundry agent (e.g., PAReviewCopilot).
+    Distinct from MissionControlOrchestrator: not a router, not bound to a
+    Fabric data agent, but may delegate to data agents via function tools.
+    """
+    spec = yaml.safe_load((agent_dir / "agent.yaml").read_text())
+    instructions = (agent_dir / spec["ai_instructions"]).read_text(encoding="utf-8")
+    tools = json.loads((agent_dir / "tool_schemas.json").read_text())
+    output_schema = json.loads((agent_dir / spec["output_schema"]).read_text())
+
+    payload = {
+        "name": spec["agent"],
+        "kind": spec["kind"],
+        "model": spec["foundry"]["model"],
+        "api_version": spec["foundry"]["api_version"],
+        "auth": {"type": "ProjectManagedIdentity"},
+        "instructions": instructions,
+        "tools": tools,
+        "mcp_tool": {"require_approval": spec["mcp_tool"]["require_approval"]},
+        "structured_output": {"schema": output_schema},
+        "knowledge_sources": spec.get("knowledge_sources", []),
+        "governance": spec.get("governance", {}),
+    }
+    if dry_run:
+        print(f"\n  [dry-run] Foundry hosted agent: {payload['name']}  tools={len(tools)}  KB={len(payload['knowledge_sources'])}  schema=output_schema.json")
+        for t in tools:
+            print(f"             - {t['name']}  (max_items={t.get('max_items', 'n/a')})")
+        return {"id": f"sim-{spec['agent']}", "status": "DryRun"}
+    raise RuntimeError("Live deploy requires Foundry project credentials.")
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--foundry-project", default=os.getenv("FOUNDRY_PROJECT"))
@@ -169,8 +201,9 @@ def main() -> int:
     orch = yaml.safe_load(ORCH.read_text())
     function_tools: list[dict] = []
     agent_dirs = sorted([d for d in DA.iterdir() if d.is_dir() and d.name.endswith(".DataAgent")])
+    hosted_dirs = sorted([d for d in DA.iterdir() if d.is_dir() and d.name.endswith(".HostedAgent")])
 
-    print(f"[deploy] {'DRY-RUN' if dry_run else 'LIVE'}  agents={len(agent_dirs)}  KB={len(list(KB.glob('*.md')))-1}")
+    print(f"[deploy] {'DRY-RUN' if dry_run else 'LIVE'}  data-agents={len(agent_dirs)}  hosted-agents={len(hosted_dirs)}  KB={len(list(KB.glob('*.md')))-1}")
     for d in agent_dirs:
         b = load_agent(d)
         print(f"\n  ---- {b['agent']} ----")
@@ -179,7 +212,12 @@ def main() -> int:
         function_tools.append(wrap_as_function_tool(b))
 
     deploy_orchestrator(orch, function_tools, dry_run=dry_run)
-    print(f"\n[deploy] OK  function_tools={len(function_tools)}  orchestrator={orch['orchestrator']['name']}")
+
+    for hd in hosted_dirs:
+        print(f"\n  ---- {hd.name.removesuffix('.HostedAgent')} (hosted) ----")
+        deploy_hosted_agent(hd, dry_run=dry_run)
+
+    print(f"\n[deploy] OK  function_tools={len(function_tools)}  orchestrator={orch['orchestrator']['name']}  hosted={len(hosted_dirs)}")
     return 0
 
 
