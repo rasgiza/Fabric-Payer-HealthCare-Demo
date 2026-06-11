@@ -12,6 +12,7 @@ Default scale=1.0 ≈ 100K members. Use --scale 0.005 for a 500-member smoke tes
 """
 
 from __future__ import annotations
+
 import argparse
 import hashlib
 import sys
@@ -145,7 +146,7 @@ def gen_members(cfg: GenConfig, rng: np.random.Generator, ref: dict) -> pd.DataF
 
     payers = ref["payers"]
     payer_ids = []
-    for l, st in zip(lob, state):
+    for l, st in zip(lob, state, strict=False):
         eligible = payers[payers["lob"].isin(LOB_TO_PAYER_FILTER[l]) &
                           payers["market_states"].str.contains(st)]
         if len(eligible) == 0:

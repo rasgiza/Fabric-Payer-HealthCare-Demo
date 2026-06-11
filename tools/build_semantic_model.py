@@ -14,6 +14,7 @@ Phase 7 (fabric-cicd) replaces the parquet-path expressions with Direct Lake
 bindings against the deployed lakehouse SQL endpoint.
 """
 from __future__ import annotations
+
 import argparse
 import json
 import shutil
@@ -87,7 +88,7 @@ def emit_table_tmdl(table: str, columns, measures=None) -> str:
             f"\tcolumn {col}",
             f"\t\tdataType: {dtype}",
             f"\t\tlineageTag: {table}.{col}",
-            f"\t\tsummarizeBy: none",
+            "\t\tsummarizeBy: none",
             f"\t\tsourceColumn: {col}",
             "",
         ]
@@ -105,27 +106,27 @@ def emit_table_tmdl(table: str, columns, measures=None) -> str:
             ]
     lines += [
         f"\tpartition {table} = m",
-        f"\t\tmode: import",
-        f"\t\tsource = ",
-        f"\t\t\tlet",
+        "\t\tmode: import",
+        "\t\tsource = ",
+        "\t\t\tlet",
         f'\t\t\t  Source = Parquet.Document(File.Contents("{parquet_uri}"))',
-        f"\t\t\tin",
-        f"\t\t\t  Source",
+        "\t\t\tin",
+        "\t\t\t  Source",
         "",
-        f"\tannotation PBI_ResultType = Table",
+        "\tannotation PBI_ResultType = Table",
     ]
     return "\n".join(lines) + "\n"
 
 
 def emit_relationships_tmdl() -> str:
     lines = []
-    for i, (ft, fc, tt, tc) in enumerate(RELATIONSHIPS):
+    for _i, (ft, fc, tt, tc) in enumerate(RELATIONSHIPS):
         rid = f"rel_{ft}_{fc}_{tt}".replace(".", "_")
         lines += [
             f"relationship {rid}",
             f"\tfromColumn: {ft}.{fc}",
             f"\ttoColumn: {tt}.{tc}",
-            f"\tjoinOnDateBehavior: datePartOnly" if "date" in fc.lower() or fc.lower().endswith("_date") or fc.lower() == "month_start" else "",
+            "\tjoinOnDateBehavior: datePartOnly" if "date" in fc.lower() or fc.lower().endswith("_date") or fc.lower() == "month_start" else "",
             "",
         ]
     return "\n".join([l for l in lines if l != ""])

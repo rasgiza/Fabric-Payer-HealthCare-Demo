@@ -1,0 +1,48 @@
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = [
+  "-q",
+  "--strict-markers",
+  "--strict-config",
+  "-ra",
+]
+markers = [
+  "smoke: tests that depend on the bundled data/synth/smoke run + data/graph/smoke graph",
+  "slow: end-to-end tests that shell out to audit / eval scripts",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+  ".git",
+  ".venv",
+  "__pycache__",
+  "data/synth",
+  "data/graph",
+  "report",
+  "semantic_model/PayerAnalytics.SemanticModel",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "W",   # pycodestyle warnings
+]
+ignore = [
+  "E501",  # line too long — repo has long printed banners and YAML strings
+  "B008",  # Default arg call (FastAPI/Click idiom we don't need to police here)
+  "E701",  # multi-statement-on-one-line colon — common in compact data scripts
+  "E702",  # multi-statement-on-one-line semicolon — common in compact data scripts
+  "E741",  # ambiguous variable name (l, I, O) — pre-existing in legacy notebook code
+  "F541",  # f-string without placeholders — common in print() banners
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]  # allow `assert False` style in tests

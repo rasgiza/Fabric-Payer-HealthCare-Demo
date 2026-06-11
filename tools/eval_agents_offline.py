@@ -27,6 +27,7 @@ Gate (must all pass):
   - 100% of hosted-agent artifact checks pass
 """
 from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path

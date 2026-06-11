@@ -14,6 +14,7 @@ SQL ports cleanly to spark.sql() in Phase 7.
 """
 
 from __future__ import annotations
+
 import argparse
 import sys
 from pathlib import Path

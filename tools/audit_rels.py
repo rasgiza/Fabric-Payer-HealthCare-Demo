@@ -4,6 +4,7 @@ endpoint resolution in the built graph. Fails (exit 1) on any unresolved
 edges. Used as Phase 3 gate.
 """
 from __future__ import annotations
+
 import argparse
 import pickle
 import sys
@@ -23,8 +24,6 @@ def main() -> int:
 
     onto = yaml.safe_load(Path(args.ontology).read_text())
     declared_rels = {r["name"]: (r["from"], r["to"]) for r in onto["relationships"]}
-    built_flags = {r["name"]: r.get("built", True) and not r.get("synthetic", False)
-                   for r in onto["relationships"]}
 
     gpath = ROOT / "data" / "graph" / args.run_id / "payer_graph.gpickle"
     if not gpath.exists():
@@ -73,7 +72,7 @@ def main() -> int:
     # Relationships declared but absent from graph (zero edges)
     declared_missing = sorted(set(declared_rels) - edge_rels_seen)
     if declared_missing:
-        print(f"\n  declared relationships with 0 edges in graph:")
+        print("\n  declared relationships with 0 edges in graph:")
         for r in declared_missing:
             spec = next((x for x in onto["relationships"] if x["name"] == r), {})
             if spec.get("synthetic"):

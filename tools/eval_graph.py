@@ -14,10 +14,10 @@ The Foundry agent eval (Phase 5) will run the same questions against the live
 agent and score answers vs. the values produced here.
 """
 from __future__ import annotations
+
 import argparse
 import json
 import pickle
-import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -75,7 +75,7 @@ def execute(G, spec):
     if t == "count_nodes_with_edge_in":
         rels = spec["edges"]
         nodes = set()
-        for s, t_, k in G.edges(keys=True):
+        for _s, t_, k in G.edges(keys=True):
             if k in rels:
                 nodes.add(t_)
         return len(nodes)

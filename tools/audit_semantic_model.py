@@ -6,9 +6,8 @@ reference resolves to a real measure or column.
 Used as Phase 4 gate.
 """
 from __future__ import annotations
-import json
+
 import re
-import sys
 from pathlib import Path
 
 import duckdb
@@ -68,7 +67,7 @@ def main() -> int:
                     continue
                 tbl, col = f.split(".", 1)
                 # synthetic columns like dim_date.year_month are allowed (computed)
-                if tbl in schemas and col not in schemas[tbl] and not col in {"year_month"}:
+                if tbl in schemas and col not in schemas[tbl] and col not in {"year_month"}:
                     errors.append(f"[page {page['id']}/{v['id']}] field '{f}' not in gold")
                 if tbl not in schemas:
                     errors.append(f"[page {page['id']}/{v['id']}] table '{tbl}' not in gold")

@@ -18,6 +18,7 @@ positions use a 4-column grid auto-layout. Power BI reads PBIR JSON and
 materializes visuals; humans can refine in Power BI Desktop after deploy.
 """
 from __future__ import annotations
+
 import argparse
 import json
 import shutil

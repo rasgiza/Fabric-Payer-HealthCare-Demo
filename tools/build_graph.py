@@ -8,6 +8,7 @@ Output:
     data/graph/<run_id>/graph_summary.json   - node/edge counts per type
 """
 from __future__ import annotations
+
 import argparse
 import json
 import pickle

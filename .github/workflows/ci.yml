@@ -7,6 +7,22 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+
+      - name: Ruff check
+        run: ruff check .
+
   citations:
     name: Citation linter
     runs-on: ubuntu-latest
@@ -22,3 +38,19 @@ jobs:
 
       - name: Run citation linter
         run: python tools/check_citations.py
+
+  tests:
+    name: Pytest harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: pytest

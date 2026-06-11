@@ -1,0 +1,12 @@
+# Tier 1B dev dependencies — pytest + ruff harness for CI and local runs.
+# Runtime deps for the audit + eval scripts are also pinned here so CI doesn't
+# need a separate requirements.txt; this repo ships notebooks + scripts, not a
+# Python package, so we deliberately skip a top-level install.
+
+pyyaml==6.0.2
+pandas==2.2.3
+networkx==3.4.2
+jsonschema==4.23.0
+
+pytest==8.3.4
+ruff==0.8.4

@@ -10,6 +10,7 @@ Output (per agent under data_agents/<Agent>.DataAgent/):
 Phase 7 (fabric-cicd + Foundry SDK) consumes these to deploy the agents.
 """
 from __future__ import annotations
+
 import json
 from pathlib import Path
 

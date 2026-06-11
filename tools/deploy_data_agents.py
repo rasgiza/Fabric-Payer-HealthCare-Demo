@@ -25,6 +25,7 @@ run; full execution requires Foundry project credentials (set FOUNDRY_PROJECT,
 FOUNDRY_ENDPOINT, FABRIC_WORKSPACE_ID env vars).
 """
 from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -79,7 +80,7 @@ def deploy_fabric_data_agent(binding: dict, *, fabric_workspace_id: str, dry_run
         },
     }
     if dry_run:
-        print(f"  [dry-run] PUT Fabric DataAgent: {binding['agent']} (instructions hash {binding['_ai_instructions_hash']})")
+        print(f"  [dry-run] PUT Fabric DataAgent: {binding['agent']} (instructions hash {binding['_ai_instructions_hash']}, payload keys={sorted(payload['definition'].keys())})")
         return {"id": f"sim-{binding['agent']}", "status": "DryRun"}
     raise RuntimeError("Live deploy requires fabric_workspace_id + Fabric SDK (see docstring).")
 
