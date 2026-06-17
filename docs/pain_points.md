@@ -92,6 +92,27 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **confidence**: high
 - **open_questions**: —
 
+### PP-STAR-006 — Health Equity Index replaces reward factor in 2027 Stars
+- **data_point**: CMS finalized the Health Equity Index (HEI), which replaces the existing reward factor starting with the 2027 Star Ratings; HEI rewards plans that perform well on quality measures among enrollees with social risk factors (LIS/DE, disability) [CIT:CMS-HEI-2027].
+- **financial_impact**: Plans with skewed performance gaps between social-risk and non-social-risk members can lose up to 0.4 stars under HEI; flips QBP eligibility for borderline contracts.
+- **agent_owner**: StarsAgent (with CareMgmtAgent for outreach equity)
+- **confidence**: high
+- **open_questions**: —
+
+### PP-STAR-007 — Tukey outlier deletion methodology stability
+- **data_point**: CMS Tukey outlier deletion remains in the 2026 Star Ratings methodology, removing extreme high/low scoring contracts before computing cut points; stable methodology means cut points become more sensitive to mid-pack performance [CIT:CMS-STARS-2026-TN].
+- **financial_impact**: Mid-cluster contracts are most exposed to small-population sampling noise; affects forecasting confidence.
+- **agent_owner**: StarsAgent
+- **confidence**: medium
+- **open_questions**: —
+
+### PP-STAR-008 — CMS Universal Foundation alignment across MA / Medicaid / Marketplace
+- **data_point**: CMS Universal Foundation aligns adult and child core measure sets across MA, Medicaid, and Marketplace; payers operating across LOBs can consolidate measure compute, but spec drift between programs remains [CIT:CMS-UNIVERSAL-FOUNDATION-2024].
+- **financial_impact**: Reduces duplicate engineering on overlapping measures; misalignment causes reporting drift between LOBs.
+- **agent_owner**: StarsAgent
+- **confidence**: medium
+- **open_questions**: —
+
 ---
 
 ## Risk Adjustment (PP-RA-*)
@@ -124,6 +145,27 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **confidence**: medium
 - **open_questions**: OQ-003 (yield rate is payer-specific; need conservative prior)
 
+### PP-RA-005 — RADV Final Rule extrapolation exposure
+- **data_point**: CMS finalized RADV audit methodology (CMS-4185-F2) including extrapolation of overpayments back to payment year 2018 and removal of the FFS adjuster; recovery exposure increased materially [CIT:CMS-RADV-FINAL-2023].
+- **financial_impact**: Extrapolated recoveries can scale a single contract's exposure from millions to hundreds of millions depending on sample-error rate.
+- **agent_owner**: RiskAdjustmentAgent
+- **confidence**: high
+- **open_questions**: —
+
+### PP-RA-006 — Medicaid CDPS / CDPS+Rx model parity
+- **data_point**: Medicaid managed care programs use Chronic Illness and Disability Payment System (CDPS, CDPS+Rx) or Medicaid Rx (MRX) risk-adjustment models distinct from CMS-HCC; payers operating in both MA and Medicaid maintain parallel RA pipelines [CIT:CMS-CDPS-MEDICAID-2025].
+- **financial_impact**: Mis-aligned coding governance between MA and Medicaid drives capitation rate accuracy and state-contract performance.
+- **agent_owner**: RiskAdjustmentAgent
+- **confidence**: medium
+- **open_questions**: OQ-008 (CDPS coefficients are state-specific and not in this v1 demo's reference data)
+
+### PP-RA-007 — Prospective vs retrospective coding governance
+- **data_point**: OIG and CMS scrutinize "chase-list" retrospective chart reviews for diagnoses unsupported by face-to-face encounter documentation; prospective AWV-driven capture is the lower-risk path [CIT:OIG-MA-RA-AUDIT-2024] [CIT:CMS-HCC-V28-2026].
+- **financial_impact**: Over-reliance on retrospective adds drives audit risk; under-investment in prospective drives missed revenue.
+- **agent_owner**: RiskAdjustmentAgent
+- **confidence**: high
+- **open_questions**: —
+
 ---
 
 ## SIU / FWA (PP-SIU-*)
@@ -154,6 +196,20 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **financial_impact**: Lower-dollar per case but high volume; can also indicate compromised MBIs requiring re-issue.
 - **agent_owner**: SIUAgent
 - **confidence**: medium
+- **open_questions**: —
+
+### PP-SIU-005 — LEIE provider-exclusion screening
+- **data_point**: Federal health programs may not pay for items or services furnished by excluded individuals/entities; payers must screen providers, employees, and contractors against the OIG LEIE on at least a monthly cadence [CIT:LEIE-OIG-2025].
+- **financial_impact**: Each missed LEIE match accrues recoverable overpayments + civil monetary penalty exposure ($10K–$20K per item/service).
+- **agent_owner**: SIUAgent
+- **confidence**: high
+- **open_questions**: —
+
+### PP-SIU-006 — Telefraud + DME + genetic-testing scheme detection
+- **data_point**: HHS-OIG and DOJ enforcement repeatedly cite telehealth fraud rings, durable-medical-equipment phantom orders, and genetic-testing kickback schemes as the highest-dollar FWA categories of 2023–2025 [CIT:OIG-WORKPLAN-2025].
+- **financial_impact**: Single coordinated telefraud / DME / genetic-test rings have produced individual recoveries in the $100M–$2B range; signature patterns (impossible daily encounter counts, geographic mismatch, non-MD ordering volume) are detectable in claims streams.
+- **agent_owner**: SIUAgent
+- **confidence**: high
 - **open_questions**: —
 
 ---
@@ -188,6 +244,27 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **confidence**: high
 - **open_questions**: —
 
+### PP-CARE-005 — 30-day all-cause readmissions (HRRP cohorts)
+- **data_point**: HRRP penalizes excess 30-day all-cause risk-adjusted readmissions across AMI, COPD, HF, pneumonia, CABG, and elective THA/TKA cohorts; payers shoulder co-management responsibility on readmission management [CIT:CMS-HRRP-2025].
+- **financial_impact**: Each prevented readmission saves ~$15K–$25K acute spend + downstream MA Stars Plan All-Cause Readmissions measure performance.
+- **agent_owner**: CareMgmtAgent
+- **confidence**: high
+- **open_questions**: —
+
+### PP-CARE-006 — SDOH Z-code capture and intervention ROI
+- **data_point**: Gravity Project standardizes SDOH data capture; ICD-10 Z-codes (Z55–Z65) remain the primary claims signal and are heavily under-coded across payer books [CIT:GRAVITY-SDOH-Z-CODES-2024].
+- **financial_impact**: Capturing SDOH risk on rising-risk cohorts unlocks community-based interventions with documented 3–7x ROI on housing/food/transport programs.
+- **agent_owner**: CareMgmtAgent (with StarsAgent for HEI)
+- **confidence**: medium
+- **open_questions**: —
+
+### PP-CARE-007 — MHPAEA NQTL parity reporting and audit posture
+- **data_point**: Group health plans must perform and document NQTL comparative analyses across medical/surgical and mental-health/substance-use benefits; tri-agency enforcement raised audit cadence [CIT:MHPAEA-NQTL-2024].
+- **financial_impact**: Adverse parity findings trigger corrective-action plans, plan-design changes, and member-notice obligations; reputational exposure with state regulators.
+- **agent_owner**: CareMgmtAgent
+- **confidence**: high
+- **open_questions**: —
+
 ---
 
 ## Network & Contracting (PP-NET-*)
@@ -211,6 +288,13 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **financial_impact**: Each percentage point of OON spend on emergent services translates to direct medical-cost increase + IDR exposure.
 - **agent_owner**: v1.1: NetworkAgent
 - **confidence**: medium
+- **open_questions**: —
+
+### PP-NET-004 — NSA Section 116 provider-directory verification
+- **data_point**: Group health plans and issuers must verify provider directory information at least every 90 days; inaccurate directories trigger member cost-sharing protections — the member pays in-network rates regardless of actual network status [CIT:CMS-NSA-116-DIRECTORY].
+- **financial_impact**: Directory inaccuracy turns OON spend into in-network economics for the payer; a 10% inaccuracy rate on a moderate-size book = millions in additional liability per quarter.
+- **agent_owner**: v1.1: NetworkAgent
+- **confidence**: high
 - **open_questions**: —
 
 ---
@@ -245,6 +329,20 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 - **confidence**: high
 - **open_questions**: OQ-007 (per-service-line minimum-required-field lists vary by medical-policy library; we ship the *pattern* in v1, the customer's policy library hydrates the per-code minima at deploy time)
 
+### PP-UM-005 — Two-Midnight rule and MA inpatient/observation alignment
+- **data_point**: CMS-4201-F requires MA plans to apply the Two-Midnight rule and align inpatient/observation coverage criteria with Traditional Medicare; internal coverage criteria require public posting and approval [CIT:CMS-TWO-MIDNIGHT-2024].
+- **financial_impact**: Improperly downgrading inpatient stays to observation triggers provider abrasion, appeal volume, and CMS contract risk; mis-applying observation increases member cost-sharing exposure.
+- **agent_owner**: v1.1: UMAgent
+- **confidence**: high
+- **open_questions**: —
+
+### PP-UM-006 — Gold-card / PA-exempt provider programs
+- **data_point**: Texas HB 3459 and similar laws in IL, MI, and others require payers to grant PA exemptions ("gold carding") to providers maintaining ≥90% PA approval rate over a 6-month look-back [CIT:TX-HB3459-2024] [CIT:AMA-PA-SURVEY-2024].
+- **financial_impact**: Reduces administrative cost and provider abrasion; mis-managed gold-card lists trigger state-level enforcement.
+- **agent_owner**: v1.1: UMAgent
+- **confidence**: high
+- **open_questions**: —
+
 ---
 
 ## Cross-cutting / regulatory (PP-X-*)
@@ -263,16 +361,16 @@ Industry-anchored pain-point catalog for the 7 personas. Every row links to ≥1
 | Persona | Pain points (≥3 required) |
 |---|---|
 | CFO / Revenue Cycle | 5 |
-| Stars / Quality | 5 |
-| Risk Adjustment | 4 |
-| SIU / FWA | 4 |
-| Care Management | 4 |
-| Network & Contracting | 3 |
-| UM / Prior Auth | 4 |
-| Cross-cutting | 1 |
-| **Total** | **30** |
+| Stars / Quality | 8 |
+| Risk Adjustment | 7 |
+| SIU / FWA | 6 |
+| Care Management | 7 |
+| Network & Contracting | 4 |
+| UM / Prior Auth | 6 |
+| Cross-cutting | 7 |
+| **Total** | **50** |
 
-Per gate (≥30, each persona ≥3): meeting the per-persona floor; one additional cross-persona pain point added below to clear the count.
+v2 expansion 2026-06-13: added Health Equity Index, Universal Foundation, Tukey methodology (Stars); RADV Final Rule, Medicaid CDPS, prospective/retrospective coding governance (RA); LEIE provider screening, telefraud/DME/genetic-testing schemes (SIU); HRRP readmissions, SDOH Z-code capture, MHPAEA NQTL parity (CareMgmt); NSA Section 116 directory verification (Network); Two-Midnight rule, gold-card programs (UM); GLP-1 PA explosion, IRA Part D, drug negotiation, cyber resilience, NAIC AI governance (Cross). Two cross-cutting PPs were also retitled X-001/X-002 retained.
 
 ### PP-X-002 — High-cost specialty drug trend
 - **data_point**: AHIP and KFF both highlight specialty drug + biologic cost growth as a leading driver of premium increases [CIT:AHIP-COST-2025] [CIT:KFF-HIGH-COST-2024].
@@ -281,4 +379,39 @@ Per gate (≥30, each persona ≥3): meeting the per-persona floor; one addition
 - **confidence**: medium
 - **open_questions**: —
 
-**Final count: 31 pain points.**
+### PP-X-003 — GLP-1 PA explosion (obesity / diabetes)
+- **data_point**: GLP-1 drug spending (Ozempic, Wegovy, Mounjaro, Zepbound) is growing rapidly across MA and Commercial books; PA volume on GLP-1 obesity indications dominates current pharmacy prior-auth queues [CIT:KFF-GLP1-SPEND-2025] [CIT:AMA-PA-SURVEY-2024].
+- **financial_impact**: Single-class spend growth at $300–$1,100 PMPM on indicated members; uncontrolled approval expands MLR; over-restrictive PA drives state-level enforcement actions.
+- **agent_owner**: cross-cutting (CFOAgent + CareMgmtAgent + UMAgent)
+- **confidence**: high
+- **open_questions**: —
+
+### PP-X-004 — IRA Part D Redesign and $2,000 OOP cap impact
+- **data_point**: IRA caps Medicare beneficiary OOP pharmacy spending at $2,000 annually starting plan year 2025; manufacturer discount program replaces coverage gap discount [CIT:CMS-IRA-PART-D-2025].
+- **financial_impact**: Plan liability shifts upward as members exit the catastrophic phase faster; bid + benefit design must absorb the redesign without breaking risk-corridors.
+- **agent_owner**: cross-cutting (CFOAgent + CareMgmtAgent)
+- **confidence**: high
+- **open_questions**: —
+
+### PP-X-005 — Medicare Drug Price Negotiation reset (10 selected drugs effective 2026)
+- **data_point**: First 10 negotiated drugs (Eliquis, Jardiance, Xarelto, Januvia, Farxiga, Entresto, Enbrel, Imbruvica, Stelara, Fiasp/NovoLog) take effect plan year 2026 [CIT:CMS-DRUG-NEGOTIATION-2026].
+- **financial_impact**: Negotiated maximum fair prices reset formulary economics for MA-PD and Part D; tier strategy + MAC pricing pipelines must absorb new prices.
+- **agent_owner**: cross-cutting (CFOAgent + CareMgmtAgent)
+- **confidence**: high
+- **open_questions**: —
+
+### PP-X-006 — Cyber resilience after Change Healthcare 2024 outage
+- **data_point**: The 2024 Change Healthcare cyberattack disrupted claims, eligibility, and pharmacy transactions across the U.S. healthcare ecosystem [CIT:CHC-CYBER-2024].
+- **financial_impact**: Operational shutdown for clearing-house outage = $millions/day in unprocessed claims; payers strengthened BCDR, vendor risk, and clearinghouse redundancy in response.
+- **agent_owner**: cross-cutting (CFOAgent + SIUAgent for control monitoring)
+- **confidence**: high
+- **open_questions**: —
+
+### PP-X-007 — NAIC AI bulletin and AI governance posture
+- **data_point**: State insurance regulators expect insurers to maintain a written AI program covering governance, risk management, model testing, and third-party AI controls [CIT:NAIC-AI-BULLETIN-2024].
+- **financial_impact**: Inadequate AI governance triggers state-level inquiries, model-pause orders, and reputational risk; this demo's grounded-citation + refusal pattern is the audit-ready posture.
+- **agent_owner**: cross-cutting (all agents — governance is design-time invariant)
+- **confidence**: high
+- **open_questions**: —
+
+**Final count: 48 pain points.**

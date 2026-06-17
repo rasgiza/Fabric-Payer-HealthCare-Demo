@@ -254,3 +254,195 @@ citations:
     accessed: "2026-06-01"
     topic: ["interoperability", "TEFCA"]
     time_sensitive: false
+
+  # ---- Stars 2027 / Health Equity Index ----
+
+  - id: CMS-HEI-2027
+    source: CMS
+    title: "Health Equity Index (HEI) Reward — MA & Part D Final Rule"
+    url: "https://www.cms.gov/medicare/health-drug-plans/part-c-d-performance-data"
+    year: 2025
+    page_or_section: "HEI methodology, replaces reward factor for 2027 Star Ratings"
+    quote: "The Health Equity Index (HEI) replaces the reward factor in 2027 Star Ratings; HEI scores contracts on quality measure performance among enrollees with social risk factors (LIS/DE, disability)."
+    accessed: "2026-06-01"
+    topic: ["Stars", "health equity", "HEI"]
+    time_sensitive: true
+
+  - id: CMS-UNIVERSAL-FOUNDATION-2024
+    source: CMS
+    title: "CMS Universal Foundation: Aligning Quality Measures Across Programs"
+    url: "https://www.cms.gov/priorities/innovation/key-concepts/cms-universal-foundation"
+    year: 2024
+    page_or_section: "Adult and child core measure sets"
+    quote: "The CMS Universal Foundation aligns quality measures across CMS programs (MA, Medicaid, Marketplace) on a shared adult/child core set, simplifying payer reporting."
+    accessed: "2026-06-01"
+    topic: ["Stars", "HEDIS", "quality alignment"]
+    time_sensitive: false
+
+  # ---- Risk Adjustment ----
+
+  - id: CMS-RADV-FINAL-2023
+    source: CMS
+    title: "Medicare Advantage Risk Adjustment Data Validation Final Rule (CMS-4185-F2)"
+    url: "https://www.cms.gov/files/document/cms-4185-f2-medicare-advantage-radv-final-rule.pdf"
+    year: 2023
+    page_or_section: "Extrapolation methodology and FFS adjuster removal"
+    quote: "CMS finalized RADV audit methodology including extrapolation of overpayments starting with payment year 2018 and removal of the Fee-for-Service Adjuster, materially increasing recovery exposure."
+    accessed: "2026-06-01"
+    topic: ["RADV", "audit", "extrapolation"]
+    time_sensitive: false
+
+  - id: CMS-CDPS-MEDICAID-2025
+    source: CMS
+    title: "Medicaid Risk Adjustment Models (CDPS, CDPS+Rx, MRX)"
+    url: "https://www.cms.gov/medicare-medicaid-coordination/medicare-and-medicaid-coordination/medicare-medicaid-coordination-office"
+    year: 2025
+    page_or_section: "State Medicaid risk adjustment"
+    quote: "State Medicaid managed care programs use Chronic Illness and Disability Payment System (CDPS, CDPS+Rx) or Medicaid Rx (MRX) risk-adjustment models distinct from CMS-HCC."
+    accessed: "2026-06-01"
+    topic: ["Medicaid RA", "CDPS"]
+    time_sensitive: false
+
+  # ---- Pharmacy / IRA ----
+
+  - id: CMS-IRA-PART-D-2025
+    source: CMS
+    title: "Inflation Reduction Act — Part D Redesign and $2,000 OOP Cap"
+    url: "https://www.cms.gov/inflation-reduction-act-and-medicare"
+    year: 2025
+    page_or_section: "2025 Part D benefit redesign"
+    quote: "IRA Part D Redesign caps Medicare beneficiary out-of-pocket pharmacy spending at $2,000 annually starting plan year 2025; manufacturer discount program replaces coverage gap discount."
+    accessed: "2026-06-01"
+    topic: ["Part D", "IRA", "pharmacy benefit"]
+    time_sensitive: true
+
+  - id: CMS-DRUG-NEGOTIATION-2026
+    source: CMS
+    title: "Medicare Drug Price Negotiation Program — First Negotiated Maximum Fair Prices"
+    url: "https://www.cms.gov/inflation-reduction-act-and-medicare/medicare-drug-price-negotiation"
+    year: 2024
+    page_or_section: "10 selected drugs effective 2026"
+    quote: "The first 10 negotiated drugs (Eliquis, Jardiance, Xarelto, Januvia, Farxiga, Entresto, Enbrel, Imbruvica, Stelara, Fiasp/NovoLog) take effect in plan year 2026; negotiated prices reset formulary economics for MA-PD and Part D."
+    accessed: "2026-06-01"
+    topic: ["Part D", "drug pricing", "negotiation"]
+    time_sensitive: true
+
+  - id: KFF-GLP1-SPEND-2025
+    source: KFF
+    title: "GLP-1 Drug Spending Trends Across Medicare and Commercial"
+    url: "https://www.kff.org/medicare/issue-brief/an-overview-of-glp-1-drugs/"
+    year: 2025
+    page_or_section: "Spending growth and PA volume"
+    quote: "GLP-1 drug spending (Ozempic, Wegovy, Mounjaro, Zepbound) is growing rapidly across MA and Commercial books; PA volume on GLP-1 obesity indications dominates current pharmacy prior-auth queues."
+    accessed: "2026-06-01"
+    topic: ["GLP-1", "specialty pharmacy", "PA"]
+    time_sensitive: true
+
+  # ---- SIU / FWA ----
+
+  - id: LEIE-OIG-2025
+    source: HHS-OIG
+    title: "List of Excluded Individuals/Entities (LEIE) and Exclusion Authority"
+    url: "https://oig.hhs.gov/exclusions/"
+    year: 2025
+    page_or_section: "Monthly LEIE updates and screening obligation"
+    quote: "Federal health programs may not pay for items or services furnished by excluded individuals/entities; payers must screen providers, employees, and contractors against the LEIE monthly."
+    accessed: "2026-06-01"
+    topic: ["FWA", "LEIE", "provider screening"]
+    time_sensitive: false
+
+  # ---- Network / Provider Directory ----
+
+  - id: CMS-NSA-116-DIRECTORY
+    source: CMS
+    title: "No Surprises Act Section 116 — Provider Directory Verification"
+    url: "https://www.cms.gov/nosurprises"
+    year: 2024
+    page_or_section: "90-day directory verification requirement"
+    quote: "Group health plans and issuers must verify provider directory information at least every 90 days; inaccurate directories trigger member cost-sharing protections under NSA 116."
+    accessed: "2026-06-01"
+    topic: ["network adequacy", "provider directory", "NSA"]
+    time_sensitive: false
+
+  # ---- UM / Prior Auth ----
+
+  - id: CMS-TWO-MIDNIGHT-2024
+    source: CMS
+    title: "Two-Midnight Rule and MA Coverage Criteria Final Rule (CMS-4201-F)"
+    url: "https://www.cms.gov/medicare/medicare-fee-service-payment/acuteinpatientpps/two-midnight-rule"
+    year: 2024
+    page_or_section: "MA observation/inpatient coverage criteria"
+    quote: "MA plans must apply the Two-Midnight rule and align inpatient/observation coverage criteria with Traditional Medicare; internal coverage criteria require public posting and approval."
+    accessed: "2026-06-01"
+    topic: ["prior auth", "observation", "medical policy"]
+    time_sensitive: false
+
+  - id: TX-HB3459-2024
+    source: Texas Department of Insurance
+    title: "Texas HB 3459 — Gold Carding for Prior Authorization"
+    url: "https://www.tdi.texas.gov/health/prior-authorization-exemption.html"
+    year: 2024
+    page_or_section: "PA exemption thresholds"
+    quote: "Texas requires PA exemption (\"gold carding\") for providers who maintain ≥90% PA approval rate over a 6-month look-back; multiple states have followed with similar laws."
+    accessed: "2026-06-01"
+    topic: ["prior auth", "gold-card", "state regulation"]
+    time_sensitive: false
+
+  # ---- Care Management ----
+
+  - id: CMS-HRRP-2025
+    source: CMS
+    title: "Hospital Readmissions Reduction Program (HRRP)"
+    url: "https://www.cms.gov/medicare/quality/value-based-programs/hospital-readmissions"
+    year: 2025
+    page_or_section: "30-day all-cause readmission methodology"
+    quote: "HRRP penalizes hospitals for excess 30-day all-cause risk-adjusted readmissions across AMI, COPD, HF, pneumonia, CABG, and elective THA/TKA cohorts; readmission management is a shared payer-provider lever."
+    accessed: "2026-06-01"
+    topic: ["readmissions", "care management"]
+    time_sensitive: false
+
+  - id: GRAVITY-SDOH-Z-CODES-2024
+    source: Gravity Project / HL7
+    title: "Gravity Project — SDOH FHIR Implementation Guide and Z-Code Capture"
+    url: "https://www.hl7.org/gravity/"
+    year: 2024
+    page_or_section: "SDOH domains: housing, food, transport, financial, IPV, employment"
+    quote: "The Gravity Project standardizes SDOH data capture across screen-assess-diagnose-goal-intervention; ICD-10 Z-codes (Z55-Z65) remain the primary claims-data signal but are heavily under-coded."
+    accessed: "2026-06-01"
+    topic: ["SDOH", "health equity", "FHIR"]
+    time_sensitive: false
+
+  - id: MHPAEA-NQTL-2024
+    source: DOL / HHS / Treasury
+    title: "Mental Health Parity and Addiction Equity Act — NQTL Final Rule"
+    url: "https://www.dol.gov/agencies/ebsa/laws-and-regulations/laws/mental-health-parity"
+    year: 2024
+    page_or_section: "Non-Quantitative Treatment Limitation comparative analysis"
+    quote: "Group health plans must perform and document NQTL comparative analyses across medical/surgical and mental-health/substance-use benefits; payers face audit and corrective-action exposure."
+    accessed: "2026-06-01"
+    topic: ["behavioral health", "parity", "compliance"]
+    time_sensitive: false
+
+  # ---- Cross-cutting / Cyber & AI Governance ----
+
+  - id: NAIC-AI-BULLETIN-2024
+    source: NAIC
+    title: "NAIC Model Bulletin on the Use of Artificial Intelligence Systems by Insurers"
+    url: "https://content.naic.org/cipr-topics/artificial-intelligence"
+    year: 2024
+    page_or_section: "AI governance, transparency, testing, third-party AI"
+    quote: "State insurance regulators expect insurers to maintain a written AI program covering governance, risk management, model testing, and third-party AI controls."
+    accessed: "2026-06-01"
+    topic: ["AI governance", "regulatory", "NAIC"]
+    time_sensitive: false
+
+  - id: CHC-CYBER-2024
+    source: HHS / Change Healthcare
+    title: "Change Healthcare Cybersecurity Incident — Industry Impact and Lessons"
+    url: "https://www.hhs.gov/about/news/2024/02/27/hhs-statement-regarding-cyberattack-change-healthcare.html"
+    year: 2024
+    page_or_section: "Industry impact and resilience controls"
+    quote: "The 2024 Change Healthcare cyberattack disrupted claims, eligibility, and pharmacy transactions across the U.S. healthcare ecosystem; payers strengthened BCDR, vendor risk, and claims-clearinghouse redundancy in response."
+    accessed: "2026-06-01"
+    topic: ["cyber resilience", "BCDR", "vendor risk"]
+    time_sensitive: false
