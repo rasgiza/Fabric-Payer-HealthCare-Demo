@@ -75,7 +75,19 @@ DRUG_CLASS = {
     "MAD-PDC": [("DM-METFORMIN", "Metformin 500mg", 14.0), ("DM-EMPAGLIFLOZIN", "Empagliflozin 10mg", 525.0)],
     "MAC-PDC": [("STATIN-ATORVA", "Atorvastatin 20mg", 12.0), ("STATIN-ROSUVA", "Rosuvastatin 10mg", 28.0)],
     "SPC-PDC": [("AP-RISPERIDONE", "Risperidone 1mg", 32.0), ("AP-OLANZAPINE", "Olanzapine 5mg", 88.0)],
+    "GLP1":    [("GLP1-SEMA", "Ozempic 1mg", 935.0), ("GLP1-TIRZ", "Mounjaro 5mg", 1095.0), ("GLP1-WEGO", "Wegovy 2.4mg", 1350.0)],
+    "SPECIALTY-IMM": [("IMM-ADAL", "Humira 40mg", 6850.0), ("IMM-USTE", "Stelara 90mg", 24500.0)],
 }
+
+# IRA Maximum Fair Price (MFP) negotiated drugs effective plan year 2026.
+# Reference: CMS-DRUG-NEGOTIATION-2026.
+IRA_NEGOTIATED_NDC = {"DM-EMPAGLIFLOZIN", "IMM-USTE"}
+GLP1_NDC = {"GLP1-SEMA", "GLP1-TIRZ", "GLP1-WEGO"}
+SPECIALTY_NDC = {"IMM-ADAL", "IMM-USTE", "DM-EMPAGLIFLOZIN"}
+
+GRAVITY_SDOH_DOMAINS = ["food_insecurity", "housing_instability", "transport_barrier",
+                        "financial_strain", "social_isolation"]
+HRRP_COHORTS = ["AMI", "COPD", "HF", "PNEUMONIA", "CABG", "THA_TKA"]
 
 LOB_TO_PAYER_FILTER = {
     "MA": ["MA"], "Dual": ["MA"],
@@ -156,6 +168,17 @@ def gen_members(cfg: GenConfig, rng: np.random.Generator, ref: dict) -> pd.DataF
     member_ids = [f"M{1_000_000 + i:08d}" for i in range(n)]
     plan_year = cfg.start_year
 
+    # CMS Health Equity Index cohort eligibility (low-income subsidy / dual-eligible
+    # OR disability). LIS/DE share is high in Dual and Medicaid, low in Commercial.
+    lis_de_flag = np.array([
+        rng.random() < {"Dual": 1.0, "Medicaid": 0.55, "MA": 0.18, "Commercial": 0.03}[lob_i]
+        for lob_i in lob
+    ])
+    disability_flag = np.array([
+        rng.random() < {"Dual": 0.42, "Medicaid": 0.18, "MA": 0.12, "Commercial": 0.04}[lob_i]
+        for lob_i in lob
+    ])
+
     df = pd.DataFrame({
         "member_id": member_ids,
         "mbi_hash": [_mbi_hash(1_000_000 + i) for i in range(n)],
@@ -175,6 +198,13 @@ def gen_members(cfg: GenConfig, rng: np.random.Generator, ref: dict) -> pd.DataF
         "sdoh_housing_unstable": rng.random(n) < 0.08,
         "sdoh_food_insecure":     rng.random(n) < 0.12,
         "sdoh_transport_barrier": rng.random(n) < 0.10,
+        # 2026 equity + parity attributes
+        "lis_de_flag": lis_de_flag,
+        "disability_flag": disability_flag,
+        "hei_eligible_flag": lis_de_flag | disability_flag,
+        "re_l_collection_method": rng.choice(
+            ["self_reported", "indirect_estimated", "unknown"], size=n, p=[0.62, 0.28, 0.10]),
+        "sogi_collected_flag": rng.random(n) < 0.34,
     })
     return df
 
@@ -214,15 +244,21 @@ def gen_providers(cfg: GenConfig, rng: np.random.Generator) -> pd.DataFrame:
     is_pcp = rng.random(n) < 0.45
     spec = [rng.choice(PCP_SPECIALTIES) if pcp else rng.choice(SPECIALIST_SPECIALTIES) for pcp in is_pcp]
     state = _pick(rng, STATE_MIX, n)
+    in_network = rng.random(n) < 0.92
+    vbc_eligible = is_pcp & (rng.random(n) < 0.35)
     return pd.DataFrame({
         "provider_npi": npis,
         "provider_name": [f"Provider {i}" for i in range(n)],
         "specialty_type": spec,
         "is_pcp": is_pcp,
         "state": state,
-        "in_network_flag": rng.random(n) < 0.92,
+        "in_network_flag": in_network,
         "apm_tier": rng.choice([1, 2, "3a", "3b", 4], size=n, p=[0.30, 0.35, 0.18, 0.12, 0.05]),
         "gold_carded_flag": rng.random(n) < 0.04,
+        # 2026 governance / sanctions / VBC attributes
+        "leie_excluded_flag": rng.random(n) < 0.002,
+        "vbc_contract_id": [f"VBC-{i % 12 + 1:03d}" if v else None for i, v in enumerate(vbc_eligible)],
+        "vbc_risk_arrangement": [rng.choice(["upside_only", "two_sided"]) if v else None for v in vbc_eligible],
     })
 
 
@@ -309,6 +345,16 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                 primary_dx = (rng.choice(member_conds) if member_conds and rng.random() < 0.7
                               else rng.choice(["Z00.00", "Z23", "R51", "M54.5", "J06.9"]))
 
+                # Network status: most claims in-network; ~8% out-of-network. NSA
+                # Section 116 cost-sharing protections attach when OON AND emergent
+                # OR when provider directory was stale (we proxy here, full join in silver).
+                oon_flag = rng.random() < 0.08
+                nsa_eligible = (oon_flag and is_ed) or (
+                    oon_flag and not is_inpatient and rng.random() < 0.20)
+                # Two-Midnight rule applies to MA inpatient stays under CMS-4201-F.
+                two_midnight_flag = bool(is_inpatient and m["lob"] in ("MA", "Dual")
+                                         and rng.random() < 0.82)
+
                 headers.append({
                     "claim_id": claim_id, "member_id": mid, "provider_npi": provider,
                     "payer_id": m["payer_id"], "plan_year": yr, "service_date": dos,
@@ -320,6 +366,10 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                     "denied_flag": denied, "carc_code": carc_code,
                     "pa_required_flag": cpt in PA_REQUIRED_CPTS,
                     "lob": m["lob"],
+                    "oon_flag": oon_flag,
+                    "nsa_eligible_flag": nsa_eligible,
+                    "two_midnight_flag": two_midnight_flag,
+                    "service_line": "inpatient" if is_inpatient else ("ed" if is_ed else "office"),
                 })
                 lines.append({
                     "claim_id": claim_id, "line_no": 1, "cpt_hcpcs": cpt,
@@ -341,31 +391,64 @@ def gen_pharmacy(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame
     member_cond = conditions.groupby("member_id")["condition_code"].apply(set).to_dict()
     rows = []
     rx_idx = 0
+
+    def _emit_fill(mid, payer_id, klass, ndc, drug_name, unit_cost, yr, month, days_supply, prescriber):
+        nonlocal rx_idx
+        rx_idx += 1
+        rows.append({
+            "rx_claim_id": f"RX-{rx_idx:010d}", "member_id": mid,
+            "ndc_code": ndc, "drug_name": drug_name, "drug_class": klass,
+            "fill_date": date(yr, month, int(rng.integers(1, 28))),
+            "days_supply": days_supply,
+            "quantity_dispensed": days_supply,
+            "prescriber_npi": prescriber,
+            "billed_amount": round(unit_cost * days_supply * 1.4, 2),
+            "paid_amount": round(unit_cost * days_supply, 2),
+            "formulary_tier": int(rng.integers(1, 5)),
+            "plan_year": yr, "payer_id": payer_id,
+            "glp1_flag": ndc in GLP1_NDC,
+            "ira_negotiated_flag": ndc in IRA_NEGOTIATED_NDC,
+            "specialty_drug_flag": ndc in SPECIALTY_NDC,
+        })
+
     for _, m in members.iterrows():
         mid = m["member_id"]
         cs = member_cond.get(mid, set())
+        prescriber = rng.choice(pcp_ids)
+        # Chronic-class adherence fills — pace one per month so dedup keys are unique.
         for c in cs:
             klass = cond_to_drugclass.get(c)
-            if not klass: continue
+            if not klass:
+                continue
             ndc, drug_name, unit_cost = DRUG_CLASS[klass][int(rng.integers(0, len(DRUG_CLASS[klass])))]
             adherent_member = rng.random() < 0.78
             for yr in range(cfg.start_year, cfg.start_year + cfg.n_years):
                 n_fills = 11 if adherent_member else int(rng.integers(3, 9))
                 for f in range(n_fills):
-                    rx_idx += 1
-                    fill_date = date(yr, min(12, f + 1), int(rng.integers(1, 28)))
                     days_supply = 30 if rng.random() < 0.7 else 90
-                    rows.append({
-                        "rx_claim_id": f"RX-{rx_idx:010d}", "member_id": mid,
-                        "ndc_code": ndc, "drug_name": drug_name, "drug_class": klass,
-                        "fill_date": fill_date, "days_supply": days_supply,
-                        "quantity_dispensed": days_supply,
-                        "prescriber_npi": rng.choice(pcp_ids),
-                        "billed_amount": round(unit_cost * days_supply * 1.4, 2),
-                        "paid_amount": round(unit_cost * days_supply, 2),
-                        "formulary_tier": int(rng.integers(1, 5)),
-                        "plan_year": yr, "payer_id": m["payer_id"],
-                    })
+                    month = min(12, f + 1)
+                    _emit_fill(mid, m["payer_id"], klass, ndc, drug_name, unit_cost,
+                               yr, month, days_supply, prescriber)
+        # GLP-1 fills: diabetics ~28% on therapy, plus obesity-indicated ~4% of remaining.
+        is_diabetic = bool(cs & {"DIABETES", "DIABETES_COMP"})
+        on_glp1 = (is_diabetic and rng.random() < 0.28) or (not is_diabetic and rng.random() < 0.04)
+        if on_glp1:
+            ndc, drug_name, unit_cost = DRUG_CLASS["GLP1"][int(rng.integers(0, 3))]
+            for yr in range(max(cfg.start_year, 2024), cfg.start_year + cfg.n_years):
+                n_fills = int(rng.integers(4, 12))
+                for f in range(n_fills):
+                    month = min(12, f + 1)
+                    _emit_fill(mid, m["payer_id"], "GLP1", ndc, drug_name, unit_cost,
+                               yr, month, 30, prescriber)
+        # Specialty / biologic: ~1.5% of members.
+        if rng.random() < 0.015:
+            ndc, drug_name, unit_cost = DRUG_CLASS["SPECIALTY-IMM"][int(rng.integers(0, 2))]
+            for yr in range(cfg.start_year, cfg.start_year + cfg.n_years):
+                n_fills = int(rng.integers(6, 13))
+                for f in range(n_fills):
+                    month = min(12, f + 1)
+                    _emit_fill(mid, m["payer_id"], "SPECIALTY-IMM", ndc, drug_name,
+                               unit_cost, yr, month, 30, prescriber)
     return pd.DataFrame(rows)
 
 
@@ -523,6 +606,253 @@ def gen_quality(rng: np.random.Generator, members: pd.DataFrame, conditions: pd.
 
 
 # ============================================================================
+# 2026 industry expansion: PA on pharmacy, LEIE sanctions, directory attestation,
+# HRRP readmissions, Gravity SDOH, CAHPS, outreach, VBC attribution.
+# ============================================================================
+
+def gen_pharmacy_pa(rng: np.random.Generator, rx: pd.DataFrame,
+                    providers: pd.DataFrame) -> pd.DataFrame:
+    """PA decisions for GLP-1 and specialty drug fills.
+
+    GLP-1 PA volume is currently the largest pharmacy-PA queue across MA + Commercial
+    books [CIT:KFF-GLP1-SPEND-2025] [CIT:AMA-PA-SURVEY-2024].
+    """
+    if len(rx) == 0:
+        return pd.DataFrame(columns=["pa_id", "member_id", "ndc_code", "drug_class",
+                                     "submitted_at", "decision_at", "decision",
+                                     "indication", "approval_rate_bucket", "plan_year"])
+    pa_targets = rx[rx["glp1_flag"] | rx["specialty_drug_flag"]]
+    if len(pa_targets) == 0:
+        return pd.DataFrame()
+    # One PA per (member, drug, year) — collapse fills.
+    first_fills = (pa_targets.sort_values("fill_date")
+                   .groupby(["member_id", "ndc_code", "plan_year"], as_index=False)
+                   .first())
+    rows = []
+    for idx, r in first_fills.iterrows():
+        is_glp1 = r["glp1_flag"]
+        # Diabetes indication approves at ~88%; obesity at ~52% (highly variable by plan).
+        indication = rng.choice(["diabetes", "obesity"], p=[0.62, 0.38]) if is_glp1 else "specialty"
+        approval_p = {"diabetes": 0.88, "obesity": 0.52, "specialty": 0.74}[indication]
+        decision = "approve" if rng.random() < approval_p else "deny"
+        sub = pd.Timestamp(r["fill_date"]) - pd.Timedelta(days=int(rng.integers(2, 10)))
+        tat_hours = float(rng.gamma(2.5, 28))
+        rows.append({
+            "pa_id": f"PHA-{idx:010d}",
+            "member_id": r["member_id"],
+            "ndc_code": r["ndc_code"],
+            "drug_class": r["drug_class"],
+            "submitted_at": sub.date(),
+            "decision_at": (sub + pd.Timedelta(hours=tat_hours)).date(),
+            "decision": decision,
+            "indication": indication,
+            "approval_rate_bucket": "high" if approval_p > 0.7 else "low",
+            "plan_year": int(r["plan_year"]),
+        })
+    return pd.DataFrame(rows)
+
+
+def gen_provider_sanctions(rng: np.random.Generator,
+                           providers: pd.DataFrame) -> pd.DataFrame:
+    """OIG-LEIE-style provider exclusion list. Federal health programs may not pay
+    for items or services furnished by excluded individuals/entities [CIT:LEIE-OIG-2025].
+    """
+    excluded = providers[providers["leie_excluded_flag"]]
+    if len(excluded) == 0:
+        return pd.DataFrame(columns=["sanction_id", "provider_npi", "exclusion_type",
+                                     "exclusion_date", "reinstatement_eligible_date",
+                                     "source"])
+    rows = []
+    types = ["1128(a)(1)_program-related_conviction",
+             "1128(b)(4)_license_revocation",
+             "1128(b)(7)_fraud_kickbacks",
+             "1128(a)(3)_felony_health_care_fraud"]
+    for idx, p in excluded.iterrows():
+        excl_date = date(2023 + int(rng.integers(0, 3)),
+                         int(rng.integers(1, 13)), int(rng.integers(1, 28)))
+        rows.append({
+            "sanction_id": f"SAN-{idx:08d}",
+            "provider_npi": p["provider_npi"],
+            "exclusion_type": rng.choice(types),
+            "exclusion_date": excl_date,
+            "reinstatement_eligible_date": excl_date + timedelta(days=int(rng.integers(1825, 3650))),
+            "source": "OIG-LEIE",
+        })
+    return pd.DataFrame(rows)
+
+
+def gen_provider_directory_attestation(rng: np.random.Generator,
+                                       providers: pd.DataFrame) -> pd.DataFrame:
+    """NSA Section 116 requires verification at least every 90 days.
+
+    We emit the most recent attestation per provider. ~12% are stale (>90 days),
+    creating cost-sharing-protection liability [CIT:CMS-NSA-116-DIRECTORY].
+    """
+    today = date(2026, 6, 30)
+    rows = []
+    for _, p in providers.iterrows():
+        is_stale = rng.random() < 0.12
+        age_days = int(rng.integers(91, 240)) if is_stale else int(rng.integers(1, 90))
+        last_verified = today - timedelta(days=age_days)
+        rows.append({
+            "provider_npi": p["provider_npi"],
+            "attestation_method": rng.choice(["roster_file", "portal_attest", "outbound_call"],
+                                             p=[0.55, 0.30, 0.15]),
+            "last_verified_date": last_verified,
+            "age_days": age_days,
+            "stale_flag": is_stale,
+            "directory_status": "active" if p["in_network_flag"] else "termed",
+        })
+    return pd.DataFrame(rows)
+
+
+def gen_readmission(rng: np.random.Generator, claims_header: pd.DataFrame) -> pd.DataFrame:
+    """30-day all-cause readmissions on HRRP cohorts [CIT:CMS-HRRP-2025].
+
+    Approximated from inpatient claims; ~14.8% national baseline, varied by cohort.
+    """
+    inpatient = claims_header[claims_header["place_of_service"] == "21"].copy()
+    if len(inpatient) == 0:
+        return pd.DataFrame(columns=["readmit_id", "member_id", "index_claim_id",
+                                     "hrrp_cohort", "index_dis_date", "readmit_date",
+                                     "days_to_readmit", "readmit_within_30d",
+                                     "plan_year"])
+    rows = []
+    for idx, c in inpatient.iterrows():
+        cohort = rng.choice(HRRP_COHORTS, p=[0.18, 0.16, 0.24, 0.20, 0.12, 0.10])
+        readmit_p = {"AMI": 0.17, "COPD": 0.20, "HF": 0.22, "PNEUMONIA": 0.16,
+                     "CABG": 0.12, "THA_TKA": 0.05}[cohort]
+        readmit = rng.random() < readmit_p
+        days = int(rng.integers(2, 30)) if readmit else None
+        rows.append({
+            "readmit_id": f"RDM-{idx:010d}",
+            "member_id": c["member_id"],
+            "index_claim_id": c["claim_id"],
+            "hrrp_cohort": cohort,
+            "index_dis_date": c["service_date"],
+            "readmit_date": (pd.Timestamp(c["service_date"]) + pd.Timedelta(days=days)).date()
+                            if days else None,
+            "days_to_readmit": days,
+            "readmit_within_30d": readmit,
+            "plan_year": c["plan_year"],
+        })
+    return pd.DataFrame(rows)
+
+
+def gen_sdoh_assessment(rng: np.random.Generator, members: pd.DataFrame) -> pd.DataFrame:
+    """Gravity Project SDOH domain captures (ICD-10 Z-codes Z55-Z65)
+    [CIT:GRAVITY-SDOH-Z-CODES-2024].
+    """
+    domain_to_member_flag = {
+        "food_insecurity":     "sdoh_food_insecure",
+        "housing_instability": "sdoh_housing_unstable",
+        "transport_barrier":   "sdoh_transport_barrier",
+        "financial_strain":    None,
+        "social_isolation":    None,
+    }
+    z_codes = {
+        "food_insecurity":     "Z59.41",
+        "housing_instability": "Z59.811",
+        "transport_barrier":   "Z59.82",
+        "financial_strain":    "Z59.86",
+        "social_isolation":    "Z60.2",
+    }
+    rows = []
+    for _, m in members.iterrows():
+        capture_p = 0.18 if (m["hei_eligible_flag"] or m["lob"] == "Medicaid") else 0.06
+        if rng.random() > capture_p:
+            continue
+        for domain, flag in domain_to_member_flag.items():
+            base = bool(m[flag]) if flag else False
+            positive = (base and rng.random() < 0.85) or (not base and rng.random() < 0.05)
+            if not positive and rng.random() > 0.30:
+                continue
+            rows.append({
+                "member_id": m["member_id"],
+                "domain": domain,
+                "assessment_date": date(2026, int(rng.integers(1, 13)), int(rng.integers(1, 28))),
+                "positive_screen": positive,
+                "z_code": z_codes[domain],
+                "intervention_referred": positive and rng.random() < 0.62,
+                "plan_year": 2026,
+            })
+    return pd.DataFrame(rows)
+
+
+def gen_cahps_response(rng: np.random.Generator, members: pd.DataFrame) -> pd.DataFrame:
+    """CAHPS member-experience survey response. Sample ~12% of MA members."""
+    rows = []
+    ma_members = members[members["lob"].isin(["MA", "Dual"])]
+    sampled = ma_members.sample(frac=0.12, random_state=42) if len(ma_members) else ma_members
+    for _, m in sampled.iterrows():
+        rows.append({
+            "response_id": f"CAHPS-{m['member_id']}-2026",
+            "member_id": m["member_id"],
+            "survey_year": 2026,
+            "rating_health_plan": int(rng.integers(6, 11)),
+            "rating_personal_doctor": int(rng.integers(6, 11)),
+            "rating_specialist": int(rng.integers(5, 11)),
+            "getting_needed_care": rng.choice(["always", "usually", "sometimes", "never"],
+                                              p=[0.55, 0.32, 0.10, 0.03]),
+            "getting_care_quickly": rng.choice(["always", "usually", "sometimes", "never"],
+                                               p=[0.48, 0.34, 0.14, 0.04]),
+            "customer_service": rng.choice(["always", "usually", "sometimes", "never"],
+                                           p=[0.51, 0.33, 0.12, 0.04]),
+        })
+    return pd.DataFrame(rows)
+
+
+def gen_outreach(rng: np.random.Generator, members: pd.DataFrame) -> pd.DataFrame:
+    """Care-management outreach events (gap-closure, HEDIS reminders, post-discharge)."""
+    rows = []
+    for _, m in members.iterrows():
+        n = int(rng.poisson(2.4 if m["lob"] in ("MA", "Dual") else 1.2))
+        for _ in range(n):
+            channel = rng.choice(["sms", "ivr", "live_call", "secure_msg", "letter"],
+                                 p=[0.30, 0.22, 0.18, 0.20, 0.10])
+            outcome = rng.choice(["completed", "no_response", "opted_out"],
+                                 p=[0.42, 0.50, 0.08])
+            rows.append({
+                "member_id": m["member_id"],
+                "outreach_date": date(2026, int(rng.integers(1, 13)), int(rng.integers(1, 28))),
+                "channel": channel,
+                "purpose": rng.choice(["hedis_gap", "post_discharge", "med_adherence",
+                                       "awv_reminder", "sdoh_followup"]),
+                "outcome": outcome,
+                "plan_year": 2026,
+            })
+    return pd.DataFrame(rows)
+
+
+def gen_vbc_attribution(rng: np.random.Generator, members: pd.DataFrame,
+                        providers: pd.DataFrame) -> pd.DataFrame:
+    """Member-to-VBC-provider attribution snapshots."""
+    vbc_provs = providers[providers["vbc_contract_id"].notna()]
+    if len(vbc_provs) == 0:
+        return pd.DataFrame(columns=["member_id", "provider_npi", "vbc_contract_id",
+                                     "attribution_method", "effective_year",
+                                     "risk_arrangement"])
+    rows = []
+    for _, m in members.iterrows():
+        # ~40% of MA + Medicaid members attributed; lower in Commercial.
+        attrib_p = {"MA": 0.45, "Dual": 0.40, "Medicaid": 0.35, "Commercial": 0.18}[m["lob"]]
+        if rng.random() > attrib_p:
+            continue
+        chosen = vbc_provs.sample(1, random_state=int(rng.integers(0, 2**31)))
+        p = chosen.iloc[0]
+        rows.append({
+            "member_id": m["member_id"],
+            "provider_npi": p["provider_npi"],
+            "vbc_contract_id": p["vbc_contract_id"],
+            "attribution_method": rng.choice(["plurality_pcp", "primary_care_visit", "assigned"],
+                                             p=[0.55, 0.30, 0.15]),
+            "effective_year": 2026,
+            "risk_arrangement": p["vbc_risk_arrangement"],
+        })
+    return pd.DataFrame(rows)
+
+
+# ============================================================================
 # DRIVER
 # ============================================================================
 
@@ -577,6 +907,23 @@ def main(argv=None) -> int:
     print(f"  -> {len(raf):,}")
     print("[gen] quality...");      qual     = gen_quality(rng, members, conds, rx, hdrs, ref); qual.to_csv(out / "quality_events.csv", index=False)
     print(f"  -> {len(qual):,}")
+
+    print("[gen] pharmacy_pa...");           pha     = gen_pharmacy_pa(rng, rx, provs);                     pha.to_csv(out / "pharmacy_pa.csv", index=False)
+    print(f"  -> {len(pha):,}")
+    print("[gen] provider_sanctions...");    sanc    = gen_provider_sanctions(rng, provs);                  sanc.to_csv(out / "provider_sanctions.csv", index=False)
+    print(f"  -> {len(sanc):,}")
+    print("[gen] directory_attestation..."); attest  = gen_provider_directory_attestation(rng, provs);      attest.to_csv(out / "provider_directory_attestation.csv", index=False)
+    print(f"  -> {len(attest):,}")
+    print("[gen] readmission...");           rdm     = gen_readmission(rng, hdrs);                          rdm.to_csv(out / "readmission.csv", index=False)
+    print(f"  -> {len(rdm):,}")
+    print("[gen] sdoh_assessment...");       sdoh    = gen_sdoh_assessment(rng, members);                   sdoh.to_csv(out / "sdoh_assessment.csv", index=False)
+    print(f"  -> {len(sdoh):,}")
+    print("[gen] cahps_response...");        cahps   = gen_cahps_response(rng, members);                    cahps.to_csv(out / "cahps_response.csv", index=False)
+    print(f"  -> {len(cahps):,}")
+    print("[gen] outreach...");              outr    = gen_outreach(rng, members);                          outr.to_csv(out / "outreach.csv", index=False)
+    print(f"  -> {len(outr):,}")
+    print("[gen] vbc_attribution...");       vbc     = gen_vbc_attribution(rng, members, provs);            vbc.to_csv(out / "vbc_attribution.csv", index=False)
+    print(f"  -> {len(vbc):,}")
 
     payers = ref["payers"]; payers.to_csv(out / "payers.csv", index=False)
     print(f"[gen] DONE -> {out}")

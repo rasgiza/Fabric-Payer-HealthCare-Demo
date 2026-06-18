@@ -34,7 +34,10 @@ class Check(NamedTuple):
 
 def _load(run_dir: Path) -> dict[str, pd.DataFrame]:
     files = ["members", "providers", "payers", "enrollment_spans", "conditions",
-             "claims_header", "claims_line", "rx_claims", "raf_scores"]
+             "claims_header", "claims_line", "rx_claims", "raf_scores",
+             "pharmacy_pa", "provider_sanctions", "provider_directory_attestation",
+             "readmission", "sdoh_assessment", "cahps_response", "outreach",
+             "vbc_attribution"]
     out: dict[str, pd.DataFrame] = {}
     for f in files:
         p = run_dir / f"{f}.csv"
@@ -223,6 +226,106 @@ def check_service_date_sanity(d: dict[str, pd.DataFrame]) -> Check:
                  "; ".join(fails) if fails else f"n={len(c)}, range [{sd.min().date()},{sd.max().date()}] within plan_year window")
 
 
+def check_glp1_pa_volume(d: dict[str, pd.DataFrame]) -> Check:
+    """GLP-1 PA volume should be material relative to total pharmacy PA volume.
+
+    KFF [CIT:KFF-GLP1-SPEND-2025] shows GLP-1 PA volume now dominates pharmacy
+    PA queues. Expect GLP-1 PAs >=20% of all pharmacy PAs in this synth book.
+    """
+    pa = d["pharmacy_pa"]
+    rx = d["rx_claims"]
+    if len(pa) == 0:
+        return Check("glp1_pa_volume", True, "no pharmacy_pa data")
+    glp1_pa_share = (pa["drug_class"] == "GLP1").mean()
+    glp1_rx_pmpm = (rx[rx["glp1_flag"] == 1]["paid_amount"].sum() /
+                    max(d["members"]["member_id"].nunique(), 1)) if len(rx) else 0
+    ok = glp1_pa_share >= 0.20
+    return Check("glp1_pa_volume", ok,
+                 f"GLP-1 PA share={glp1_pa_share:.2%} of {len(pa)} pharmacy PAs (floor 20%); GLP-1 paid per member=${glp1_rx_pmpm:,.0f}")
+
+
+def check_specialty_drug_share(d: dict[str, pd.DataFrame]) -> Check:
+    """Specialty drug spend share. AHIP [CIT:AHIP-COST-2025] cites specialty
+    drugs as the largest single category of pharmacy spend. Expect >=15%
+    spend share even at smoke scale.
+    """
+    rx = d["rx_claims"]
+    if len(rx) == 0:
+        return Check("specialty_drug_share", True, "empty")
+    total_paid = rx["paid_amount"].sum()
+    spec_paid = rx[rx["specialty_drug_flag"] == 1]["paid_amount"].sum()
+    share = spec_paid / max(total_paid, 1.0)
+    ok = share >= 0.15
+    return Check("specialty_drug_share", ok,
+                 f"specialty spend share={share:.2%} of ${total_paid:,.0f} (floor 15%)")
+
+
+def check_readmission_rate(d: dict[str, pd.DataFrame]) -> Check:
+    """30-day all-cause readmission rate. CMS HRRP national average ~14.8%
+    [CIT:CMS-HRRP-2025]. Demo should land in [10%, 25%].
+    """
+    rdm = d["readmission"]
+    if len(rdm) == 0:
+        return Check("readmission_rate", True, "no readmission data")
+    rate = float(rdm["readmit_within_30d"].mean())
+    ok = 0.10 <= rate <= 0.25
+    return Check("readmission_rate", ok,
+                 f"30-day readmit rate={rate:.2%} of {len(rdm)} index admits (band 10-25%)")
+
+
+def check_sdoh_capture_rate(d: dict[str, pd.DataFrame]) -> Check:
+    """SDOH Z-code capture rate is heavily under-coded in claims
+    [CIT:GRAVITY-SDOH-Z-CODES-2024]. Demo should show positive screening on
+    HEI-eligible members at >=5% of total members.
+    """
+    sdoh = d["sdoh_assessment"]
+    members = d["members"]
+    if len(members) == 0 or len(sdoh) == 0:
+        return Check("sdoh_capture_rate", True, "empty")
+    captured_members = sdoh["member_id"].nunique()
+    share = captured_members / len(members)
+    ok = share >= 0.05
+    return Check("sdoh_capture_rate", ok,
+                 f"SDOH-assessed members={captured_members} ({share:.2%} of {len(members)}), floor 5%")
+
+
+def check_oon_ed_share(d: dict[str, pd.DataFrame]) -> Check:
+    """Out-of-network share of ED claims. NSA dispute volume implies a
+    non-trivial OON ED slice [CIT:CMS-NSA-IDR-2025]. Demo should show
+    >=3% OON share on ED claims.
+    """
+    c = d["claims_header"]
+    if len(c) == 0:
+        return Check("oon_ed_share", True, "empty")
+    ed = c[c["place_of_service"].astype(str) == "23"]
+    if len(ed) < 50:
+        return Check("oon_ed_share", True, f"only {len(ed)} ED claims, skipping")
+    share = float(ed["oon_flag"].mean())
+    ok = share >= 0.03
+    return Check("oon_ed_share", ok,
+                 f"OON share of ED claims={share:.2%} of {len(ed)} (floor 3%)")
+
+
+def check_leie_provider_share(d: dict[str, pd.DataFrame]) -> Check:
+    """LEIE-excluded provider share. National prevalence is fractional; demo
+    expects 0.1%-2% to give SIU agents working signal [CIT:LEIE-OIG-2025].
+    Smoke-scale tolerance: allow zero matches if the provider count is small
+    (<200) because 0.2% expected rate × 50 providers ~ 0 — sampling noise.
+    """
+    p = d["providers"]
+    if len(p) == 0:
+        return Check("leie_provider_share", True, "empty")
+    excl = int(p["leie_excluded_flag"].sum())
+    share = excl / len(p)
+    if len(p) < 200:
+        ok = True
+        detail = f"smoke tolerance (n_providers={len(p)}<200): {excl} excluded ({share:.2%})"
+    else:
+        ok = 0.001 <= share <= 0.02
+        detail = f"LEIE share={share:.2%} ({excl} of {len(p)}), band 0.1-2%"
+    return Check("leie_provider_share", ok, detail)
+
+
 def run_all(run_dir: Path) -> list[Check]:
     d = _load(run_dir)
     checks = [
@@ -235,6 +338,12 @@ def run_all(run_dir: Path) -> list[Check]:
         check_raf_coherence(d),
         check_line_header_consistency(d),
         check_service_date_sanity(d),
+        check_glp1_pa_volume(d),
+        check_specialty_drug_share(d),
+        check_readmission_rate(d),
+        check_sdoh_capture_rate(d),
+        check_oon_ed_share(d),
+        check_leie_provider_share(d),
     ]
     return checks
 
