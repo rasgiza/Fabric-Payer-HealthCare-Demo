@@ -1,0 +1,130 @@
+{
+    "properties": {
+        "description": "Payer medallion ETL pipeline. Chains NB_01_Bronze_Ingest -> NB_02_Silver_Transform -> NB_03_Gold_Build. Parameters: run_id (synth batch name under Files/synth/) and load_mode (full=overwrite | incremental=append). Direct Lake semantic model picks up changes automatically.",
+        "activities": [
+            {
+                "name": "Set_Bronze_Mode",
+                "description": "Translate load_mode (full|incremental) into the NB_01 mode parameter (overwrite|append).",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "bronze_mode",
+                    "value": {
+                        "value": "@if(equals(pipeline().parameters.load_mode, 'incremental'), 'append', 'overwrite')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "NB_01_Bronze_Ingest",
+                "description": "Ingest CSV batch from Files/synth/<run_id>/ into lh_bronze_raw Delta tables (21 tables).",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Set_Bronze_Mode",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "b3000003-0001-0001-0001-000000000001",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "parameters": {
+                        "run_id": {
+                            "value": {
+                                "value": "@pipeline().parameters.run_id",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        },
+                        "mode": {
+                            "value": {
+                                "value": "@variables('bronze_mode')",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "NB_02_Silver_Transform",
+                "description": "Transform lh_bronze_raw into lh_silver_stage (14) + lh_silver_ods (8) Delta tables.",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "NB_01_Bronze_Ingest",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "b3000003-0001-0001-0001-000000000002",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000"
+                }
+            },
+            {
+                "name": "NB_03_Gold_Build",
+                "description": "Build the Payer gold star-schema in lh_gold_curated (10 dims + 16 facts + 9 aggregates).",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "NB_02_Silver_Transform",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "b3000003-0001-0001-0001-000000000003",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000"
+                }
+            }
+        ],
+        "parameters": {
+            "run_id": {
+                "type": "string",
+                "defaultValue": "smoke"
+            },
+            "load_mode": {
+                "type": "string",
+                "defaultValue": "full"
+            }
+        },
+        "variables": {
+            "bronze_mode": {
+                "type": "String",
+                "defaultValue": "overwrite"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2026-06-18T00:00:00Z"
+    }
+}

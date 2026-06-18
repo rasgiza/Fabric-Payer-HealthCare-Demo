@@ -1,0 +1,83 @@
+{
+    "properties": {
+        "description": "Master orchestrator pipeline for the Payer demo. Branches on load_mode (full | incremental) and invokes PL_Payer_Full_Load with the resolved parameters. Schedule with a Fabric trigger for automated daily incremental loads.",
+        "activities": [
+            {
+                "name": "Check_Load_Mode",
+                "description": "Branch based on the load_mode parameter (full | incremental).",
+                "type": "IfCondition",
+                "dependsOn": [],
+                "typeProperties": {
+                    "expression": {
+                        "value": "@equals(pipeline().parameters.load_mode, 'incremental')",
+                        "type": "Expression"
+                    },
+                    "ifTrueActivities": [
+                        {
+                            "name": "Execute_Incremental_Load",
+                            "description": "Invoke PL_Payer_Full_Load with load_mode=incremental (NB_01 append, then silver+gold rebuild).",
+                            "type": "ExecutePipeline",
+                            "dependsOn": [],
+                            "policy": {
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "typeProperties": {
+                                "pipeline": {
+                                    "referenceName": "c4000004-0001-0001-0001-000000000001",
+                                    "type": "PipelineReference"
+                                },
+                                "waitOnCompletion": true,
+                                "parameters": {
+                                    "run_id": {
+                                        "value": "@pipeline().parameters.run_id",
+                                        "type": "Expression"
+                                    },
+                                    "load_mode": "incremental"
+                                }
+                            }
+                        }
+                    ],
+                    "ifFalseActivities": [
+                        {
+                            "name": "Execute_Full_Load",
+                            "description": "Invoke PL_Payer_Full_Load with load_mode=full (NB_01 overwrite, then silver+gold rebuild).",
+                            "type": "ExecutePipeline",
+                            "dependsOn": [],
+                            "policy": {
+                                "secureOutput": false,
+                                "secureInput": false
+                            },
+                            "typeProperties": {
+                                "pipeline": {
+                                    "referenceName": "c4000004-0001-0001-0001-000000000001",
+                                    "type": "PipelineReference"
+                                },
+                                "waitOnCompletion": true,
+                                "parameters": {
+                                    "run_id": {
+                                        "value": "@pipeline().parameters.run_id",
+                                        "type": "Expression"
+                                    },
+                                    "load_mode": "full"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "run_id": {
+                "type": "string",
+                "defaultValue": "smoke"
+            },
+            "load_mode": {
+                "type": "string",
+                "defaultValue": "full"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2026-06-18T00:00:00Z"
+    }
+}
