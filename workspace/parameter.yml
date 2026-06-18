@@ -1,0 +1,42 @@
+# fabric-cicd parameter file — per-environment rewrites.
+#
+# Each block maps a logicalId from the workspace/ source-of-truth to the
+# corresponding live Fabric item GUID in the target workspace. fabric-cicd
+# replaces the logicalId references in notebook-content.py, semantic model
+# TMDL, data-pipeline JSON, and data-agent datasource.json before publishing.
+#
+# When you onboard a new tenant, copy a block, update the GUIDs, and add the
+# environment to deployment.yaml's `environments:` map.
+
+find_replace:
+  # ---------------- Lakehouses ----------------
+  - find_value: "a2000002-0001-0001-0001-000000000001"   # lh_bronze_raw logicalId
+    replace_value:
+      dev:     "$LH_BRONZE_RAW_DEV"
+      staging: "$LH_BRONZE_RAW_STAGING"
+      prod:    "$LH_BRONZE_RAW_PROD"
+
+  - find_value: "a2000002-0001-0001-0001-000000000002"   # lh_silver_stage logicalId
+    replace_value:
+      dev:     "$LH_SILVER_STAGE_DEV"
+      staging: "$LH_SILVER_STAGE_STAGING"
+      prod:    "$LH_SILVER_STAGE_PROD"
+
+  - find_value: "a2000002-0001-0001-0001-000000000003"   # lh_silver_ods logicalId
+    replace_value:
+      dev:     "$LH_SILVER_ODS_DEV"
+      staging: "$LH_SILVER_ODS_STAGING"
+      prod:    "$LH_SILVER_ODS_PROD"
+
+  - find_value: "a2000002-0001-0001-0001-000000000004"   # lh_gold_curated logicalId
+    replace_value:
+      dev:     "$LH_GOLD_CURATED_DEV"
+      staging: "$LH_GOLD_CURATED_STAGING"
+      prod:    "$LH_GOLD_CURATED_PROD"
+
+  # ---------------- Workspace ----------------
+  - find_value: "<WORKSPACE_ID>"
+    replace_value:
+      dev:     "$FABRIC_WORKSPACE_ID_DEV"
+      staging: "$FABRIC_WORKSPACE_ID_STAGING"
+      prod:    "$FABRIC_WORKSPACE_ID_PROD"

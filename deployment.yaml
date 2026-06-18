@@ -1,0 +1,89 @@
+# Fabric deployment manifest — fabric-cicd 1.1.0 GA
+#
+# Used by tools/deploy.py (Stream A.4) and the GitHub Actions deploy workflow.
+# All Fabric items live under workspace/ and follow Microsoft Fabric Git
+# Integration v2.0 conventions (each item is a folder named <displayName>.<Type>
+# with a .platform descriptor at its root).
+#
+# This file is the single source of truth for the deployment topology:
+#   - environment list (dev / staging / prod) with workspace bindings
+#   - item-type ordering for dependency-safe deploys
+#   - parameterization (lakehouse references, MSI identity)
+#
+# Workspace IDs are filled in at deploy time via env vars (FABRIC_WORKSPACE_ID_*).
+
+apiVersion: v1
+kind: FabricDeployment
+metadata:
+  name: fabric-payer-healthcare-demo
+  description: >-
+    Payer-only Fabric healthcare demo — medallion lakehouses, Direct Lake
+    semantic model, 7 Foundry data agents (CFO/Stars/RA/SIU/CareMgmt/Network/UM)
+    + 1 hosted PAReviewCopilot, optional RTI Eventhouse + Activator stack.
+  repo:
+    url: https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo.git
+    branch: main
+
+spec:
+  workspaceRoot: workspace/
+
+  # Item-type deploy order — dependencies first.
+  # fabric-cicd resolves cross-item references automatically once each type
+  # is published in this order.
+  itemOrder:
+    - Lakehouse
+    - Environment
+    - Notebook
+    - DataPipeline
+    - SemanticModel
+    - Report
+    - DataAgent
+    - Eventhouse
+    - KQLDatabase
+    - Reflex          # Activator
+    - Eventstream
+
+  environments:
+    dev:
+      workspaceId: ${FABRIC_WORKSPACE_ID_DEV}
+      capacityId: ${FABRIC_CAPACITY_ID_DEV}
+      identity:
+        type: ManagedIdentity
+        scope: workspace
+    staging:
+      workspaceId: ${FABRIC_WORKSPACE_ID_STAGING}
+      capacityId: ${FABRIC_CAPACITY_ID_STAGING}
+      identity:
+        type: ManagedIdentity
+        scope: workspace
+    prod:
+      workspaceId: ${FABRIC_WORKSPACE_ID_PROD}
+      capacityId: ${FABRIC_CAPACITY_ID_PROD}
+      identity:
+        type: ManagedIdentity
+        scope: workspace
+
+  # Parameterization — lakehouse references and connection strings get
+  # rewritten per environment by fabric-cicd at deploy time.
+  parameterFile: workspace/parameter.yml
+
+  # Pre-deploy gates that must pass (CI uses the same set).
+  preflight:
+    - pytest -q
+    - ruff check tools tests
+    - python tools/check_citations.py
+    - python tools/audit_data.py --run-dir data/synth/smoke
+    - python tools/data_fidelity.py --run-dir data/synth/smoke
+
+  # Items that are opt-in (RTI stack ships disabled by default; CFO/Stars/RA
+  # agents are always-on; the rest can be toggled per tenant).
+  optionalItems:
+    - Healthcare_RTI_Eventhouse.Eventhouse
+    - Healthcare_RTI_DB.KQLDatabase
+    - NB_RTI_Fraud_Detection.Notebook
+    - NB_RTI_Care_Gap_Alerts.Notebook
+    - NB_RTI_HighCost_Trajectory.Notebook
+    - NB_RTI_Provider_Network_Watch.Notebook
+    - NB_RTI_PA_Surge_Detection.Notebook
+    - NB_RTI_Appeal_Aging.Notebook
+    - PayerOps_Activator.Reflex

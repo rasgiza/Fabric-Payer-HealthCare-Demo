@@ -259,3 +259,10 @@ data/synth/
 synthea/output/
 data/lakehouse/
 data/graph/
+
+# fabric-cicd transient staging + workspace local caches
+.fabric-cicd/
+workspace/**/cache/
+workspace/**/.cache/
+workspace/**/builtin/
+*.lh-shortcut.tmp
