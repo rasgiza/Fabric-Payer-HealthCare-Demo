@@ -54,3 +54,44 @@ jobs:
 
       - name: Run pytest
         run: pytest
+
+  data-gates:
+    name: Data audit + fidelity (smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+
+      - name: Generate smoke synthetic data (seed=42, scale=0.005)
+        run: python tools/gen_payer_overlay.py --scale 0.005 --seed 42 --out data/synth/smoke
+
+      - name: ETL (bronze + silver + gold)
+        run: python tools/run_local_etl.py --run-id smoke
+
+      - name: Data audit
+        run: python tools/audit_data.py --run-dir data/synth/smoke
+
+      - name: Data fidelity
+        run: python tools/data_fidelity.py --run-dir data/synth/smoke
+
+  deploy-dryrun:
+    name: Deploy dry-run (validate workspace tree)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+
+      - name: Deploy dry-run (dev)
+        run: python tools/deploy.py --env dev --dry-run

@@ -116,9 +116,44 @@ python tools/eval_agents_offline.py
 
 # 8. Citation linter (every [CIT:<id>] in any markdown resolves to citations.yaml)
 python tools/check_citations.py
+
+# 9. Validate the workspace tree (dry-run; no Fabric workspace needed)
+python tools/deploy.py --env dev --dry-run
 ```
 
-CI runs steps 2, 3, and 8 on every push and PR (`.github/workflows/ci.yml`).
+CI runs all of the above on every push and PR (`.github/workflows/ci.yml`).
+
+## Deploying to a Fabric workspace
+
+Stream A ships a self-contained medallion deployment: 4 lakehouses, 4 notebooks
+(NB_01 bronze + NB_02 silver + NB_03 gold + Healthcare_Launcher), and 2 data
+pipelines (PL_Payer_Full_Load chain + PL_Payer_Master orchestrator). All items
+live under `workspace/` in Fabric Git Integration v2.0 format and publish via
+[fabric-cicd 1.1.0](https://pypi.org/project/fabric-cicd/) wrapped by
+`tools/deploy.py`.
+
+```powershell
+# Set per-environment workspace IDs (or use Azure Key Vault in CI)
+$env:FABRIC_WORKSPACE_ID_DEV = "<your dev workspace GUID>"
+$env:AZURE_TENANT_ID         = "<tenant GUID>"
+
+# Authenticate (DefaultAzureCredential — az login, MSI, or service principal)
+az login --tenant $env:AZURE_TENANT_ID
+
+# Preview the deploy
+python tools/deploy.py --env dev --dry-run
+
+# Publish to the dev workspace
+python tools/deploy.py --env dev
+
+# Production publish (guarded by --confirm)
+python tools/deploy.py --env prod --confirm
+```
+
+After publish, open the `Healthcare_Launcher` notebook in the Fabric workspace
+and **Run All** to invoke the medallion chain end-to-end against
+`Files/synth/smoke/` and verify the gold-tier aggregates the 7 Foundry data
+agents bind to.
 
 ## Sample questions
 
