@@ -29,6 +29,9 @@ BRONZE_TABLES = [
     "members", "enrollment_spans", "providers", "payers", "conditions",
     "claims_header", "claims_line", "rx_claims", "auths", "appeals",
     "premiums", "raf_scores", "quality_events",
+    "pharmacy_pa", "provider_sanctions", "provider_directory_attestation",
+    "readmission", "sdoh_assessment", "cahps_response", "outreach",
+    "vbc_attribution",
 ]
 
 
@@ -71,6 +74,8 @@ def silver(con: duckdb.DuckDBPyConnection, out: Path) -> None:
             lob, product, state, race_ethnicity, sex, age_at_year_end, dob_year, zip3,
             payer_id, plan_id, pcp_provider_id, effective_year,
             sdoh_housing_unstable, sdoh_food_insecure, sdoh_transport_barrier,
+            lis_de_flag, disability_flag, hei_eligible_flag,
+            re_l_collection_method, sogi_collected_flag,
             CASE
                 WHEN age_at_year_end < 18 THEN '0-17'
                 WHEN age_at_year_end < 35 THEN '18-34'
@@ -105,6 +110,36 @@ def silver(con: duckdb.DuckDBPyConnection, out: Path) -> None:
     con.execute("CREATE OR REPLACE TABLE silver_raf_scores AS SELECT * FROM bronze_raf_scores")
     con.execute("CREATE OR REPLACE TABLE silver_quality_events AS SELECT * FROM bronze_quality_events")
 
+    # New silver passthroughs (A.0c). Carry through any inline date keys where useful.
+    con.execute("""
+        CREATE OR REPLACE TABLE silver_pharmacy_pa AS
+        SELECT *,
+               CAST(strftime(CAST(submitted_at AS DATE), '%Y%m%d') AS INT) AS submitted_date_key,
+               CAST(strftime(CAST(decision_at AS DATE), '%Y%m%d') AS INT) AS decision_date_key
+        FROM bronze_pharmacy_pa
+    """)
+    con.execute("CREATE OR REPLACE TABLE silver_provider_sanctions AS SELECT * FROM bronze_provider_sanctions")
+    con.execute("CREATE OR REPLACE TABLE silver_provider_directory_attestation AS SELECT * FROM bronze_provider_directory_attestation")
+    con.execute("""
+        CREATE OR REPLACE TABLE silver_readmission AS
+        SELECT *,
+               CAST(strftime(index_dis_date, '%Y%m%d') AS INT) AS index_dis_date_key,
+               CAST(strftime(readmit_date, '%Y%m%d') AS INT) AS readmit_date_key
+        FROM bronze_readmission
+    """)
+    con.execute("""
+        CREATE OR REPLACE TABLE silver_sdoh_assessment AS
+        SELECT *, CAST(strftime(assessment_date, '%Y%m%d') AS INT) AS assessment_date_key
+        FROM bronze_sdoh_assessment
+    """)
+    con.execute("CREATE OR REPLACE TABLE silver_cahps_response AS SELECT * FROM bronze_cahps_response")
+    con.execute("""
+        CREATE OR REPLACE TABLE silver_outreach AS
+        SELECT *, CAST(strftime(outreach_date, '%Y%m%d') AS INT) AS outreach_date_key
+        FROM bronze_outreach
+    """)
+    con.execute("CREATE OR REPLACE TABLE silver_vbc_attribution AS SELECT * FROM bronze_vbc_attribution")
+
     # ODS-style member-month explosion from enrollment_spans
     con.execute("""
         CREATE OR REPLACE TABLE silver_member_month AS
@@ -123,11 +158,17 @@ def silver(con: duckdb.DuckDBPyConnection, out: Path) -> None:
         FROM months
     """)
 
-    for t in ["dim_date", "members", "claims_header", "claims_line", "rx_claims",
-              "auths", "appeals", "premiums", "providers", "payers", "conditions",
-              "raf_scores", "quality_events", "member_month"]:
+    silver_tables = [
+        "dim_date", "members", "claims_header", "claims_line", "rx_claims",
+        "auths", "appeals", "premiums", "providers", "payers", "conditions",
+        "raf_scores", "quality_events", "member_month",
+        "pharmacy_pa", "provider_sanctions", "provider_directory_attestation",
+        "readmission", "sdoh_assessment", "cahps_response", "outreach",
+        "vbc_attribution",
+    ]
+    for t in silver_tables:
         con.execute(f"COPY silver_{t} TO '{(out / f'{t}.parquet').as_posix()}' (FORMAT PARQUET)")
-    print("  silver: 14 tables (incl. member_month, dim_date)")
+    print(f"  silver: {len(silver_tables)} tables (incl. member_month, dim_date, +8 new A.0c)")
 
 
 def gold(con: duckdb.DuckDBPyConnection, out: Path) -> None:
@@ -185,6 +226,15 @@ def gold(con: duckdb.DuckDBPyConnection, out: Path) -> None:
     con.execute("CREATE OR REPLACE TABLE gold_fact_member_month AS SELECT * FROM silver_member_month")
     con.execute("CREATE OR REPLACE TABLE gold_fact_quality_event AS SELECT * FROM silver_quality_events")
     con.execute("CREATE OR REPLACE TABLE gold_fact_raf_score AS SELECT * FROM silver_raf_scores")
+    # New facts (A.0c)
+    con.execute("CREATE OR REPLACE TABLE gold_fact_pharmacy_pa AS SELECT * FROM silver_pharmacy_pa")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_provider_sanction AS SELECT * FROM silver_provider_sanctions")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_provider_directory_attestation AS SELECT * FROM silver_provider_directory_attestation")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_readmission AS SELECT * FROM silver_readmission")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_sdoh_assessment AS SELECT * FROM silver_sdoh_assessment")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_cahps_response AS SELECT * FROM silver_cahps_response")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_outreach AS SELECT * FROM silver_outreach")
+    con.execute("CREATE OR REPLACE TABLE gold_fact_vbc_attribution AS SELECT * FROM silver_vbc_attribution")
 
     # ----- Aggregates -----
     con.execute("""
@@ -243,12 +293,98 @@ def gold(con: duckdb.DuckDBPyConnection, out: Path) -> None:
         GROUP BY 1, 2, 3
     """)
 
+    # ----- New A.0c aggregates -----
+
+    # HRRP 30-day readmission rate by cohort
+    con.execute("""
+        CREATE OR REPLACE TABLE gold_agg_readmissions AS
+        SELECT plan_year, hrrp_cohort,
+               COUNT(*) AS index_admits,
+               SUM(CASE WHEN readmit_within_30d THEN 1 ELSE 0 END) AS readmits_30d,
+               1.0 * SUM(CASE WHEN readmit_within_30d THEN 1 ELSE 0 END)
+                   / NULLIF(COUNT(*), 0) AS readmit_rate_30d
+        FROM silver_readmission
+        GROUP BY 1, 2
+    """)
+
+    # GLP-1 PA volume + approval yield (KFF/IRA exposure)
+    con.execute("""
+        CREATE OR REPLACE TABLE gold_agg_glp1_pa_yield AS
+        SELECT plan_year,
+               COUNT(*) AS pa_count,
+               SUM(CASE WHEN decision = 'approve' THEN 1 ELSE 0 END) AS approvals,
+               SUM(CASE WHEN decision = 'deny' THEN 1 ELSE 0 END) AS denials,
+               1.0 * SUM(CASE WHEN decision = 'approve' THEN 1 ELSE 0 END)
+                   / NULLIF(COUNT(*), 0) AS approval_rate
+        FROM silver_pharmacy_pa
+        WHERE drug_class = 'GLP1'
+        GROUP BY 1
+    """)
+
+    # SDOH burden by Gravity domain
+    con.execute("""
+        CREATE OR REPLACE TABLE gold_agg_sdoh_burden AS
+        SELECT plan_year, domain,
+               COUNT(*) AS assessed_count,
+               SUM(CASE WHEN positive_screen THEN 1 ELSE 0 END) AS positive_count,
+               1.0 * SUM(CASE WHEN positive_screen THEN 1 ELSE 0 END)
+                   / NULLIF(COUNT(*), 0) AS positive_rate,
+               SUM(CASE WHEN intervention_referred THEN 1 ELSE 0 END) AS referred_count
+        FROM silver_sdoh_assessment
+        GROUP BY 1, 2
+    """)
+
+    # Health Equity Index proxy: Stars compliance split by HEI-eligible vs non-HEI members
+    con.execute("""
+        CREATE OR REPLACE TABLE gold_agg_health_equity_index_proxy AS
+        SELECT
+            m.payer_id,
+            q.plan_year,
+            CASE WHEN m.hei_eligible_flag THEN 'hei_eligible' ELSE 'non_hei' END AS hei_segment,
+            SUM(CASE WHEN q.eligible THEN 1 ELSE 0 END) AS denominator,
+            SUM(CASE WHEN q.compliant THEN 1 ELSE 0 END) AS numerator,
+            1.0 * SUM(CASE WHEN q.compliant THEN 1 ELSE 0 END)
+                / NULLIF(SUM(CASE WHEN q.eligible THEN 1 ELSE 0 END), 0) AS compliance_pct
+        FROM silver_quality_events q
+        JOIN silver_members m USING (member_id)
+        GROUP BY 1, 2, 3
+    """)
+
+    # OON exposure + NSA-eligible share + directory staleness (one row per payer/year + scalar stale_pct)
+    con.execute("""
+        CREATE OR REPLACE TABLE gold_agg_oon_directory_inaccuracy AS
+        WITH oon AS (
+            SELECT payer_id, plan_year,
+                   COUNT(*) AS claims_total,
+                   SUM(CASE WHEN oon_flag THEN 1 ELSE 0 END) AS oon_claims,
+                   SUM(CASE WHEN nsa_eligible_flag THEN 1 ELSE 0 END) AS nsa_eligible_claims,
+                   1.0 * SUM(CASE WHEN oon_flag THEN 1 ELSE 0 END)
+                       / NULLIF(COUNT(*), 0) AS oon_pct,
+                   1.0 * SUM(CASE WHEN nsa_eligible_flag THEN 1 ELSE 0 END)
+                       / NULLIF(COUNT(*), 0) AS nsa_eligible_share
+            FROM silver_claims_header
+            GROUP BY 1, 2
+        ),
+        dir AS (
+            SELECT 1.0 * SUM(CASE WHEN stale_flag THEN 1 ELSE 0 END)
+                       / NULLIF(COUNT(*), 0) AS directory_stale_pct
+            FROM silver_provider_directory_attestation
+        )
+        SELECT oon.*, dir.directory_stale_pct
+        FROM oon CROSS JOIN dir
+    """)
+
     gold_tables = [
         "dim_date", "dim_member", "dim_provider", "dim_payer", "dim_lob",
         "dim_product", "dim_diagnosis", "dim_procedure", "dim_drug", "dim_hcc",
         "fact_claim", "fact_rx_claim", "fact_auth", "fact_appeal", "fact_premium",
         "fact_member_month", "fact_quality_event", "fact_raf_score",
+        "fact_pharmacy_pa", "fact_provider_sanction", "fact_provider_directory_attestation",
+        "fact_readmission", "fact_sdoh_assessment", "fact_cahps_response",
+        "fact_outreach", "fact_vbc_attribution",
         "agg_denial_by_payer", "agg_mlr_monthly", "agg_pa_tat", "agg_stars_compliance",
+        "agg_readmissions", "agg_glp1_pa_yield", "agg_sdoh_burden",
+        "agg_health_equity_index_proxy", "agg_oon_directory_inaccuracy",
     ]
     for t in gold_tables:
         con.execute(f"COPY gold_{t} TO '{(out / f'{t}.parquet').as_posix()}' (FORMAT PARQUET)")
@@ -268,6 +404,14 @@ def smoke_checks(con: duckdb.DuckDBPyConnection) -> int:
         ("dim_member unique", "SELECT COUNT(*) = COUNT(DISTINCT member_id) FROM gold_dim_member"),
         ("agg_stars_compliance has rows", "SELECT COUNT(*) > 0 FROM gold_agg_stars_compliance"),
         ("agg_pa_tat has rows", "SELECT COUNT(*) > 0 FROM gold_agg_pa_tat"),
+        ("agg_readmissions overall rate 0.05-0.35",
+         "SELECT (1.0*SUM(readmits_30d)/NULLIF(SUM(index_admits),0)) BETWEEN 0.05 AND 0.35 FROM gold_agg_readmissions"),
+        ("agg_glp1_pa_yield has rows", "SELECT COUNT(*) > 0 FROM gold_agg_glp1_pa_yield"),
+        ("agg_sdoh_burden has rows", "SELECT COUNT(*) > 0 FROM gold_agg_sdoh_burden"),
+        ("agg_health_equity_index_proxy has rows",
+         "SELECT COUNT(*) > 0 FROM gold_agg_health_equity_index_proxy"),
+        ("agg_oon_directory_inaccuracy oon_pct 0.0-0.3",
+         "SELECT MIN(oon_pct) >= 0.0 AND MAX(oon_pct) <= 0.3 FROM gold_agg_oon_directory_inaccuracy"),
     ]
     for name, sql in checks:
         ok = con.execute(sql).fetchone()[0]

@@ -18,7 +18,10 @@ import pandas as pd
 def _load(run_dir: Path) -> dict:
     files = ["members", "enrollment_spans", "providers", "conditions",
              "claims_header", "claims_line", "rx_claims", "auths", "appeals",
-             "premiums", "raf_scores", "quality_events", "payers"]
+             "premiums", "raf_scores", "quality_events", "payers",
+             "pharmacy_pa", "provider_sanctions", "provider_directory_attestation",
+             "readmission", "sdoh_assessment", "cahps_response", "outreach",
+             "vbc_attribution"]
     out = {}
     for f in files:
         p = run_dir / f"{f}.csv"
@@ -58,6 +61,16 @@ def audit(run_dir: Path) -> int:
         ("premiums", "member_id", member_ids, "members"),
         ("raf_scores", "member_id", member_ids, "members"),
         ("quality_events", "member_id", member_ids, "members"),
+        ("pharmacy_pa", "member_id", member_ids, "members"),
+        ("provider_sanctions", "provider_npi", provider_ids, "providers"),
+        ("provider_directory_attestation", "provider_npi", provider_ids, "providers"),
+        ("readmission", "member_id", member_ids, "members"),
+        ("readmission", "index_claim_id", claim_ids, "claims_header"),
+        ("sdoh_assessment", "member_id", member_ids, "members"),
+        ("cahps_response", "member_id", member_ids, "members"),
+        ("outreach", "member_id", member_ids, "members"),
+        ("vbc_attribution", "member_id", member_ids, "members"),
+        ("vbc_attribution", "provider_npi", provider_ids, "providers"),
     ]:
         df = d[tbl]
         if len(df) == 0:
