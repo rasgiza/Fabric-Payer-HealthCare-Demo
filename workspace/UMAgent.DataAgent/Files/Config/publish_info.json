@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/publishInfo/1.0.0/schema.json",
+  "description": "UM/Prior Auth Agent (UMAgent) for the UM, PriorAuth persona(s). Bound to PayerAnalytics semantic model (Direct Lake over lh_gold_curated) and the Payer_Ontology graph. Allowed gold tables: fact_auth, fact_appeal, agg_pa_tat, dim_member, dim_provider, dim_date."
+}

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/publishInfo/1.0.0/schema.json",
+  "description": "Stars/Quality Agent (StarsAgent) for the Stars, Quality persona(s). Bound to PayerAnalytics semantic model (Direct Lake over lh_gold_curated) and the Payer_Ontology graph. Allowed gold tables: fact_quality_event, fact_member_month, agg_stars_compliance, dim_member, dim_lob, dim_payer, dim_date."
+}

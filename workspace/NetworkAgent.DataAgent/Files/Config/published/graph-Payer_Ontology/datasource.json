@@ -1,0 +1,220 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "00000000-0000-0000-0000-000000000000",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "displayName": "Payer_Ontology",
+  "type": "graph",
+  "dataSourceInstructions": "Payer_Ontology graph (26 entities, 32 relationships) for NetworkAgent. Use for multi-hop traversals: member \u2192 claim \u2192 provider \u2192 payer, member \u2192 eligibility \u2192 premium, provider \u2192 sanction, member \u2192 pharmacy_pa \u2192 appeal. Start with the entity nearest the user's question, then traverse outward. Bound entity tables for this persona: ['dim_date', 'dim_lob', 'dim_payer', 'dim_provider', 'fact_claim'].",
+  "userDescription": "Payer_Ontology graph exposed to NetworkAgent.",
+  "metadata": {},
+  "elements": [
+    {
+      "id": "6e271aa7-0398-5032-9eae-f93e84f72b87",
+      "is_selected": true,
+      "display_name": "Date",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_date",
+      "children": []
+    },
+    {
+      "id": "4cc9ec09-56ec-5fb5-bdbd-524f2f0abb80",
+      "is_selected": false,
+      "display_name": "Member",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_member",
+      "children": []
+    },
+    {
+      "id": "c834b6d9-c67d-5524-9022-6e6de19b4351",
+      "is_selected": true,
+      "display_name": "Provider",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_provider",
+      "children": []
+    },
+    {
+      "id": "cbba4ddf-b71f-56d9-acf3-c0f4079d8162",
+      "is_selected": true,
+      "display_name": "Payer",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_payer",
+      "children": []
+    },
+    {
+      "id": "f9c76cfb-e351-570f-b80c-8385423329eb",
+      "is_selected": true,
+      "display_name": "LOB",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_lob",
+      "children": []
+    },
+    {
+      "id": "0489b9dd-4caf-5ac5-b640-5fcea0577cd2",
+      "is_selected": false,
+      "display_name": "Product",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_product",
+      "children": []
+    },
+    {
+      "id": "4a39633b-fb0e-5058-b2f2-605bb94360ad",
+      "is_selected": false,
+      "display_name": "Diagnosis",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_diagnosis",
+      "children": []
+    },
+    {
+      "id": "1cdb009d-10bc-5d52-a261-54d9e66ea107",
+      "is_selected": false,
+      "display_name": "Procedure",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_procedure",
+      "children": []
+    },
+    {
+      "id": "3ceb0bd1-a8be-549f-ba48-7095e946eafc",
+      "is_selected": false,
+      "display_name": "Drug",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_drug",
+      "children": []
+    },
+    {
+      "id": "66c0f584-52df-54e8-bef7-71feea55cf7d",
+      "is_selected": false,
+      "display_name": "HCC",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to dim_hcc",
+      "children": []
+    },
+    {
+      "id": "4f3285ff-e34e-587e-9e1d-5cd2c74a7401",
+      "is_selected": true,
+      "display_name": "Claim",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_claim",
+      "children": []
+    },
+    {
+      "id": "cd2e286c-71e5-568f-a8ba-9601871fb7f8",
+      "is_selected": false,
+      "display_name": "RxClaim",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_rx_claim",
+      "children": []
+    },
+    {
+      "id": "d5238ce7-2da5-596e-a44a-7912c8bd25ef",
+      "is_selected": false,
+      "display_name": "Authorization",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_auth",
+      "children": []
+    },
+    {
+      "id": "c43e8827-2136-5f12-b066-85e8f5d00fb8",
+      "is_selected": false,
+      "display_name": "Appeal",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_appeal",
+      "children": []
+    },
+    {
+      "id": "2ed189a5-5552-5bcd-a122-736059acf37b",
+      "is_selected": false,
+      "display_name": "Premium",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_premium",
+      "children": []
+    },
+    {
+      "id": "0f9554ca-03cc-5d3f-b8b9-399d5e56625f",
+      "is_selected": false,
+      "display_name": "MemberMonth",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_member_month",
+      "children": []
+    },
+    {
+      "id": "fe7ba9c7-c53d-57ef-b684-6539bba094ce",
+      "is_selected": false,
+      "display_name": "QualityEvent",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_quality_event",
+      "children": []
+    },
+    {
+      "id": "8a430152-6a43-5bda-9960-03dce8b7fef2",
+      "is_selected": false,
+      "display_name": "RAFScore",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_raf_score",
+      "children": []
+    },
+    {
+      "id": "2f32ebe7-a8a8-5768-bb1b-1c43c730c480",
+      "is_selected": false,
+      "display_name": "PharmacyPA",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_pharmacy_pa",
+      "children": []
+    },
+    {
+      "id": "daa806a8-2dfb-5174-b5ad-2d976e0ea5d3",
+      "is_selected": false,
+      "display_name": "ProviderSanction",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_provider_sanction",
+      "children": []
+    },
+    {
+      "id": "3e76053b-856a-51c0-9faf-d9bd7e9fc723",
+      "is_selected": false,
+      "display_name": "ProviderDirectoryAttestation",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_provider_directory_attestation",
+      "children": []
+    },
+    {
+      "id": "8c2e7f92-c0ab-5436-84b4-35aa7e3d4595",
+      "is_selected": false,
+      "display_name": "Readmission",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_readmission",
+      "children": []
+    },
+    {
+      "id": "c8fc0d35-c122-5e5e-bc6f-ecdd17632200",
+      "is_selected": false,
+      "display_name": "SDOHAssessment",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_sdoh_assessment",
+      "children": []
+    },
+    {
+      "id": "ef12d0de-2cb4-540d-a229-93be8235aa5a",
+      "is_selected": false,
+      "display_name": "CAHPSResponse",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_cahps_response",
+      "children": []
+    },
+    {
+      "id": "64f23ad0-5e2c-50b2-8814-b3a65b15ad4e",
+      "is_selected": false,
+      "display_name": "OutreachEvent",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_outreach",
+      "children": []
+    },
+    {
+      "id": "47246afe-b008-5dfa-a9a3-5186503c092c",
+      "is_selected": false,
+      "display_name": "VBCAttribution",
+      "type": "graph.nodeType",
+      "description": "Ontology entity bound to fact_vbc_attribution",
+      "children": []
+    }
+  ]
+}
