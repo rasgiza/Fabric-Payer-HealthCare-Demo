@@ -1,0 +1,62 @@
+table dim_date
+	lineageTag: d5000005-0001-0001-0001-00000000001000
+	sourceLineageTag: [dbo].[dim_date]
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001001
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column full_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000001002
+		summarizeBy: none
+		sourceColumn: full_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001003
+		summarizeBy: none
+		sourceColumn: year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001004
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001005
+		summarizeBy: sum
+		sourceColumn: quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column year_month
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001006
+		summarizeBy: none
+		sourceColumn: year_month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_date = entity
+		mode: directLake
+		source
+			entityName: dim_date
+			expressionSource: 'DirectLake - lh_gold_curated'

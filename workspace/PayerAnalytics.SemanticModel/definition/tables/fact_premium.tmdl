@@ -1,0 +1,71 @@
+table fact_premium
+	lineageTag: d5000005-0001-0001-0001-00000000001e00
+	sourceLineageTag: [dbo].[fact_premium]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001e01
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001e02
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001e03
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001e04
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_months
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001e05
+		summarizeBy: sum
+		sourceColumn: member_months
+
+		annotation SummarizationSetBy = Automatic
+
+	column premium_pmpm
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001e06
+		summarizeBy: sum
+		sourceColumn: premium_pmpm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column premium_total
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001e07
+		summarizeBy: sum
+		sourceColumn: premium_total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fact_premium = entity
+		mode: directLake
+		source
+			entityName: fact_premium
+			expressionSource: 'DirectLake - lh_gold_curated'

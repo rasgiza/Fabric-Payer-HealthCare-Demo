@@ -1,0 +1,33 @@
+table dim_drug
+	lineageTag: d5000005-0001-0001-0001-00000000001800
+	sourceLineageTag: [dbo].[dim_drug]
+
+	column ndc_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001801
+		summarizeBy: none
+		sourceColumn: ndc_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column drug_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001802
+		summarizeBy: none
+		sourceColumn: drug_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column drug_class
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001803
+		summarizeBy: none
+		sourceColumn: drug_class
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_drug = entity
+		mode: directLake
+		source
+			entityName: dim_drug
+			expressionSource: 'DirectLake - lh_gold_curated'

@@ -1,0 +1,63 @@
+table agg_sdoh_burden
+	lineageTag: d5000005-0001-0001-0001-00000000003000
+	sourceLineageTag: [dbo].[agg_sdoh_burden]
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003001
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column domain
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000003002
+		summarizeBy: none
+		sourceColumn: domain
+
+		annotation SummarizationSetBy = Automatic
+
+	column assessed_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003003
+		summarizeBy: sum
+		sourceColumn: assessed_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column positive_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003004
+		summarizeBy: sum
+		sourceColumn: positive_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column positive_rate
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000003005
+		summarizeBy: sum
+		sourceColumn: positive_rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column referred_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003006
+		summarizeBy: sum
+		sourceColumn: referred_count
+
+		annotation SummarizationSetBy = Automatic
+
+	partition agg_sdoh_burden = entity
+		mode: directLake
+		source
+			entityName: agg_sdoh_burden
+			expressionSource: 'DirectLake - lh_gold_curated'

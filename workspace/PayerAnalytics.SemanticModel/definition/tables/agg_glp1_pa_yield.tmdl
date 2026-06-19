@@ -1,0 +1,55 @@
+table agg_glp1_pa_yield
+	lineageTag: d5000005-0001-0001-0001-00000000002f00
+	sourceLineageTag: [dbo].[agg_glp1_pa_yield]
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002f01
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column pa_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002f02
+		summarizeBy: sum
+		sourceColumn: pa_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column approvals
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002f03
+		summarizeBy: sum
+		sourceColumn: approvals
+
+		annotation SummarizationSetBy = Automatic
+
+	column denials
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002f04
+		summarizeBy: sum
+		sourceColumn: denials
+
+		annotation SummarizationSetBy = Automatic
+
+	column approval_rate
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002f05
+		summarizeBy: sum
+		sourceColumn: approval_rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition agg_glp1_pa_yield = entity
+		mode: directLake
+		source
+			entityName: agg_glp1_pa_yield
+			expressionSource: 'DirectLake - lh_gold_curated'

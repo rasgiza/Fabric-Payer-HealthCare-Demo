@@ -1,0 +1,54 @@
+table agg_readmissions
+	lineageTag: d5000005-0001-0001-0001-00000000002e00
+	sourceLineageTag: [dbo].[agg_readmissions]
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002e01
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column hrrp_cohort
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002e02
+		summarizeBy: none
+		sourceColumn: hrrp_cohort
+
+		annotation SummarizationSetBy = Automatic
+
+	column index_admits
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002e03
+		summarizeBy: sum
+		sourceColumn: index_admits
+
+		annotation SummarizationSetBy = Automatic
+
+	column readmits_30d
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002e04
+		summarizeBy: sum
+		sourceColumn: readmits_30d
+
+		annotation SummarizationSetBy = Automatic
+
+	column readmit_rate_30d
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002e05
+		summarizeBy: sum
+		sourceColumn: readmit_rate_30d
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition agg_readmissions = entity
+		mode: directLake
+		source
+			entityName: agg_readmissions
+			expressionSource: 'DirectLake - lh_gold_curated'

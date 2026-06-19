@@ -1,0 +1,33 @@
+table dim_product
+	lineageTag: d5000005-0001-0001-0001-00000000001500
+	sourceLineageTag: [dbo].[dim_product]
+
+	column product_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001501
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001502
+		summarizeBy: none
+		sourceColumn: product_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001503
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_product = entity
+		mode: directLake
+		source
+			entityName: dim_product
+			expressionSource: 'DirectLake - lh_gold_curated'

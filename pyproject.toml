@@ -24,6 +24,11 @@ exclude = [
   "data/graph",
   "report",
   "semantic_model/PayerAnalytics.SemanticModel",
+  # Fabric notebook content files are platform-generated and use runtime
+  # globals (spark, mssparkutils) plus cell-delimited code that does not
+  # parse cleanly as a normal Python module. Drift is locked by
+  # tests/test_notebook_shape.py instead.
+  "workspace/**/notebook-content.py",
 ]
 
 [tool.ruff.lint]

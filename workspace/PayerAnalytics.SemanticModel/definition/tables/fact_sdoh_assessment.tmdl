@@ -1,0 +1,76 @@
+table fact_sdoh_assessment
+	lineageTag: d5000005-0001-0001-0001-00000000002600
+	sourceLineageTag: [dbo].[fact_sdoh_assessment]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002601
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column domain
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002602
+		summarizeBy: none
+		sourceColumn: domain
+
+		annotation SummarizationSetBy = Automatic
+
+	column assessment_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002603
+		summarizeBy: none
+		sourceColumn: assessment_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column positive_screen
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000002604
+		summarizeBy: none
+		sourceColumn: positive_screen
+
+		annotation SummarizationSetBy = Automatic
+
+	column z_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002605
+		summarizeBy: none
+		sourceColumn: z_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column intervention_referred
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000002606
+		summarizeBy: none
+		sourceColumn: intervention_referred
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002607
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column assessment_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002608
+		summarizeBy: none
+		sourceColumn: assessment_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_sdoh_assessment = entity
+		mode: directLake
+		source
+			entityName: fact_sdoh_assessment
+			expressionSource: 'DirectLake - lh_gold_curated'

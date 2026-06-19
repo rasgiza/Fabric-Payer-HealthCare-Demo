@@ -1,0 +1,163 @@
+table fact_rx_claim
+	lineageTag: d5000005-0001-0001-0001-00000000001b00
+	sourceLineageTag: [dbo].[fact_rx_claim]
+
+	column rx_claim_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b01
+		summarizeBy: none
+		sourceColumn: rx_claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b02
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ndc_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b03
+		summarizeBy: none
+		sourceColumn: ndc_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column drug_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b04
+		summarizeBy: none
+		sourceColumn: drug_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column drug_class
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b05
+		summarizeBy: none
+		sourceColumn: drug_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column fill_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000001b06
+		summarizeBy: none
+		sourceColumn: fill_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column days_supply
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001b07
+		summarizeBy: sum
+		sourceColumn: days_supply
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity_dispensed
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001b08
+		summarizeBy: sum
+		sourceColumn: quantity_dispensed
+
+		annotation SummarizationSetBy = Automatic
+
+	column prescriber_npi
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b09
+		summarizeBy: none
+		sourceColumn: prescriber_npi
+
+		annotation SummarizationSetBy = Automatic
+
+	column billed_amount
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001b0a
+		summarizeBy: sum
+		sourceColumn: billed_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column paid_amount
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001b0b
+		summarizeBy: sum
+		sourceColumn: paid_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column formulary_tier
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001b0c
+		summarizeBy: sum
+		sourceColumn: formulary_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001b0d
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001b0e
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column glp1_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001b0f
+		summarizeBy: none
+		sourceColumn: glp1_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column ira_negotiated_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001b10
+		summarizeBy: none
+		sourceColumn: ira_negotiated_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_drug_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001b11
+		summarizeBy: none
+		sourceColumn: specialty_drug_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column fill_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001b12
+		summarizeBy: none
+		sourceColumn: fill_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_rx_claim = entity
+		mode: directLake
+		source
+			entityName: fact_rx_claim
+			expressionSource: 'DirectLake - lh_gold_curated'

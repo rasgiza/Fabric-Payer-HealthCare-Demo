@@ -1,0 +1,25 @@
+table dim_lob
+	lineageTag: d5000005-0001-0001-0001-00000000001400
+	sourceLineageTag: [dbo].[dim_lob]
+
+	column lob_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001401
+		summarizeBy: none
+		sourceColumn: lob_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001402
+		summarizeBy: none
+		sourceColumn: lob_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_lob = entity
+		mode: directLake
+		source
+			entityName: dim_lob
+			expressionSource: 'DirectLake - lh_gold_curated'

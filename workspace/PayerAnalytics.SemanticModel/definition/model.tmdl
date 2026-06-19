@@ -1,0 +1,49 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DirectLake - lh_gold_curated"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DirectLakeOnOneLakeInWeb","WebModelingEdit"]
+
+ref table dim_date
+ref table dim_member
+ref table dim_provider
+ref table dim_payer
+ref table dim_lob
+ref table dim_product
+ref table dim_diagnosis
+ref table dim_procedure
+ref table dim_drug
+ref table dim_hcc
+ref table fact_claim
+ref table fact_rx_claim
+ref table fact_auth
+ref table fact_appeal
+ref table fact_premium
+ref table fact_member_month
+ref table fact_quality_event
+ref table fact_raf_score
+ref table fact_pharmacy_pa
+ref table fact_provider_sanction
+ref table fact_provider_directory_attestation
+ref table fact_readmission
+ref table fact_sdoh_assessment
+ref table fact_cahps_response
+ref table fact_outreach
+ref table fact_vbc_attribution
+ref table agg_denial_by_payer
+ref table agg_mlr_monthly
+ref table agg_pa_tat
+ref table agg_stars_compliance
+ref table agg_readmissions
+ref table agg_glp1_pa_yield
+ref table agg_sdoh_burden
+ref table agg_health_equity_index_proxy
+ref table agg_oon_directory_inaccuracy

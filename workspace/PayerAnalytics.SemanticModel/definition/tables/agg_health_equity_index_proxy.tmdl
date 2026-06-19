@@ -1,0 +1,62 @@
+table agg_health_equity_index_proxy
+	lineageTag: d5000005-0001-0001-0001-00000000003100
+	sourceLineageTag: [dbo].[agg_health_equity_index_proxy]
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000003101
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003102
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column hei_segment
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000003103
+		summarizeBy: none
+		sourceColumn: hei_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column denominator
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003104
+		summarizeBy: sum
+		sourceColumn: denominator
+
+		annotation SummarizationSetBy = Automatic
+
+	column numerator
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000003105
+		summarizeBy: sum
+		sourceColumn: numerator
+
+		annotation SummarizationSetBy = Automatic
+
+	column compliance_pct
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000003106
+		summarizeBy: sum
+		sourceColumn: compliance_pct
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition agg_health_equity_index_proxy = entity
+		mode: directLake
+		source
+			entityName: agg_health_equity_index_proxy
+			expressionSource: 'DirectLake - lh_gold_curated'

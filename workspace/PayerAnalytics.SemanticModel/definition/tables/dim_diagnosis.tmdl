@@ -1,0 +1,17 @@
+table dim_diagnosis
+	lineageTag: d5000005-0001-0001-0001-00000000001600
+	sourceLineageTag: [dbo].[dim_diagnosis]
+
+	column dx_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001601
+		summarizeBy: none
+		sourceColumn: dx_code
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_diagnosis = entity
+		mode: directLake
+		source
+			entityName: dim_diagnosis
+			expressionSource: 'DirectLake - lh_gold_curated'

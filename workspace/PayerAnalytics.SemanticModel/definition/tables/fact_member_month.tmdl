@@ -1,0 +1,68 @@
+table fact_member_month
+	lineageTag: d5000005-0001-0001-0001-00000000001f00
+	sourceLineageTag: [dbo].[fact_member_month]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001f01
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001f02
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001f03
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001f04
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	column product
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001f05
+		summarizeBy: none
+		sourceColumn: product
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001f06
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column year_month_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001f07
+		summarizeBy: none
+		sourceColumn: year_month_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_member_month = entity
+		mode: directLake
+		source
+			entityName: fact_member_month
+			expressionSource: 'DirectLake - lh_gold_curated'

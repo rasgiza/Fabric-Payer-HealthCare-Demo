@@ -1,0 +1,57 @@
+table fact_provider_sanction
+	lineageTag: d5000005-0001-0001-0001-00000000002300
+	sourceLineageTag: [dbo].[fact_provider_sanction]
+
+	column sanction_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002301
+		summarizeBy: none
+		sourceColumn: sanction_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column provider_npi
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002302
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+		annotation SummarizationSetBy = Automatic
+
+	column exclusion_type
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002303
+		summarizeBy: none
+		sourceColumn: exclusion_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column exclusion_date
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002304
+		summarizeBy: none
+		sourceColumn: exclusion_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column reinstatement_eligible_date
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002305
+		summarizeBy: none
+		sourceColumn: reinstatement_eligible_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column source
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002306
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_provider_sanction = entity
+		mode: directLake
+		source
+			entityName: fact_provider_sanction
+			expressionSource: 'DirectLake - lh_gold_curated'
