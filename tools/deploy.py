@@ -46,8 +46,9 @@ PARAMETER_YAML = WORKSPACE_DIR / "parameter.yml"
 # fabric-cicd 1.1.0 supports these item types; the SDK names are stable.
 # Note: HostedAgent (Foundry hosted agents, preview) is NOT a fabric-cicd item
 # type — those deploy via the Foundry SDK / container registry, not via the
-# Fabric workspace tree. PAReviewCopilot (Stream B.4) lives under foundry/
-# at the repo root and is published by tools/deploy_foundry.py, not here.
+# Fabric workspace tree. PAReviewCopilot (Stream B.4) lives under
+# data_agents/PAReviewCopilot.HostedAgent/ and is published by
+# tools/deploy_data_agents.py (`deploy_hosted_agent`), not here.
 # Source: https://microsoft.github.io/fabric-cicd/latest/#supported-item-types
 SUPPORTED_TYPES = {
     "Lakehouse",

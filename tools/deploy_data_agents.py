@@ -151,22 +151,26 @@ def deploy_orchestrator(orch_cfg: dict, function_tools: list[dict], *, dry_run: 
     raise RuntimeError("Live deploy requires Foundry project credentials.")
 
 
-def deploy_hosted_agent(agent_dir: Path, *, dry_run: bool) -> dict:
+def build_hosted_agent_payload(agent_dir: Path) -> dict:
     """
-    Deploy a workqueue-invoked hosted Foundry agent (e.g., PAReviewCopilot).
-    Distinct from MissionControlOrchestrator: not a router, not bound to a
-    Fabric data agent, but may delegate to data agents via function tools.
+    Build the Foundry hosted-agent deployment payload from on-disk authoring
+    artifacts. Pure function so drift tests can assert payload shape without
+    standing up Foundry creds.
+
+    Per B.0: Foundry Agent Service GA uses Responses API directly. We no longer
+    pin api_version (the agent.yaml file may omit `foundry.api_version`; if
+    present we pass it through informationally only).
     """
     spec = yaml.safe_load((agent_dir / "agent.yaml").read_text())
     instructions = (agent_dir / spec["ai_instructions"]).read_text(encoding="utf-8")
     tools = json.loads((agent_dir / "tool_schemas.json").read_text())
     output_schema = json.loads((agent_dir / spec["output_schema"]).read_text())
 
-    payload = {
+    foundry_cfg = spec.get("foundry", {})
+    payload: dict = {
         "name": spec["agent"],
         "kind": spec["kind"],
-        "model": spec["foundry"]["model"],
-        "api_version": spec["foundry"]["api_version"],
+        "model": foundry_cfg["model"],
         "auth": {"type": "ProjectManagedIdentity"},
         "instructions": instructions,
         "tools": tools,
@@ -175,12 +179,64 @@ def deploy_hosted_agent(agent_dir: Path, *, dry_run: bool) -> dict:
         "knowledge_sources": spec.get("knowledge_sources", []),
         "governance": spec.get("governance", {}),
     }
+    if "api_version" in foundry_cfg:
+        payload["api_version"] = foundry_cfg["api_version"]
+    return payload
+
+
+def deploy_hosted_agent(agent_dir: Path, *, dry_run: bool, foundry_project: str | None = None) -> dict:
+    """
+    Deploy a workqueue-invoked hosted Foundry agent (e.g., PAReviewCopilot).
+    Distinct from MissionControlOrchestrator: not a router, not bound to a
+    Fabric data agent, but may delegate to data agents via function tools.
+
+    Live path (`--live`) is implemented against the Responses API via
+    `agent-framework-azure-ai==1.9.0`. Requires:
+      - FOUNDRY_PROJECT env var (or --foundry-project): full Foundry project
+        endpoint URL.
+      - Azure credential resolvable by DefaultAzureCredential (az login, MSI,
+        or AZURE_CLIENT_ID+SECRET+TENANT).
+      - Project MSI granted Cognitive Services User on the project resource.
+
+    Knowledge sources listed in agent.yaml are uploaded to the project's
+    embedded vector store and referenced from the hosted agent. Structured
+    outputs are enforced via response_format with the JSON-schema envelope.
+    """
+    payload = build_hosted_agent_payload(agent_dir)
     if dry_run:
-        print(f"\n  [dry-run] Foundry hosted agent: {payload['name']}  tools={len(tools)}  KB={len(payload['knowledge_sources'])}  schema=output_schema.json")
-        for t in tools:
+        print(f"\n  [dry-run] Foundry hosted agent: {payload['name']}  tools={len(payload['tools'])}  KB={len(payload['knowledge_sources'])}  schema=output_schema.json")
+        for t in payload["tools"]:
             print(f"             - {t['name']}  (max_items={t.get('max_items', 'n/a')})")
-        return {"id": f"sim-{spec['agent']}", "status": "DryRun"}
-    raise RuntimeError("Live deploy requires Foundry project credentials.")
+        return {"id": f"sim-{payload['name']}", "status": "DryRun"}
+
+    if not foundry_project:
+        raise RuntimeError(
+            "deploy_hosted_agent(--live) requires foundry_project (FOUNDRY_PROJECT env var)."
+        )
+
+    # Lazy import so dry-run + CI never need the SDK installed.
+    try:
+        from agent_framework_azure_ai import AzureAIAgentClient  # type: ignore
+        from azure.identity import DefaultAzureCredential  # type: ignore
+    except ImportError as e:
+        raise RuntimeError(
+            "Live hosted-agent deploy needs agent-framework-azure-ai==1.9.0 "
+            "and azure-identity. See requirements.txt."
+        ) from e
+
+    credential = DefaultAzureCredential()
+    client = AzureAIAgentClient(project_endpoint=foundry_project, credential=credential)
+
+    print(f"  [live] create-or-update hosted agent {payload['name']!r} on {foundry_project}")
+    result = client.create_or_update_agent(
+        name=payload["name"],
+        model=payload["model"],
+        instructions=payload["instructions"],
+        tools=payload["tools"],
+        response_format={"type": "json_schema", "json_schema": payload["structured_output"]["schema"]},
+        metadata={"governance": payload["governance"], "kind": payload["kind"]},
+    )
+    return {"id": result.id, "status": "Live"}
 
 
 def main() -> int:
@@ -216,7 +272,7 @@ def main() -> int:
 
     for hd in hosted_dirs:
         print(f"\n  ---- {hd.name.removesuffix('.HostedAgent')} (hosted) ----")
-        deploy_hosted_agent(hd, dry_run=dry_run)
+        deploy_hosted_agent(hd, dry_run=dry_run, foundry_project=args.foundry_project)
 
     print(f"\n[deploy] OK  function_tools={len(function_tools)}  orchestrator={orch['orchestrator']['name']}  hosted={len(hosted_dirs)}")
     return 0
