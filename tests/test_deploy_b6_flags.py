@@ -46,14 +46,14 @@ def _run(repo_root: Path, *args: str, env_overrides: dict[str, str] | None = Non
 
 
 def test_check_passes_in_sync_state(repo_root: Path) -> None:
-    """`--check` must exit 0 today: parameter.yml covers all 19 logicalIds."""
+    """`--check` must exit 0 today: parameter.yml covers all 20 logicalIds."""
     res = _run(repo_root, "--check")
     assert res.returncode == 0, (
         f"--check failed: stdout={res.stdout!r}  stderr={res.stderr!r}"
     )
     assert "--check OK" in res.stdout
-    assert ".platform logicalIds: 19" in res.stdout
-    assert "parameter.yml rules (logicalId-shaped): 19" in res.stdout
+    assert ".platform logicalIds: 20" in res.stdout
+    assert "parameter.yml rules (logicalId-shaped): 20" in res.stdout
 
 
 def test_check_does_not_require_env_flag(repo_root: Path) -> None:
@@ -73,9 +73,9 @@ def test_explain_reports_unset_vars_with_nonzero_exit(repo_root: Path) -> None:
         f"stdout={res.stdout!r}"
     )
     assert "[UNSET]" in res.stdout
-    # All 5 lakehouse + workspace + ontology + 7 agent + 4 notebook + 2 pipeline
-    # + SM rules = 19 logicalIds + 1 workspace placeholder = 20 rules.
-    assert "rules=20" in res.stdout
+    # 5 lakehouse + 5 notebook (NB_00..NB_03 + launcher) + 2 pipeline + 1 SM
+    # + 1 ontology + 7 agent = 20 logicalIds + 1 workspace placeholder = 21 rules.
+    assert "rules=21" in res.stdout
     # Mentions a known unset variable
     assert "LH_BRONZE_RAW_DEV" in res.stdout
 
@@ -87,8 +87,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         "LH_BRONZE_RAW_DEV":          "11111111-1111-1111-1111-aaaaaaaaaaa1",
         "LH_SILVER_STAGE_DEV":        "11111111-1111-1111-1111-aaaaaaaaaaa2",
         "LH_SILVER_ODS_DEV":          "11111111-1111-1111-1111-aaaaaaaaaaa3",
-        "LH_GOLD_CURATED_DEV":        "11111111-1111-1111-1111-aaaaaaaaaaa4",
-        "NB_01_BRONZE_INGEST_DEV":    "11111111-1111-1111-1111-bbbbbbbbbbb1",
+        "LH_GOLD_CURATED_DEV":        "11111111-1111-1111-1111-aaaaaaaaaaa4",            "NB_00_GENERATE_SMOKE_DATA_DEV": "11111111-1111-1111-1111-bbbbbbbbbbb0",        "NB_01_BRONZE_INGEST_DEV":    "11111111-1111-1111-1111-bbbbbbbbbbb1",
         "NB_02_SILVER_TRANSFORM_DEV": "11111111-1111-1111-1111-bbbbbbbbbbb2",
         "NB_03_GOLD_BUILD_DEV":       "11111111-1111-1111-1111-bbbbbbbbbbb3",
         "HEALTHCARE_LAUNCHER_DEV":    "11111111-1111-1111-1111-bbbbbbbbbb99",
@@ -111,7 +110,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         f"stderr={res.stderr!r}"
     )
     assert "[UNSET]" not in res.stdout
-    assert "all 20 parameter.yml rules resolve" in res.stdout
+    assert "all 21 parameter.yml rules resolve" in res.stdout
 
 
 # ---------- --only -----------------------------------------------------------

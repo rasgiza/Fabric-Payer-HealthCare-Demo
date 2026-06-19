@@ -35,6 +35,12 @@ find_replace:
       prod:    "$LH_GOLD_CURATED_PROD"
 
   # ---------------- Notebooks ----------------
+  - find_value: "b3000003-0001-0001-0001-000000000004"   # NB_00_Generate_Smoke_Data logicalId
+    replace_value:
+      dev:     "$NB_00_GENERATE_SMOKE_DATA_DEV"
+      staging: "$NB_00_GENERATE_SMOKE_DATA_STAGING"
+      prod:    "$NB_00_GENERATE_SMOKE_DATA_PROD"
+
   - find_value: "b3000003-0001-0001-0001-000000000001"   # NB_01_Bronze_Ingest logicalId
     replace_value:
       dev:     "$NB_01_BRONZE_INGEST_DEV"

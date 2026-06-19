@@ -20,6 +20,7 @@ from pathlib import Path
 import pytest
 
 EXPECTED_NOTEBOOKS = [
+    "NB_00_Generate_Smoke_Data",
     "NB_01_Bronze_Ingest",
     "NB_02_Silver_Transform",
     "NB_03_Gold_Build",

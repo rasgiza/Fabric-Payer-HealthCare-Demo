@@ -24,12 +24,13 @@
 # 4. Print a one-line gold-tier sanity check (8 must-have tables) and
 #    workspace publish-state summary.
 #
-# > **Smoke data**: this launcher does NOT regenerate synthetic data. Smoke
-# > CSVs live at `data/synth/smoke/` in the repo (gitignored) and ship into
-# > `lh_bronze_raw/Files/synth/smoke/` via the Jumpstart installer or by
-# > running `python tools/run_local_etl.py` against an OneLake-mounted path
-# > before the medallion chain. A `NB_00_Generate_Smoke_Data` notebook will
-# > land in a later B.x to make this end-to-end one-click.
+# > **Smoke data**: by default this launcher does NOT regenerate synthetic
+# > data; it expects CSVs already present at `lh_bronze_raw/Files/synth/smoke/`
+# > (shipped via the Jumpstart installer or `python tools/run_local_etl.py`).
+# > Set `RUN_GENERATE_SMOKE = True` below to invoke `NB_00_Generate_Smoke_Data`
+# > first, which fetches the generator + reference CSVs from GitHub raw and
+# > lands a fresh 500-member smoke set into the bronze lakehouse (true
+# > one-click path for fresh workspaces).
 # >
 # > **Out-of-scope here**: PAReviewCopilot hosted Foundry agent (deploys via
 # > `tools/deploy_data_agents.py --live`, not this notebook). RTI Eventhouse
@@ -57,15 +58,18 @@ PATCH_DATA_AGENTS     = True   # Cell 3: rebind 7 DataAgent placeholder GUIDs to
 RUN_SANITY_CHECK      = True   # Cell 4: gold-tier 8-table + publish-state summary
 
 # --- ETL options (apply only when RUN_ETL=True) ---
-RUN_ID      = "smoke"        # synth batch under Files/synth/<run_id>/
-MODE        = "overwrite"    # 'overwrite' on first run, 'append' for daily increment
-RUN_BRONZE  = True           # set False to skip NB_01 (silver+gold-only iteration)
+RUN_ID             = "smoke"        # synth batch under Files/synth/<run_id>/
+MODE               = "overwrite"    # 'overwrite' on first run, 'append' for daily increment
+RUN_GENERATE_SMOKE = False          # set True to run NB_00 first (fetch+gen 500-member smoke set)
+SMOKE_SCALE        = 0.005          # NB_00 generator scale (only used when RUN_GENERATE_SMOKE=True)
+SMOKE_SEED         = 42             # NB_00 RNG seed (deterministic)
+RUN_BRONZE         = True           # set False to skip NB_01 (silver+gold-only iteration)
 
 workspace_id = spark.conf.get("trident.workspace.id")
 print(f"Workspace:   {workspace_id}")
 print(f"Source ref:  github.com/{GITHUB_OWNER}/{GITHUB_REPO}@{GITHUB_BRANCH}")
 print(f"Toggles:     knowledge={UPLOAD_KNOWLEDGE_DOCS}  etl={RUN_ETL}  patch_agents={PATCH_DATA_AGENTS}  sanity={RUN_SANITY_CHECK}")
-print(f"ETL config:  run_id={RUN_ID}  mode={MODE}  run_bronze={RUN_BRONZE}")
+print(f"ETL config:  run_id={RUN_ID}  mode={MODE}  gen_smoke={RUN_GENERATE_SMOKE}  run_bronze={RUN_BRONZE}")
 
 # METADATA **{"language":"python"}**
 
@@ -147,6 +151,20 @@ if RUN_ETL:
     from notebookutils import mssparkutils
 
     results: dict[str, str] = {}
+
+    if RUN_GENERATE_SMOKE:
+        results["NB_00_Generate_Smoke_Data"] = mssparkutils.notebook.run(
+            "NB_00_Generate_Smoke_Data",
+            3600,
+            {
+                "run_id": RUN_ID,
+                "scale": SMOKE_SCALE,
+                "seed": SMOKE_SEED,
+                "github_owner": GITHUB_OWNER,
+                "github_repo": GITHUB_REPO,
+                "github_branch": GITHUB_BRANCH,
+            },
+        )
 
     if RUN_BRONZE:
         results["NB_01_Bronze_Ingest"] = mssparkutils.notebook.run(
