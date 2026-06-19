@@ -2,7 +2,9 @@
 
 End-to-end Microsoft Fabric demo for **U.S. health-insurance payers** — synthetic data, medallion lakehouse, payer ontology + graph, semantic model, **7 Foundry data agents + 1 hosted reviewer Copilot**, real-time intelligence, and a one-click launcher.
 
-> **Status:** **Phase 5.5 trimmed shipped** (commit [`0e42e49`](https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo/commit/0e42e49)). 7 Foundry data agents (CFO / Stars / Risk Adjustment / SIU / Care Mgmt / Network / UM) + 1 hosted PA-review Copilot, MissionControlOrchestrator router, payer KB, offline eval gate, pytest + ruff CI, data-fidelity gate. Phase 6 (RTI Eventhouse + Activator) and Phase 7 (launcher + governance + 3D story page) are next.
+> **Status:** **Stream A + Stream B shipped** through commit [`538f3cb`](https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo/commit/538f3cb) (2026-06-19). Workspace-shaped artifacts under `workspace/` (4 lakehouses, 4 notebooks incl. `Healthcare_Launcher`, 2 data pipelines, `PayerAnalytics` Direct Lake semantic model, `Payer_Ontology`, 7 Foundry data agents) publish via fabric-cicd 1.1.0; `PAReviewCopilot.HostedAgent` deploys via Foundry SDK out-of-band. The launcher is now Jumpstart-ready: pulls `payer_knowledge/*.md` from GitHub raw and rebinds the 7 agents' zero-GUID placeholders to live workspace ids on Run All. **Stream C (RTI Eventhouse + Activator + Fabric IQ hosted Copilot) is next.**
+>
+> **Two install paths**: (1) **Analyst / Jumpstart** — open `Healthcare_Launcher` in a Fabric workspace that has the items deployed, Run All, done. (2) **Platform team / CI** — `tools/deploy.py` wraps fabric-cicd for dev / staging / prod promotion.
 
 > **Preview disclosures:** `PAReviewCopilot.HostedAgent` runs on the Foundry **Hosted-agent service** which is currently in **PREVIEW**. The Power BI report uses **PBIR (still preview)** as of 2026-06-10. Customer production deployments must call out both.
 
@@ -47,6 +49,8 @@ Full surface inventory + verify-before-coding queue: [`docs/_internal/api_delta_
 
 ```
 docs/                 industry truth: pain points, coverage matrix, sample questions, story, runbook
+  ARCHITECTURE.md     ← one-page architecture (4 lakehouses + SM + ontology + 7 agents + hosted Copilot)
+  RUNBOOK.md          ← ops failure modes + recovery (distinct from EXECUTIVE_RUNBOOK demo script)
   personas/           one-page card per persona
   _internal/          api_delta scan, adopt list, known issues (not customer-facing)
 data_agents/          one folder per Foundry agent
@@ -82,9 +86,36 @@ requirements-dev.txt  pyyaml, pandas, networkx, jsonschema, pytest, ruff
 | 1A | api_delta refresh against 2026-06-10 MS Learn | ✅ shipped (`c698b20`) |
 | 1B | pytest harness + ruff + CI | ✅ shipped (`b052bd4`) — 15 tests, ruff clean |
 | 1C | data-fidelity gate (9 checks) | ✅ shipped (`fe98a8f`) |
-| 1D | README accuracy pass (this commit) | 🟡 in flight |
-| 6 | RTI: Eventhouse + KQL update policies + Activator + Power Automate MTTR loop | ⏳ next |
-| 7 | Launcher notebook + Purview governance + 3D story page + Direct Lake rebind | ⏳ |
+| 1D | README accuracy pass | ✅ shipped |
+
+### Stream A — workspace skeleton + medallion (Fabric Git Integration v2.0)
+
+| Phase | What | Status |
+|---|---|---|
+| A.0a/b/c | Catalog expansion + data realism + ETL extension | ✅ `ca91c10` / `34dcfeb` / `7cab69b` |
+| A.1 | 4 lakehouses (`lh_bronze_raw`, `lh_silver_stage`, `lh_silver_ods`, `lh_gold_curated`) | ✅ `4c96510` |
+| A.2 | 3 medallion notebooks (NB_01 / NB_02 / NB_03) | ✅ `f217c4c` |
+| A.3 | 2 data pipelines (PL_Payer_Full_Load + PL_Payer_Master) | ✅ `09c5f89` |
+| A.4-A.7 | `Healthcare_Launcher` + `tools/deploy.py` + CI + README | ✅ `168825e` |
+
+### Stream B — Foundry agents + Jumpstart launcher
+
+| Phase | What | Status |
+|---|---|---|
+| B.0 | Platform alignment (DefaultAzureCredential, agent-framework 1.9.0, Ontology in itemOrder) | ✅ `f0e8ccc` |
+| B.1 | `PayerAnalytics.SemanticModel` (Direct Lake, 35 tables, 32 rels, 15 measures) | ✅ `4f47807` |
+| B.2 | `Payer_Ontology` (26 entities, 32 relationships) | ✅ `7cc3919` |
+| B.3 | 7 Foundry DataAgents (CFO / Stars / RA / SIU / CareMgmt / Network / UM) | ✅ `406c821` |
+| B.3.5 | Launcher extended for Jumpstart (knowledge upload + DataAgent ID patching) | ✅ `538f3cb` |
+| B.4 | `PAReviewCopilot.HostedAgent` made deployable (Responses API; tool stubs; live deploy path) | ✅ `b1b0826` |
+| B.5-B.7 | Tests polish + deploy.py polish + docs (this commit) | 🟡 in flight |
+
+### Stream C — RTI
+
+| Phase | What | Status |
+|---|---|---|
+| C | Eventhouse + 6 KQL notebooks + Activator + Fabric IQ hosted Copilot | ⏳ next |
+| Future B.x | `NB_00_Generate_Smoke_Data` (the remaining gap before true fresh-workspace one-click) | ⏳ deferred |
 
 Detailed planning substrate: [`docs/_internal/api_delta_2026-06.md`](docs/_internal/api_delta_2026-06.md), [`docs/_internal/adopt_list.md`](docs/_internal/adopt_list.md), [`docs/_internal/known_issues.md`](docs/_internal/known_issues.md).
 
@@ -151,9 +182,34 @@ python tools/deploy.py --env prod --confirm
 ```
 
 After publish, open the `Healthcare_Launcher` notebook in the Fabric workspace
-and **Run All** to invoke the medallion chain end-to-end against
-`Files/synth/smoke/` and verify the gold-tier aggregates the 7 Foundry data
-agents bind to.
+and **Run All**. As of B.3.5, the launcher does four things in order:
+
+1. **Upload** all 15 `payer_knowledge/*.md` from GitHub raw → `lh_gold_curated/Files/payer_knowledge/`
+   (Fabric Git Integration ships workspace items, not loose markdown).
+2. **Run** the medallion notebook chain `NB_01` → `NB_02` → `NB_03` against
+   `Files/synth/smoke/` with `RUN_ID="smoke"`, `MODE="overwrite"`.
+3. **Patch** all 7 Foundry DataAgent definitions in place: discovers the live
+   ids of `lh_gold_curated`, `PayerAnalytics`, `Payer_Ontology` via
+   `/workspaces/{wid}/items` and rewrites the zero-GUID `artifactId` /
+   `workspaceId` placeholders committed in each agent's
+   `Files/Config/{draft,published}/<ds>/datasource.json` via Fabric REST
+   `getDefinition` → `updateDefinition` (handles 202 LRO with `Retry-After`).
+4. **Verify** the 8 must-have gold tables and print a workspace publish-state
+   summary.
+
+Each step has a toggle in the launcher's CONFIG cell
+(`UPLOAD_KNOWLEDGE_DOCS`, `RUN_ETL`, `PATCH_DATA_AGENTS`, `RUN_SANITY_CHECK`)
+so you can iterate on any single step without re-running the others.
+
+The `PAReviewCopilot.HostedAgent` hosted Foundry agent deploys separately via
+`python tools/deploy_data_agents.py --live --foundry-project <endpoint>` —
+it's not a fabric-cicd item type. Run `--dry-run` first to preview.
+
+**Known gap** before true fresh-workspace one-click: smoke CSVs must be
+present at `lh_bronze_raw/Files/synth/smoke/` for Step 2 to succeed. Today
+that's the job of `python tools/run_local_etl.py` against an OneLake-mounted
+path; a future `NB_00_Generate_Smoke_Data` notebook will close that gap. See
+[docs/RUNBOOK.md](docs/RUNBOOK.md) for the workaround.
 
 ## Sample questions
 
