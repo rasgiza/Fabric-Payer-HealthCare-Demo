@@ -37,11 +37,15 @@ spec:
     - DataPipeline
     - SemanticModel
     - Report
-    - DataAgent
+    - Ontology        # Payer_Ontology (B.2) — must publish before DataAgent
+    - DataAgent       # 7 agents bind to Lakehouse + SemanticModel + Ontology
     - Eventhouse
     - KQLDatabase
     - Reflex          # Activator
     - Eventstream
+  # NOTE: PAReviewCopilot is a Foundry hosted agent (preview), NOT a Fabric
+  # workspace item. It deploys via tools/deploy_foundry.py from foundry/ at
+  # the repo root, separately from this manifest.
 
   environments:
     dev:

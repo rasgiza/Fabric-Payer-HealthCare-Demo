@@ -16,6 +16,10 @@ Environment variables required (per env):
     AZURE_CLIENT_ID               (only when not using DefaultAzureCredential)
     AZURE_CLIENT_SECRET           (only when not using MSI / az login)
 
+fabric-cicd v1.0.0 removed the implicit credential fallback, so we now pass an
+explicit `token_credential=DefaultAzureCredential()` — works with `az login`
+locally, with `AZURE_CLIENT_ID/SECRET` in CI, and with workspace MSI in Fabric.
+
 Exit codes:
     0  success (or dry-run preview rendered)
     1  validation failure (missing item, parameter drift)
@@ -40,6 +44,11 @@ WORKSPACE_DIR = REPO_ROOT / "workspace"
 PARAMETER_YAML = WORKSPACE_DIR / "parameter.yml"
 
 # fabric-cicd 1.1.0 supports these item types; the SDK names are stable.
+# Note: HostedAgent (Foundry hosted agents, preview) is NOT a fabric-cicd item
+# type — those deploy via the Foundry SDK / container registry, not via the
+# Fabric workspace tree. PAReviewCopilot (Stream B.4) lives under foundry/
+# at the repo root and is published by tools/deploy_foundry.py, not here.
+# Source: https://microsoft.github.io/fabric-cicd/latest/#supported-item-types
 SUPPORTED_TYPES = {
     "Lakehouse",
     "Notebook",
@@ -48,6 +57,7 @@ SUPPORTED_TYPES = {
     "SemanticModel",
     "Report",
     "DataAgent",
+    "Ontology",
     "Eventhouse",
     "KQLDatabase",
     "Reflex",
@@ -137,7 +147,7 @@ def _render_preview(manifest: dict, items: dict[str, list[str]], workspace_id: s
 
 
 def _publish(env: str, workspace_id: str, manifest: dict) -> None:
-    """Invoke fabric-cicd. Import is lazy so dry-run + tests don't need the SDK."""
+    """Invoke fabric-cicd. Imports are lazy so dry-run + tests don't need the SDK."""
     try:
         fc = importlib.import_module("fabric_cicd")
     except ImportError:
@@ -145,16 +155,27 @@ def _publish(env: str, workspace_id: str, manifest: dict) -> None:
             "[deploy] fabric-cicd is not installed in this environment. "
             "Install via `pip install fabric-cicd==1.1.0`."
         )
+    try:
+        identity = importlib.import_module("azure.identity")
+    except ImportError:
+        sys.exit(
+            "[deploy] azure-identity is not installed in this environment. "
+            "Install via `pip install azure-identity>=1.19`."
+        )
 
     publish_cls = getattr(fc, "FabricWorkspace", None)
     if publish_cls is None:
         sys.exit("[deploy] fabric-cicd: FabricWorkspace not found — SDK version mismatch?")
 
+    # fabric-cicd v1.0.0 removed implicit credential fallback; an explicit
+    # token_credential is now mandatory. DefaultAzureCredential covers az login,
+    # CI service principals (AZURE_CLIENT_ID/SECRET), and workspace MSI.
     ws = publish_cls(
         workspace_id=workspace_id,
         repository_directory=str(WORKSPACE_DIR),
         item_type_in_scope=manifest["spec"]["itemOrder"],
         environment=env,
+        token_credential=identity.DefaultAzureCredential(),
     )
 
     print(f"[deploy] publishing to env={env} workspace={workspace_id}")
