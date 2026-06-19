@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/contextualization/1.0.0/schema.json",
+  "id": "d5000005-c1c1-4000-b001-00000000000a",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "itemId": "00000000-0000-0000-0000-000000000000",
+  "sourceType": "LakehouseTable",
+  "sourceSchema": null,
+  "sourceTableName": "fact_rx_claim",
+  "sourceKeyRefBindings": [
+    {
+      "sourceColumnName": "ndc_code",
+      "targetPropertyId": "8112000000000000003"
+    }
+  ],
+  "targetKeyRefBindings": [
+    {
+      "sourceColumnName": "ndc_code",
+      "targetPropertyId": "8109000000000000001"
+    }
+  ]
+}

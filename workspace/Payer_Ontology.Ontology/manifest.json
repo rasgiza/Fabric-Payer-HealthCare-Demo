@@ -1,0 +1,477 @@
+{
+  "ontologyName": "Payer_Ontology",
+  "exportedParts": [
+    {
+      "path": "definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000001/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000001/DataBindings/d5000005-b2b2-4000-b001-000000000001.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000002/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000002/DataBindings/d5000005-b2b2-4000-b001-000000000002.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000003/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000003/DataBindings/d5000005-b2b2-4000-b001-000000000003.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000004/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000004/DataBindings/d5000005-b2b2-4000-b001-000000000004.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000005/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000005/DataBindings/d5000005-b2b2-4000-b001-000000000005.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000006/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000006/DataBindings/d5000005-b2b2-4000-b001-000000000006.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000007/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000007/DataBindings/d5000005-b2b2-4000-b001-000000000007.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000008/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000008/DataBindings/d5000005-b2b2-4000-b001-000000000008.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000009/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000009/DataBindings/d5000005-b2b2-4000-b001-000000000009.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000010/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000010/DataBindings/d5000005-b2b2-4000-b001-00000000000a.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000011/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000011/DataBindings/d5000005-b2b2-4000-b001-00000000000b.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000012/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000012/DataBindings/d5000005-b2b2-4000-b001-00000000000c.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000013/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000013/DataBindings/d5000005-b2b2-4000-b001-00000000000d.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000014/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000014/DataBindings/d5000005-b2b2-4000-b001-00000000000e.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000015/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000015/DataBindings/d5000005-b2b2-4000-b001-00000000000f.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000016/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000016/DataBindings/d5000005-b2b2-4000-b001-000000000010.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000017/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000017/DataBindings/d5000005-b2b2-4000-b001-000000000011.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000018/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000018/DataBindings/d5000005-b2b2-4000-b001-000000000012.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000019/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000019/DataBindings/d5000005-b2b2-4000-b001-000000000013.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000020/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000020/DataBindings/d5000005-b2b2-4000-b001-000000000014.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000021/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000021/DataBindings/d5000005-b2b2-4000-b001-000000000015.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000022/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000022/DataBindings/d5000005-b2b2-4000-b001-000000000016.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000023/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000023/DataBindings/d5000005-b2b2-4000-b001-000000000017.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000024/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000024/DataBindings/d5000005-b2b2-4000-b001-000000000018.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000025/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000025/DataBindings/d5000005-b2b2-4000-b001-000000000019.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000026/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "EntityTypes/8000000026/DataBindings/d5000005-b2b2-4000-b001-00000000001a.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000001/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000001/Contextualizations/d5000005-c1c1-4000-b001-000000000001.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000002/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000002/Contextualizations/d5000005-c1c1-4000-b001-000000000002.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000003/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000003/Contextualizations/d5000005-c1c1-4000-b001-000000000003.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000004/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000004/Contextualizations/d5000005-c1c1-4000-b001-000000000004.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000005/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000005/Contextualizations/d5000005-c1c1-4000-b001-000000000005.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000006/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000006/Contextualizations/d5000005-c1c1-4000-b001-000000000006.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000007/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000007/Contextualizations/d5000005-c1c1-4000-b001-000000000007.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000008/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000008/Contextualizations/d5000005-c1c1-4000-b001-000000000008.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000009/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000009/Contextualizations/d5000005-c1c1-4000-b001-000000000009.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000010/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000010/Contextualizations/d5000005-c1c1-4000-b001-00000000000a.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000011/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000011/Contextualizations/d5000005-c1c1-4000-b001-00000000000b.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000012/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000012/Contextualizations/d5000005-c1c1-4000-b001-00000000000c.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000013/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000013/Contextualizations/d5000005-c1c1-4000-b001-00000000000d.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000014/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000014/Contextualizations/d5000005-c1c1-4000-b001-00000000000e.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000015/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000015/Contextualizations/d5000005-c1c1-4000-b001-00000000000f.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000016/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000016/Contextualizations/d5000005-c1c1-4000-b001-000000000010.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000017/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000017/Contextualizations/d5000005-c1c1-4000-b001-000000000011.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000018/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000018/Contextualizations/d5000005-c1c1-4000-b001-000000000012.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000019/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000019/Contextualizations/d5000005-c1c1-4000-b001-000000000013.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000020/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000020/Contextualizations/d5000005-c1c1-4000-b001-000000000014.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000021/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000021/Contextualizations/d5000005-c1c1-4000-b001-000000000015.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000022/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000022/Contextualizations/d5000005-c1c1-4000-b001-000000000016.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000023/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000023/Contextualizations/d5000005-c1c1-4000-b001-000000000017.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000024/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000024/Contextualizations/d5000005-c1c1-4000-b001-000000000018.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000025/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000025/Contextualizations/d5000005-c1c1-4000-b001-000000000019.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000026/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000026/Contextualizations/d5000005-c1c1-4000-b001-00000000001a.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000027/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000027/Contextualizations/d5000005-c1c1-4000-b001-00000000001b.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000028/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000028/Contextualizations/d5000005-c1c1-4000-b001-00000000001c.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000029/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000029/Contextualizations/d5000005-c1c1-4000-b001-00000000001d.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000030/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000030/Contextualizations/d5000005-c1c1-4000-b001-00000000001e.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000031/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000031/Contextualizations/d5000005-c1c1-4000-b001-00000000001f.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000032/definition.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": "RelationshipTypes/8200000000000000032/Contextualizations/d5000005-c1c1-4000-b001-000000000020.json",
+      "payloadType": "InlineBase64"
+    },
+    {
+      "path": ".platform",
+      "payloadType": "InlineBase64"
+    }
+  ]
+}

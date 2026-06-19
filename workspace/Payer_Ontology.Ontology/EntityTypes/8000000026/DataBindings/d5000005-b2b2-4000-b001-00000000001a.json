@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000001a",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8126000000000000001"
+      },
+      {
+        "sourceColumnName": "provider_npi",
+        "targetPropertyId": "8126000000000000002"
+      },
+      {
+        "sourceColumnName": "vbc_contract_id",
+        "targetPropertyId": "8126000000000000003"
+      },
+      {
+        "sourceColumnName": "attribution_method",
+        "targetPropertyId": "8126000000000000004"
+      },
+      {
+        "sourceColumnName": "effective_year",
+        "targetPropertyId": "8126000000000000005"
+      },
+      {
+        "sourceColumnName": "risk_arrangement",
+        "targetPropertyId": "8126000000000000006"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_vbc_attribution",
+      "sourceSchema": null
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/entityType/1.0.0/schema.json",
+  "id": "8000000006",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "Product",
+  "entityIdParts": [
+    "8106000000000000001"
+  ],
+  "displayNamePropertyId": "8106000000000000001",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "8106000000000000001",
+      "name": "product_id",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8106000000000000002",
+      "name": "product_name",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8106000000000000003",
+      "name": "lob",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/entityType/1.0.0/schema.json",
+  "id": "8000000020",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "ProviderSanction",
+  "entityIdParts": [
+    "8120000000000000001"
+  ],
+  "displayNamePropertyId": "8120000000000000001",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "8120000000000000001",
+      "name": "sanction_id",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8120000000000000002",
+      "name": "provider_npi",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8120000000000000003",
+      "name": "exclusion_type",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8120000000000000004",
+      "name": "exclusion_date",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8120000000000000005",
+      "name": "reinstatement_eligible_date",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8120000000000000006",
+      "name": "source",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000018",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "response_id",
+        "targetPropertyId": "8124000000000000001"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8124000000000000002"
+      },
+      {
+        "sourceColumnName": "survey_year",
+        "targetPropertyId": "8124000000000000003"
+      },
+      {
+        "sourceColumnName": "rating_health_plan",
+        "targetPropertyId": "8124000000000000004"
+      },
+      {
+        "sourceColumnName": "rating_personal_doctor",
+        "targetPropertyId": "8124000000000000005"
+      },
+      {
+        "sourceColumnName": "rating_specialist",
+        "targetPropertyId": "8124000000000000006"
+      },
+      {
+        "sourceColumnName": "getting_needed_care",
+        "targetPropertyId": "8124000000000000007"
+      },
+      {
+        "sourceColumnName": "getting_care_quickly",
+        "targetPropertyId": "8124000000000000008"
+      },
+      {
+        "sourceColumnName": "customer_service",
+        "targetPropertyId": "8124000000000000009"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_cahps_response",
+      "sourceSchema": null
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/entityType/1.0.0/schema.json",
+  "id": "8000000008",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "Procedure",
+  "entityIdParts": [
+    "8108000000000000001"
+  ],
+  "displayNamePropertyId": "8108000000000000001",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "8108000000000000001",
+      "name": "cpt_hcpcs",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ]
+}

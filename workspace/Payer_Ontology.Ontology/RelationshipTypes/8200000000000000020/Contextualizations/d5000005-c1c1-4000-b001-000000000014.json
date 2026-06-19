@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/contextualization/1.0.0/schema.json",
+  "id": "d5000005-c1c1-4000-b001-000000000014",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "itemId": "00000000-0000-0000-0000-000000000000",
+  "sourceType": "LakehouseTable",
+  "sourceSchema": null,
+  "sourceTableName": "fact_pharmacy_pa",
+  "sourceKeyRefBindings": [
+    {
+      "sourceColumnName": "decision_date_key",
+      "targetPropertyId": "8119000000000000012"
+    }
+  ],
+  "targetKeyRefBindings": [
+    {
+      "sourceColumnName": "date_key",
+      "targetPropertyId": "8101000000000000001"
+    }
+  ]
+}

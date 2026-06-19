@@ -1,0 +1,64 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000013",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "pa_id",
+        "targetPropertyId": "8119000000000000001"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8119000000000000002"
+      },
+      {
+        "sourceColumnName": "ndc_code",
+        "targetPropertyId": "8119000000000000003"
+      },
+      {
+        "sourceColumnName": "drug_class",
+        "targetPropertyId": "8119000000000000004"
+      },
+      {
+        "sourceColumnName": "submitted_at",
+        "targetPropertyId": "8119000000000000005"
+      },
+      {
+        "sourceColumnName": "decision_at",
+        "targetPropertyId": "8119000000000000006"
+      },
+      {
+        "sourceColumnName": "decision",
+        "targetPropertyId": "8119000000000000007"
+      },
+      {
+        "sourceColumnName": "indication",
+        "targetPropertyId": "8119000000000000008"
+      },
+      {
+        "sourceColumnName": "approval_rate_bucket",
+        "targetPropertyId": "8119000000000000009"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8119000000000000010"
+      },
+      {
+        "sourceColumnName": "submitted_date_key",
+        "targetPropertyId": "8119000000000000011"
+      },
+      {
+        "sourceColumnName": "decision_date_key",
+        "targetPropertyId": "8119000000000000012"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_pharmacy_pa",
+      "sourceSchema": null
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/entityType/1.0.0/schema.json",
+  "id": "8000000005",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "LOB",
+  "entityIdParts": [
+    "8105000000000000001"
+  ],
+  "displayNamePropertyId": "8105000000000000001",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "8105000000000000001",
+      "name": "lob_id",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8105000000000000002",
+      "name": "lob_name",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ]
+}

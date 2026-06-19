@@ -1,0 +1,44 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000000f",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8115000000000000001"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8115000000000000002"
+      },
+      {
+        "sourceColumnName": "lob",
+        "targetPropertyId": "8115000000000000003"
+      },
+      {
+        "sourceColumnName": "payer_id",
+        "targetPropertyId": "8115000000000000004"
+      },
+      {
+        "sourceColumnName": "member_months",
+        "targetPropertyId": "8115000000000000005"
+      },
+      {
+        "sourceColumnName": "premium_pmpm",
+        "targetPropertyId": "8115000000000000006"
+      },
+      {
+        "sourceColumnName": "premium_total",
+        "targetPropertyId": "8115000000000000007"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_premium",
+      "sourceSchema": null
+    }
+  }
+}

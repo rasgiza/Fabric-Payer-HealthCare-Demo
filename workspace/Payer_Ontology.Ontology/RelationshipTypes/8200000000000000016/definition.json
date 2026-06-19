@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/relationshipType/1.0.0/schema.json",
+  "name": "QualityEvent__member_id",
+  "namespace": "usertypes",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "cardinality": "ManyToOne",
+  "sourceEntityTypeId": "8000000017",
+  "targetEntityTypeId": "8000000002",
+  "properties": []
+}

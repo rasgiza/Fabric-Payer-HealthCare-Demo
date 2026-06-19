@@ -1,0 +1,72 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000000d",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "auth_id",
+        "targetPropertyId": "8113000000000000001"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8113000000000000002"
+      },
+      {
+        "sourceColumnName": "provider_npi",
+        "targetPropertyId": "8113000000000000003"
+      },
+      {
+        "sourceColumnName": "payer_id",
+        "targetPropertyId": "8113000000000000004"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8113000000000000005"
+      },
+      {
+        "sourceColumnName": "submitted_at",
+        "targetPropertyId": "8113000000000000006"
+      },
+      {
+        "sourceColumnName": "decision_at",
+        "targetPropertyId": "8113000000000000007"
+      },
+      {
+        "sourceColumnName": "decision",
+        "targetPropertyId": "8113000000000000008"
+      },
+      {
+        "sourceColumnName": "request_type",
+        "targetPropertyId": "8113000000000000009"
+      },
+      {
+        "sourceColumnName": "tat_hours",
+        "targetPropertyId": "8113000000000000010"
+      },
+      {
+        "sourceColumnName": "sla_hours",
+        "targetPropertyId": "8113000000000000011"
+      },
+      {
+        "sourceColumnName": "sla_met",
+        "targetPropertyId": "8113000000000000012"
+      },
+      {
+        "sourceColumnName": "submitted_via_fhir",
+        "targetPropertyId": "8113000000000000013"
+      },
+      {
+        "sourceColumnName": "linked_claim_id",
+        "targetPropertyId": "8113000000000000014"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_auth",
+      "sourceSchema": null
+    }
+  }
+}

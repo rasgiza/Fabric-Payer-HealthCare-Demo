@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/relationshipType/1.0.0/schema.json",
+  "name": "Readmission__index_dis_date_key",
+  "namespace": "usertypes",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "cardinality": "ManyToOne",
+  "sourceEntityTypeId": "8000000022",
+  "targetEntityTypeId": "8000000001",
+  "properties": []
+}

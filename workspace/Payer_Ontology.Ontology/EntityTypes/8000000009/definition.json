@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/entityType/1.0.0/schema.json",
+  "id": "8000000009",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "Drug",
+  "entityIdParts": [
+    "8109000000000000001"
+  ],
+  "displayNamePropertyId": "8109000000000000001",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "8109000000000000001",
+      "name": "ndc_code",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8109000000000000002",
+      "name": "drug_name",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "8109000000000000003",
+      "name": "drug_class",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ]
+}

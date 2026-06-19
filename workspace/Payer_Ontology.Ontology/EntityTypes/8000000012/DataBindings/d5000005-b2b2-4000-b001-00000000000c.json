@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000000c",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "rx_claim_id",
+        "targetPropertyId": "8112000000000000001"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8112000000000000002"
+      },
+      {
+        "sourceColumnName": "ndc_code",
+        "targetPropertyId": "8112000000000000003"
+      },
+      {
+        "sourceColumnName": "drug_name",
+        "targetPropertyId": "8112000000000000004"
+      },
+      {
+        "sourceColumnName": "drug_class",
+        "targetPropertyId": "8112000000000000005"
+      },
+      {
+        "sourceColumnName": "fill_date",
+        "targetPropertyId": "8112000000000000006"
+      },
+      {
+        "sourceColumnName": "days_supply",
+        "targetPropertyId": "8112000000000000007"
+      },
+      {
+        "sourceColumnName": "quantity_dispensed",
+        "targetPropertyId": "8112000000000000008"
+      },
+      {
+        "sourceColumnName": "prescriber_npi",
+        "targetPropertyId": "8112000000000000009"
+      },
+      {
+        "sourceColumnName": "billed_amount",
+        "targetPropertyId": "8112000000000000010"
+      },
+      {
+        "sourceColumnName": "paid_amount",
+        "targetPropertyId": "8112000000000000011"
+      },
+      {
+        "sourceColumnName": "formulary_tier",
+        "targetPropertyId": "8112000000000000012"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8112000000000000013"
+      },
+      {
+        "sourceColumnName": "payer_id",
+        "targetPropertyId": "8112000000000000014"
+      },
+      {
+        "sourceColumnName": "glp1_flag",
+        "targetPropertyId": "8112000000000000015"
+      },
+      {
+        "sourceColumnName": "ira_negotiated_flag",
+        "targetPropertyId": "8112000000000000016"
+      },
+      {
+        "sourceColumnName": "specialty_drug_flag",
+        "targetPropertyId": "8112000000000000017"
+      },
+      {
+        "sourceColumnName": "fill_date_key",
+        "targetPropertyId": "8112000000000000018"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_rx_claim",
+      "sourceSchema": null
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000012",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8118000000000000001"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8118000000000000002"
+      },
+      {
+        "sourceColumnName": "demographic_raf",
+        "targetPropertyId": "8118000000000000003"
+      },
+      {
+        "sourceColumnName": "coded_hcc_count",
+        "targetPropertyId": "8118000000000000004"
+      },
+      {
+        "sourceColumnName": "suspect_hcc_count",
+        "targetPropertyId": "8118000000000000005"
+      },
+      {
+        "sourceColumnName": "coded_hccs",
+        "targetPropertyId": "8118000000000000006"
+      },
+      {
+        "sourceColumnName": "suspect_hccs",
+        "targetPropertyId": "8118000000000000007"
+      },
+      {
+        "sourceColumnName": "raf_score",
+        "targetPropertyId": "8118000000000000008"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_raf_score",
+      "sourceSchema": null
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000000e",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "appeal_id",
+        "targetPropertyId": "8114000000000000001"
+      },
+      {
+        "sourceColumnName": "claim_id",
+        "targetPropertyId": "8114000000000000002"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8114000000000000003"
+      },
+      {
+        "sourceColumnName": "level",
+        "targetPropertyId": "8114000000000000004"
+      },
+      {
+        "sourceColumnName": "carc_code",
+        "targetPropertyId": "8114000000000000005"
+      },
+      {
+        "sourceColumnName": "filed_date",
+        "targetPropertyId": "8114000000000000006"
+      },
+      {
+        "sourceColumnName": "decision",
+        "targetPropertyId": "8114000000000000007"
+      },
+      {
+        "sourceColumnName": "peer_to_peer_flag",
+        "targetPropertyId": "8114000000000000008"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8114000000000000009"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_appeal",
+      "sourceSchema": null
+    }
+  }
+}

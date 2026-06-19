@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/relationshipType/1.0.0/schema.json",
+  "name": "OutreachEvent__outreach_date_key",
+  "namespace": "usertypes",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "cardinality": "ManyToOne",
+  "sourceEntityTypeId": "8000000025",
+  "targetEntityTypeId": "8000000001",
+  "properties": []
+}

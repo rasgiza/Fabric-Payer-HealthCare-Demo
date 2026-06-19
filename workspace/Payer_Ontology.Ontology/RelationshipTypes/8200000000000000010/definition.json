@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/relationshipType/1.0.0/schema.json",
+  "name": "RxClaim__ndc_code",
+  "namespace": "usertypes",
+  "namespaceType": "Imported",
+  "visibility": "Visible",
+  "cardinality": "ManyToOne",
+  "sourceEntityTypeId": "8000000012",
+  "targetEntityTypeId": "8000000009",
+  "properties": []
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000003",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "provider_npi",
+        "targetPropertyId": "8103000000000000001"
+      },
+      {
+        "sourceColumnName": "provider_name",
+        "targetPropertyId": "8103000000000000002"
+      },
+      {
+        "sourceColumnName": "specialty_type",
+        "targetPropertyId": "8103000000000000003"
+      },
+      {
+        "sourceColumnName": "is_pcp",
+        "targetPropertyId": "8103000000000000004"
+      },
+      {
+        "sourceColumnName": "state",
+        "targetPropertyId": "8103000000000000005"
+      },
+      {
+        "sourceColumnName": "in_network_flag",
+        "targetPropertyId": "8103000000000000006"
+      },
+      {
+        "sourceColumnName": "apm_tier",
+        "targetPropertyId": "8103000000000000007"
+      },
+      {
+        "sourceColumnName": "gold_carded_flag",
+        "targetPropertyId": "8103000000000000008"
+      },
+      {
+        "sourceColumnName": "leie_excluded_flag",
+        "targetPropertyId": "8103000000000000009"
+      },
+      {
+        "sourceColumnName": "vbc_contract_id",
+        "targetPropertyId": "8103000000000000010"
+      },
+      {
+        "sourceColumnName": "vbc_risk_arrangement",
+        "targetPropertyId": "8103000000000000011"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "dim_provider",
+      "sourceSchema": null
+    }
+  }
+}

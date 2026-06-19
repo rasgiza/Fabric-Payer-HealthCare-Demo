@@ -1,0 +1,108 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-00000000000b",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "claim_id",
+        "targetPropertyId": "8111000000000000001"
+      },
+      {
+        "sourceColumnName": "line_no",
+        "targetPropertyId": "8111000000000000002"
+      },
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8111000000000000003"
+      },
+      {
+        "sourceColumnName": "provider_npi",
+        "targetPropertyId": "8111000000000000004"
+      },
+      {
+        "sourceColumnName": "payer_id",
+        "targetPropertyId": "8111000000000000005"
+      },
+      {
+        "sourceColumnName": "service_date",
+        "targetPropertyId": "8111000000000000006"
+      },
+      {
+        "sourceColumnName": "service_date_key",
+        "targetPropertyId": "8111000000000000007"
+      },
+      {
+        "sourceColumnName": "plan_year",
+        "targetPropertyId": "8111000000000000008"
+      },
+      {
+        "sourceColumnName": "claim_type",
+        "targetPropertyId": "8111000000000000009"
+      },
+      {
+        "sourceColumnName": "place_of_service",
+        "targetPropertyId": "8111000000000000010"
+      },
+      {
+        "sourceColumnName": "lob",
+        "targetPropertyId": "8111000000000000011"
+      },
+      {
+        "sourceColumnName": "primary_dx_code",
+        "targetPropertyId": "8111000000000000012"
+      },
+      {
+        "sourceColumnName": "cpt_hcpcs",
+        "targetPropertyId": "8111000000000000013"
+      },
+      {
+        "sourceColumnName": "modifier",
+        "targetPropertyId": "8111000000000000014"
+      },
+      {
+        "sourceColumnName": "units",
+        "targetPropertyId": "8111000000000000015"
+      },
+      {
+        "sourceColumnName": "billed_amount",
+        "targetPropertyId": "8111000000000000016"
+      },
+      {
+        "sourceColumnName": "allowed_amount",
+        "targetPropertyId": "8111000000000000017"
+      },
+      {
+        "sourceColumnName": "paid_amount",
+        "targetPropertyId": "8111000000000000018"
+      },
+      {
+        "sourceColumnName": "member_liability",
+        "targetPropertyId": "8111000000000000019"
+      },
+      {
+        "sourceColumnName": "denied_int",
+        "targetPropertyId": "8111000000000000020"
+      },
+      {
+        "sourceColumnName": "paid_int",
+        "targetPropertyId": "8111000000000000021"
+      },
+      {
+        "sourceColumnName": "carc_code",
+        "targetPropertyId": "8111000000000000022"
+      },
+      {
+        "sourceColumnName": "pa_required_flag",
+        "targetPropertyId": "8111000000000000023"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_claim",
+      "sourceSchema": null
+    }
+  }
+}

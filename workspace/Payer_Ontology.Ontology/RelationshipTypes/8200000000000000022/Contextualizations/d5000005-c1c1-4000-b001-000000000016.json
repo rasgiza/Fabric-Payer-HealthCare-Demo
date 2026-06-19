@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/contextualization/1.0.0/schema.json",
+  "id": "d5000005-c1c1-4000-b001-000000000016",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "itemId": "00000000-0000-0000-0000-000000000000",
+  "sourceType": "LakehouseTable",
+  "sourceSchema": null,
+  "sourceTableName": "fact_provider_directory_attestation",
+  "sourceKeyRefBindings": [
+    {
+      "sourceColumnName": "provider_npi",
+      "targetPropertyId": "8121000000000000001"
+    }
+  ],
+  "targetKeyRefBindings": [
+    {
+      "sourceColumnName": "provider_npi",
+      "targetPropertyId": "8103000000000000001"
+    }
+  ]
+}

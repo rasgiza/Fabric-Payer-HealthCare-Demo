@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000015",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "provider_npi",
+        "targetPropertyId": "8121000000000000001"
+      },
+      {
+        "sourceColumnName": "attestation_method",
+        "targetPropertyId": "8121000000000000002"
+      },
+      {
+        "sourceColumnName": "last_verified_date",
+        "targetPropertyId": "8121000000000000003"
+      },
+      {
+        "sourceColumnName": "age_days",
+        "targetPropertyId": "8121000000000000004"
+      },
+      {
+        "sourceColumnName": "stale_flag",
+        "targetPropertyId": "8121000000000000005"
+      },
+      {
+        "sourceColumnName": "directory_status",
+        "targetPropertyId": "8121000000000000006"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "fact_provider_directory_attestation",
+      "sourceSchema": null
+    }
+  }
+}

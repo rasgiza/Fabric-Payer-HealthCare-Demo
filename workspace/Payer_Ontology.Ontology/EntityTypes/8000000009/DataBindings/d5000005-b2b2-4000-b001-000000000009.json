@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000009",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "ndc_code",
+        "targetPropertyId": "8109000000000000001"
+      },
+      {
+        "sourceColumnName": "drug_name",
+        "targetPropertyId": "8109000000000000002"
+      },
+      {
+        "sourceColumnName": "drug_class",
+        "targetPropertyId": "8109000000000000003"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "dim_drug",
+      "sourceSchema": null
+    }
+  }
+}

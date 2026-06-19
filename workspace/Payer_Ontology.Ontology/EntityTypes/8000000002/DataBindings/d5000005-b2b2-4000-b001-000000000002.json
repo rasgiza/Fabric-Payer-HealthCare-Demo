@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000002",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "member_id",
+        "targetPropertyId": "8102000000000000001"
+      },
+      {
+        "sourceColumnName": "mbi_hash",
+        "targetPropertyId": "8102000000000000002"
+      },
+      {
+        "sourceColumnName": "subscriber_id",
+        "targetPropertyId": "8102000000000000003"
+      },
+      {
+        "sourceColumnName": "lob",
+        "targetPropertyId": "8102000000000000004"
+      },
+      {
+        "sourceColumnName": "product",
+        "targetPropertyId": "8102000000000000005"
+      },
+      {
+        "sourceColumnName": "state",
+        "targetPropertyId": "8102000000000000006"
+      },
+      {
+        "sourceColumnName": "race_ethnicity",
+        "targetPropertyId": "8102000000000000007"
+      },
+      {
+        "sourceColumnName": "sex",
+        "targetPropertyId": "8102000000000000008"
+      },
+      {
+        "sourceColumnName": "age_at_year_end",
+        "targetPropertyId": "8102000000000000009"
+      },
+      {
+        "sourceColumnName": "dob_year",
+        "targetPropertyId": "8102000000000000010"
+      },
+      {
+        "sourceColumnName": "zip3",
+        "targetPropertyId": "8102000000000000011"
+      },
+      {
+        "sourceColumnName": "payer_id",
+        "targetPropertyId": "8102000000000000012"
+      },
+      {
+        "sourceColumnName": "plan_id",
+        "targetPropertyId": "8102000000000000013"
+      },
+      {
+        "sourceColumnName": "pcp_provider_id",
+        "targetPropertyId": "8102000000000000014"
+      },
+      {
+        "sourceColumnName": "effective_year",
+        "targetPropertyId": "8102000000000000015"
+      },
+      {
+        "sourceColumnName": "sdoh_housing_unstable",
+        "targetPropertyId": "8102000000000000016"
+      },
+      {
+        "sourceColumnName": "sdoh_food_insecure",
+        "targetPropertyId": "8102000000000000017"
+      },
+      {
+        "sourceColumnName": "sdoh_transport_barrier",
+        "targetPropertyId": "8102000000000000018"
+      },
+      {
+        "sourceColumnName": "lis_de_flag",
+        "targetPropertyId": "8102000000000000019"
+      },
+      {
+        "sourceColumnName": "disability_flag",
+        "targetPropertyId": "8102000000000000020"
+      },
+      {
+        "sourceColumnName": "hei_eligible_flag",
+        "targetPropertyId": "8102000000000000021"
+      },
+      {
+        "sourceColumnName": "re_l_collection_method",
+        "targetPropertyId": "8102000000000000022"
+      },
+      {
+        "sourceColumnName": "sogi_collected_flag",
+        "targetPropertyId": "8102000000000000023"
+      },
+      {
+        "sourceColumnName": "age_band",
+        "targetPropertyId": "8102000000000000024"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "dim_member",
+      "sourceSchema": null
+    }
+  }
+}

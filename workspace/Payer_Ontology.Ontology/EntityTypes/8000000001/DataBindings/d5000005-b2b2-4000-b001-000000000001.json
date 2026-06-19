@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/ontology/dataBinding/1.0.0/schema.json",
+  "id": "d5000005-b2b2-4000-b001-000000000001",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "date_key",
+        "targetPropertyId": "8101000000000000001"
+      },
+      {
+        "sourceColumnName": "full_date",
+        "targetPropertyId": "8101000000000000002"
+      },
+      {
+        "sourceColumnName": "year",
+        "targetPropertyId": "8101000000000000003"
+      },
+      {
+        "sourceColumnName": "month",
+        "targetPropertyId": "8101000000000000004"
+      },
+      {
+        "sourceColumnName": "quarter",
+        "targetPropertyId": "8101000000000000005"
+      },
+      {
+        "sourceColumnName": "year_month",
+        "targetPropertyId": "8101000000000000006"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000000",
+      "itemId": "00000000-0000-0000-0000-000000000000",
+      "sourceTableName": "dim_date",
+      "sourceSchema": null
+    }
+  }
+}
