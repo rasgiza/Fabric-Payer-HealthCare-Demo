@@ -93,5 +93,8 @@ jobs:
       - name: Install dev deps
         run: pip install -r requirements-dev.txt
 
+      - name: Deploy --check (parameter.yml <-> workspace drift)
+        run: python tools/deploy.py --check
+
       - name: Deploy dry-run (dev)
         run: python tools/deploy.py --env dev --dry-run

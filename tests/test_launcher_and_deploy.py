@@ -151,6 +151,7 @@ def test_ci_workflow_runs_all_gates(repo_root: Path) -> None:
         "tools/check_citations.py",
         "tools/audit_data.py",
         "tools/data_fidelity.py",
+        "tools/deploy.py --check",
         "tools/deploy.py --env dev --dry-run",
     ):
         assert step in ci, f"CI workflow missing step: {step}"

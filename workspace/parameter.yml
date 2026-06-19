@@ -34,6 +34,103 @@ find_replace:
       staging: "$LH_GOLD_CURATED_STAGING"
       prod:    "$LH_GOLD_CURATED_PROD"
 
+  # ---------------- Notebooks ----------------
+  - find_value: "b3000003-0001-0001-0001-000000000001"   # NB_01_Bronze_Ingest logicalId
+    replace_value:
+      dev:     "$NB_01_BRONZE_INGEST_DEV"
+      staging: "$NB_01_BRONZE_INGEST_STAGING"
+      prod:    "$NB_01_BRONZE_INGEST_PROD"
+
+  - find_value: "b3000003-0001-0001-0001-000000000002"   # NB_02_Silver_Transform logicalId
+    replace_value:
+      dev:     "$NB_02_SILVER_TRANSFORM_DEV"
+      staging: "$NB_02_SILVER_TRANSFORM_STAGING"
+      prod:    "$NB_02_SILVER_TRANSFORM_PROD"
+
+  - find_value: "b3000003-0001-0001-0001-000000000003"   # NB_03_Gold_Build logicalId
+    replace_value:
+      dev:     "$NB_03_GOLD_BUILD_DEV"
+      staging: "$NB_03_GOLD_BUILD_STAGING"
+      prod:    "$NB_03_GOLD_BUILD_PROD"
+
+  - find_value: "b3000003-0001-0001-0001-000000000099"   # Healthcare_Launcher logicalId
+    replace_value:
+      dev:     "$HEALTHCARE_LAUNCHER_DEV"
+      staging: "$HEALTHCARE_LAUNCHER_STAGING"
+      prod:    "$HEALTHCARE_LAUNCHER_PROD"
+
+  # ---------------- DataPipelines ----------------
+  - find_value: "c4000004-0001-0001-0001-000000000001"   # PL_Payer_Full_Load logicalId
+    replace_value:
+      dev:     "$PL_PAYER_FULL_LOAD_DEV"
+      staging: "$PL_PAYER_FULL_LOAD_STAGING"
+      prod:    "$PL_PAYER_FULL_LOAD_PROD"
+
+  - find_value: "c4000004-0001-0001-0001-000000000002"   # PL_Payer_Master logicalId
+    replace_value:
+      dev:     "$PL_PAYER_MASTER_DEV"
+      staging: "$PL_PAYER_MASTER_STAGING"
+      prod:    "$PL_PAYER_MASTER_PROD"
+
+  # ---------------- SemanticModel + Ontology ----------------
+  - find_value: "d5000005-0001-0001-0001-000000000001"   # PayerAnalytics SemanticModel logicalId
+    replace_value:
+      dev:     "$PAYER_ANALYTICS_DEV"
+      staging: "$PAYER_ANALYTICS_STAGING"
+      prod:    "$PAYER_ANALYTICS_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000002"   # Payer_Ontology logicalId
+    replace_value:
+      dev:     "$PAYER_ONTOLOGY_DEV"
+      staging: "$PAYER_ONTOLOGY_STAGING"
+      prod:    "$PAYER_ONTOLOGY_PROD"
+
+  # ---------------- DataAgents ----------------
+  # The launcher (Healthcare_Launcher Cell 3) rebinds zero-GUID artifactId
+  # references at runtime in the analyst install path. For the CI/CD
+  # install path, parameter.yml does the same job at publish time.
+  - find_value: "d5000005-0001-0001-0001-000000000003"   # CFOAgent logicalId
+    replace_value:
+      dev:     "$CFOAGENT_DEV"
+      staging: "$CFOAGENT_STAGING"
+      prod:    "$CFOAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000004"   # StarsAgent logicalId
+    replace_value:
+      dev:     "$STARSAGENT_DEV"
+      staging: "$STARSAGENT_STAGING"
+      prod:    "$STARSAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000005"   # RiskAdjustmentAgent logicalId
+    replace_value:
+      dev:     "$RISKADJUSTMENTAGENT_DEV"
+      staging: "$RISKADJUSTMENTAGENT_STAGING"
+      prod:    "$RISKADJUSTMENTAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000006"   # SIUAgent logicalId
+    replace_value:
+      dev:     "$SIUAGENT_DEV"
+      staging: "$SIUAGENT_STAGING"
+      prod:    "$SIUAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000007"   # CareMgmtAgent logicalId
+    replace_value:
+      dev:     "$CAREMGMTAGENT_DEV"
+      staging: "$CAREMGMTAGENT_STAGING"
+      prod:    "$CAREMGMTAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000008"   # NetworkAgent logicalId
+    replace_value:
+      dev:     "$NETWORKAGENT_DEV"
+      staging: "$NETWORKAGENT_STAGING"
+      prod:    "$NETWORKAGENT_PROD"
+
+  - find_value: "d5000005-0001-0001-0001-000000000009"   # UMAgent logicalId
+    replace_value:
+      dev:     "$UMAGENT_DEV"
+      staging: "$UMAGENT_STAGING"
+      prod:    "$UMAGENT_PROD"
+
   # ---------------- Workspace ----------------
   - find_value: "<WORKSPACE_ID>"
     replace_value:
