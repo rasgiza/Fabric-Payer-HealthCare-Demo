@@ -55,6 +55,60 @@ def test_launcher_gold_sanity_check_covers_key_aggregates(workspace_dir: Path) -
         assert must in content, f"launcher sanity check missing {must}"
 
 
+# ---------------------------------------------------------------------------
+# B.3.5 — Jumpstart distribution: knowledge upload + DataAgent ID patching
+# ---------------------------------------------------------------------------
+
+
+def test_launcher_has_b35_cell_count(workspace_dir: Path) -> None:
+    """Launcher must keep its 6-cell shape (1 markdown + 5 python)."""
+    content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
+    md = content.count('# MARKDOWN **{"language":"markdown"}**')
+    py = content.count('# CELL **{"language":"python"}**')
+    assert md == 1, f"expected 1 markdown cell, found {md}"
+    assert py == 5, f"expected 5 python cells (CONFIG + 4 steps), found {py}"
+
+
+def test_launcher_exposes_jumpstart_config(workspace_dir: Path) -> None:
+    """Jumpstart installer + analyst-edit path require these CONFIG knobs."""
+    content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
+    for knob in (
+        "GITHUB_OWNER",
+        "GITHUB_REPO",
+        "GITHUB_BRANCH",
+        "UPLOAD_KNOWLEDGE_DOCS",
+        "RUN_ETL",
+        "PATCH_DATA_AGENTS",
+        "RUN_SANITY_CHECK",
+    ):
+        assert knob in content, f"launcher CONFIG missing {knob}"
+
+
+def test_launcher_uploads_all_payer_knowledge_docs(workspace_dir: Path, repo_root: Path) -> None:
+    """The KNOWN_DOCS fallback list must list every .md actually in payer_knowledge/."""
+    content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
+    on_disk = sorted(p.name for p in (repo_root / "payer_knowledge").glob("*.md"))
+    assert on_disk, "payer_knowledge/*.md is empty — check repo state"
+    for name in on_disk:
+        assert f'"{name}"' in content, (
+            f"launcher KNOWN_DOCS fallback missing payer_knowledge/{name}"
+        )
+
+
+def test_launcher_patches_all_seven_data_agents(workspace_dir: Path) -> None:
+    """Cell 3 must rebind exactly the 7 DataAgents shipped in Stream B.3."""
+    content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
+    for agent in (
+        "CFOAgent", "StarsAgent", "RiskAdjustmentAgent", "SIUAgent",
+        "CareMgmtAgent", "NetworkAgent", "UMAgent",
+    ):
+        assert f'"{agent}"' in content, f"launcher DataAgent patch list missing {agent}"
+    # And it must drive Fabric REST API LRO (getDefinition / updateDefinition)
+    assert "getDefinition" in content
+    assert "updateDefinition" in content
+    assert "00000000-0000-0000-0000-000000000000" in content, "zero-GUID placeholder marker missing"
+
+
 def test_deploy_script_exists_and_dry_run_renders(repo_root: Path) -> None:
     script = repo_root / "tools" / "deploy.py"
     assert script.is_file(), "tools/deploy.py missing"
