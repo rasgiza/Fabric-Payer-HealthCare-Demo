@@ -137,6 +137,19 @@ find_replace:
       staging: "$UMAGENT_STAGING"
       prod:    "$UMAGENT_PROD"
 
+  # ---------------- Eventhouse / KQLDatabase (RTI) ----------------
+  - find_value: "e6000006-0001-0001-0001-000000000001"   # eh_payer_rt logicalId
+    replace_value:
+      dev:     "$EH_PAYER_RT_DEV"
+      staging: "$EH_PAYER_RT_STAGING"
+      prod:    "$EH_PAYER_RT_PROD"
+
+  - find_value: "f7000007-0001-0001-0001-000000000001"   # kqldb_payer_rt logicalId
+    replace_value:
+      dev:     "$KQLDB_PAYER_RT_DEV"
+      staging: "$KQLDB_PAYER_RT_STAGING"
+      prod:    "$KQLDB_PAYER_RT_PROD"
+
   # ---------------- Workspace ----------------
   - find_value: "<WORKSPACE_ID>"
     replace_value:

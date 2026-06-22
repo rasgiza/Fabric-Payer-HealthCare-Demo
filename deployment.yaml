@@ -81,13 +81,16 @@ spec:
 
   # Items that are opt-in (RTI stack ships disabled by default; CFO/Stars/RA
   # agents are always-on; the rest can be toggled per tenant).
+  # RTI scope is trimmed to the 3 use cases that are genuinely real-time in
+  # payer ops (PA latency / ADT-style outreach / claim-arrival fraud scoring).
+  # The other 4 personas (CFO, Stars, RA, Network) are batch by nature and
+  # would be demo theater in an RTI surface. See docs/ARCHITECTURE.md.
   optionalItems:
-    - Healthcare_RTI_Eventhouse.Eventhouse
-    - Healthcare_RTI_DB.KQLDatabase
-    - NB_RTI_Fraud_Detection.Notebook
-    - NB_RTI_Care_Gap_Alerts.Notebook
-    - NB_RTI_HighCost_Trajectory.Notebook
-    - NB_RTI_Provider_Network_Watch.Notebook
-    - NB_RTI_PA_Surge_Detection.Notebook
-    - NB_RTI_Appeal_Aging.Notebook
-    - PayerOps_Activator.Reflex
+    - eh_payer_rt.Eventhouse              # C.1
+    - kqldb_payer_rt.KQLDatabase          # C.1
+    - NB_RTI_01_Ingest_Claims_Stream.Notebook  # C.2 (planned)
+    - NB_RTI_02_PA_Latency.Notebook            # C.3 (planned, UM persona)
+    - NB_RTI_03_ADT_Outreach.Notebook          # C.3 (planned, CareMgmt persona)
+    - NB_RTI_04_SIU_Intake_Scoring.Notebook    # C.3 (planned, SIU persona)
+    - PayerOps_Activator.Reflex                # C.4 (planned)
+    - es_claims_arrivals.Eventstream           # C.2 (planned)

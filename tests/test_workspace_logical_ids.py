@@ -2,7 +2,7 @@
 
 `test_workspace_skeleton.py` enforces uniqueness across the 4 lakehouses only.
 This file extends that guarantee to every `.platform` file in the workspace
-skeleton (currently 20: 4 Lakehouse + 5 Notebook + 2 DataPipeline + 1
+skeleton (currently 22: 4 Lakehouse + 5 Notebook + 2 DataPipeline + 1
 SemanticModel + 1 Ontology + 7 DataAgent).
 
 Regressions this catches:
@@ -36,6 +36,8 @@ PREFIX_BY_TYPE = {
     "SemanticModel": "d5000005-",
     "Ontology": "d5000005-",
     "DataAgent": "d5000005-",
+    "Eventhouse": "e6000006-",
+    "KQLDatabase": "f7000007-",
 }
 
 
@@ -127,7 +129,7 @@ def test_logical_ids_follow_type_namespace_convention(workspace_dir: Path) -> No
 
 
 def test_expected_workspace_inventory(workspace_dir: Path) -> None:
-    """Inventory lock: 20 items today. Bump this when you add a new workspace item.
+    """Inventory lock: 22 items today. Bump this when you add a new workspace item.
 
     Stream A (deployment.yaml + parameter.yml) and tools/deploy.py SUPPORTED_TYPES
     must move together; this test forces the author of a new item to think about
@@ -145,6 +147,8 @@ def test_expected_workspace_inventory(workspace_dir: Path) -> None:
         "SemanticModel": 1,
         "Ontology": 1,
         "DataAgent": 7,
+        "Eventhouse": 1,
+        "KQLDatabase": 1,
     }
     assert counts == expected, (
         f"workspace inventory drift\n  expected: {expected}\n  actual:   {counts}"
