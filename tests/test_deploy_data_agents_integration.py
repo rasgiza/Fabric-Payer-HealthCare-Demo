@@ -31,7 +31,7 @@ def test_deploy_data_agents_dry_run_returns_zero(repo_root: Path) -> None:
 
 
 def test_deploy_data_agents_dry_run_lists_all_seven_agents(repo_root: Path) -> None:
-    """The dry-run plan must mention every B.3 DataAgent + the B.4 hosted Copilot."""
+    """The dry-run plan must mention every B.3 DataAgent + both hosted Copilots (B.4 + C.5)."""
     res = subprocess.run(
         [sys.executable, str(repo_root / "tools" / "deploy_data_agents.py"), "--dry-run"],
         cwd=repo_root,
@@ -45,11 +45,12 @@ def test_deploy_data_agents_dry_run_lists_all_seven_agents(repo_root: Path) -> N
     for agent in ("CFOAgent", "StarsAgent", "RiskAdjustmentAgent", "SIUAgent",
                   "CareMgmtAgent", "NetworkAgent", "UMAgent"):
         assert agent in out, f"deploy_data_agents.py dry-run plan missing {agent!r}"
-    # The hosted Copilot from B.4
+    # The hosted Copilots: PAReviewCopilot (B.4) + PayerRT_Copilot (C.5)
     assert "PAReviewCopilot" in out, "deploy_data_agents.py dry-run plan missing PAReviewCopilot"
-    # The OK marker should report function_tools=7 (one per Fabric DataAgent) and hosted=1
+    assert "PayerRT_Copilot" in out, "deploy_data_agents.py dry-run plan missing PayerRT_Copilot"
+    # The OK marker should report function_tools=7 (one per Fabric DataAgent) and hosted=2
     assert "function_tools=7" in out, f"expected function_tools=7 in summary, got: {out!r}"
-    assert "hosted=1" in out, f"expected hosted=1 in summary, got: {out!r}"
+    assert "hosted=2" in out, f"expected hosted=2 in summary, got: {out!r}"
 
 
 def test_deploy_data_agents_live_without_credentials_exits_2(repo_root: Path) -> None:

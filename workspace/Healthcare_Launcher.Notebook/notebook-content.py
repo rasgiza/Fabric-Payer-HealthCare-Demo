@@ -104,6 +104,7 @@ if UPLOAD_KNOWLEDGE_DOCS:
         "oig_radv_audit_guidance.md",
         "policy_citation_pattern.md",
         "README.md",
+        "rti_ops_runbook.md",
         "sdoh_hcp_lan_framework.md",
         "stars_2026_cutpoints.md",
     ]

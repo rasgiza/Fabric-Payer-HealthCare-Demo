@@ -1,0 +1,83 @@
+[
+  {
+    "type": "function",
+    "name": "get_pa_latency_window",
+    "description": "Return current prior-authorization latency window from kqldb_payer_rt (auth_lifecycle table). Reads the same 15-minute bin shape NB_RTI_02 publishes. Returns p50/p90/p99 latency, breach counts, and the breach_rate the pa_denial_rate_spike Activator rule fires on. Never returns member identifiers.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "lookback_min": { "type": "integer", "minimum": 15, "maximum": 1440 },
+        "is_expedited": { "type": "boolean", "description": "Filter to expedited (72h SLA) when true, standard (168h) when false, all when omitted." }
+      },
+      "required": ["lookback_min"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "get_emergency_admit_worklist",
+    "description": "Return current emergency-admit ADT worklist from kqldb_payer_rt (adt_admissions table). Reads the leftanti-join shape NB_RTI_03 publishes (admits without a member_outreach within 24h). Returns priority bucket (high/standard), facility_id, and outreach_status. PHI-minimized: returns member_hash only.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "lookback_min":   { "type": "integer", "minimum": 30, "maximum": 1440 },
+        "priority_only":  { "type": "string", "enum": ["high", "standard", "all"], "description": "Filter by dx-chapter priority bucket." }
+      },
+      "required": ["lookback_min"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "get_siu_suspect_claims",
+    "description": "Return current SIU suspect claims from kqldb_payer_rt (claim_arrivals table). Reads the score-aggregation shape NB_RTI_04 publishes. Returns claim_id, intake_score, score_reasons list, payer_id, provider_id. Triggers a downstream SIU work item if intake_score >= the configured threshold (default 0.6).",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "lookback_min":    { "type": "integer", "minimum": 30, "maximum": 1440 },
+        "score_threshold": { "type": "number",  "minimum": 0.0, "maximum": 1.0 }
+      },
+      "required": ["lookback_min", "score_threshold"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "ask_um_agent",
+    "description": "Delegate a deeper UM analytics question to the UMAgent Fabric data agent. Used when the operator needs context beyond the current RTI window (e.g., 30-day PA TAT trend, peer-to-peer overturn rate). Never used to make case-level decisions.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" }
+      },
+      "required": ["question"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "ask_care_mgmt_agent",
+    "description": "Delegate a deeper CareMgmt question to the CareMgmtAgent Fabric data agent (e.g., 'how many high-priority admits this month already received outreach?', 'what is the member's care-plan owner?'). Never used to assign outreach itself.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" }
+      },
+      "required": ["question"]
+    },
+    "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "ask_siu_agent",
+    "description": "Delegate a deeper SIU question to the SIUAgent Fabric data agent (e.g., provider pattern history, billed-amount distribution by claim type). Never used to open or close an SIU case.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" }
+      },
+      "required": ["question"]
+    },
+    "max_items": 1
+  }
+]

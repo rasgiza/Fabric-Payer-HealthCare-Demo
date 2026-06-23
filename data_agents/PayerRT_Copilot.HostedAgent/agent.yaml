@@ -1,0 +1,56 @@
+agent: PayerRT_Copilot
+display_name: Payer RT Ops Copilot
+kind: foundry_hosted_agent
+persona: RTI_Ops
+personas_owned:
+- UM
+- CareMgmt
+- SIU
+# Stream C hosted copilot. Sits in front of the RTI Fabric stack (Eventhouse +
+# KQLDatabase + 3 analytic notebooks + Activator) and gives a UM / CareMgmt /
+# SIU operator a single workqueue-style entry point. Distinct from
+# PAReviewCopilot (case-time reviewer) and from the analytics DataAgents:
+#   - PAReviewCopilot answers ONE PA case.
+#   - UMAgent/CareMgmtAgent/SIUAgent answer ad-hoc analytics questions.
+#   - PayerRT_Copilot answers "what should the RTI ops team do right now?"
+#     by fetching the current live windows from kqldb_payer_rt and routing
+#     by persona.
+pain_points_owned:
+- PP-RTI-001  # latency between event arrival and operator action
+foundry:
+  # No api_version pin -- Responses API (B.0 alignment).
+  model: gpt-4.1-mini
+  auth: project_msi
+mcp_tool:
+  require_approval: never
+tools:
+- name: get_pa_latency_window     # KQL against kqldb_payer_rt (NB_RTI_02 query shape)
+  type: function
+  schema: tool_schemas.json
+- name: get_emergency_admit_worklist  # KQL against kqldb_payer_rt (NB_RTI_03 query shape)
+  type: function
+  schema: tool_schemas.json
+- name: get_siu_suspect_claims    # KQL against kqldb_payer_rt (NB_RTI_04 query shape)
+  type: function
+  schema: tool_schemas.json
+- name: ask_um_agent              # delegates deeper UM analytics to UMAgent DataAgent
+  type: function
+  upstream_agent: UMAgent
+  max_items: 1
+- name: ask_care_mgmt_agent       # delegates CareMgmt outreach analytics to CareMgmtAgent
+  type: function
+  upstream_agent: CareMgmtAgent
+  max_items: 1
+- name: ask_siu_agent             # delegates SIU pattern analytics to SIUAgent
+  type: function
+  upstream_agent: SIUAgent
+  max_items: 1
+knowledge_sources:
+- payer_knowledge/cms_0057_f_pa_rule.md
+- payer_knowledge/rti_ops_runbook.md
+output_schema: output_schema.json
+ai_instructions: aiInstructions.md
+governance:
+  phi_minimization: required
+  decision_authority: deny     # copilot proposes routing; never auto-acts
+  audit_log: required

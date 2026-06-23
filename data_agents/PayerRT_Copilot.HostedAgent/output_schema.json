@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RTIOpsEnvelope",
+  "description": "Structured-outputs schema for the PayerRT_Copilot RTI-ops envelope. Enforced via Foundry structured-outputs mode. recommendation enum is non-adjudicative: copilot proposes a routing action only.",
+  "type": "object",
+  "required": ["persona", "recommendation", "confidence", "window", "evidence"],
+  "additionalProperties": false,
+  "properties": {
+    "persona": {
+      "type": "string",
+      "enum": ["UM", "CareMgmt", "SIU", "Unknown"],
+      "description": "Which RTI persona the operator question maps to."
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "dispatch_outreach",
+        "open_pa_investigation",
+        "open_siu_case",
+        "monitor"
+      ],
+      "description": "Routing action only. Never an adjudicated outcome (no approve/deny on a PA, no open/close on an SIU case)."
+    },
+    "confidence": { "type": "string", "enum": ["low", "medium", "high"] },
+    "window": {
+      "type": "object",
+      "required": ["lookback_min"],
+      "additionalProperties": false,
+      "properties": {
+        "lookback_min": { "type": "integer", "minimum": 15, "maximum": 1440 },
+        "is_expedited": { "type": "boolean" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "description": "Aggregated, PHI-minimized evidence extracted from kqldb_payer_rt for the current window.",
+      "additionalProperties": false,
+      "properties": {
+        "pa_latency": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "p50_hours":    { "type": "number", "minimum": 0 },
+            "p90_hours":    { "type": "number", "minimum": 0 },
+            "p99_hours":    { "type": "number", "minimum": 0 },
+            "breach_count": { "type": "integer", "minimum": 0 },
+            "breach_rate":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "decisions":    { "type": "integer", "minimum": 0 }
+          }
+        },
+        "emergency_admits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "high_priority_count":     { "type": "integer", "minimum": 0 },
+            "standard_priority_count": { "type": "integer", "minimum": 0 },
+            "without_outreach_count":  { "type": "integer", "minimum": 0 }
+          }
+        },
+        "siu": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "suspect_count":     { "type": "integer", "minimum": 0 },
+            "max_intake_score":  { "type": "number",  "minimum": 0, "maximum": 1 },
+            "score_threshold":   { "type": "number",  "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "regulatory_pointers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation_id", "relevance"],
+        "additionalProperties": false,
+        "properties": {
+          "citation_id": { "type": "string", "description": "Must resolve in citations.yaml" },
+          "relevance":   { "type": "string" }
+        }
+      }
+    },
+    "routing_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["channel", "work_item"],
+        "additionalProperties": false,
+        "properties": {
+          "channel":   { "type": "string", "description": "Teams channel or queue name -- never an individual." },
+          "work_item": { "type": "string", "description": "Work-item template name in the operator system." }
+        }
+      }
+    },
+    "rationale_snippets": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Short bullet pointers back into the evidence -- never PHI."
+    },
+    "reason": { "type": "string", "description": "Required when recommendation is 'monitor' or 'open_pa_investigation' (explains why no immediate routing)." },
+    "note":   { "type": "string" }
+  }
+}
