@@ -1,12 +1,12 @@
 # Fabric Payer Healthcare Demo
 
-End-to-end Microsoft Fabric demo for **U.S. health-insurance payers** — synthetic data, medallion lakehouse, payer ontology + graph, semantic model, **7 Foundry data agents + 1 hosted reviewer Copilot**, real-time intelligence, and a one-click launcher.
+End-to-end Microsoft Fabric demo for **U.S. health-insurance payers** — synthetic data, medallion lakehouse, payer ontology + graph, semantic model, **7 Foundry data agents + 2 hosted Copilots**, real-time intelligence (Eventhouse + KQL DB + Eventstream + Activator + RTI hosted Copilot), and a one-click launcher.
 
-> **Status:** **Stream A + Stream B shipped** through commit [`538f3cb`](https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo/commit/538f3cb) (2026-06-19). Workspace-shaped artifacts under `workspace/` (4 lakehouses, 4 notebooks incl. `Healthcare_Launcher`, 2 data pipelines, `PayerAnalytics` Direct Lake semantic model, `Payer_Ontology`, 7 Foundry data agents) publish via fabric-cicd 1.1.0; `PAReviewCopilot.HostedAgent` deploys via Foundry SDK out-of-band. The launcher is now Jumpstart-ready: pulls `payer_knowledge/*.md` from GitHub raw and rebinds the 7 agents' zero-GUID placeholders to live workspace ids on Run All. **Stream C (RTI Eventhouse + Activator + Fabric IQ hosted Copilot) is next.**
+> **Status:** **Streams A + B + C shipped** through commit [`933e59a`](https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo/commit/933e59a). Workspace-shaped artifacts under `workspace/` (4 lakehouses, 9 notebooks incl. `Healthcare_Launcher` + 3 RTI analytic notebooks, 2 data pipelines, `PayerAnalytics` Direct Lake semantic model, `Payer_Ontology`, 7 Foundry data agents, `kqldb_payer_rt` KQLDatabase, `eh_payer_rt` Eventhouse, `es_claims_arrivals` Eventstream, `PayerOps_Activator` Reflex) publish via fabric-cicd 1.1.0; `PAReviewCopilot.HostedAgent` + `PayerRT_Copilot.HostedAgent` deploy via Foundry SDK out-of-band. The launcher is Jumpstart-ready: pulls `payer_knowledge/*.md` from GitHub raw and rebinds the 7 agents' zero-GUID placeholders to live workspace ids on Run All. **Streams D (eval automation + observability) is next.**
 >
 > **Two install paths**: (1) **Analyst / Jumpstart** — open `Healthcare_Launcher` in a Fabric workspace that has the items deployed, Run All, done. (2) **Platform team / CI** — `tools/deploy.py` wraps fabric-cicd for dev / staging / prod promotion.
 
-> **Preview disclosures:** `PAReviewCopilot.HostedAgent` runs on the Foundry **Hosted-agent service** which is currently in **PREVIEW**. The Power BI report uses **PBIR (still preview)** as of 2026-06-10. Customer production deployments must call out both.
+> **Preview disclosures:** `PAReviewCopilot.HostedAgent` and `PayerRT_Copilot.HostedAgent` run on the Foundry **Hosted-agent service** which is currently in **PREVIEW**. The Power BI report uses **PBIR (still preview)** as of 2026-06-10. Customer production deployments must call out both.
 
 ---
 
@@ -28,6 +28,7 @@ Every artifact in this repo — every table, every measure, every agent question
 | 6 | Network & Contracting | `NetworkAgent` | Network adequacy, VBC/APM mix, contract analytics |
 | 7 | UM / Prior Authorization | `UMAgent` | TAT, CMS-0057-F readiness, peer-to-peer overturn |
 | + | UM Reviewer Copilot | `PAReviewCopilot.HostedAgent` | Hosted PA-decision support; pointer-not-text policy citation discipline |
+| + | RTI Ops Triage Copilot | `PayerRT_Copilot.HostedAgent` | Routes live RTI signals to UM / CareMgmt / SIU; routing-only (never adjudicates); CMS-0057-F cited when opening PA investigation |
 
 All 7 data agents bind 1:1 to the **PayerAnalytics** semantic model (`fabric_data_agent.max_items = 1`, the documented Foundry constraint). The hosted Copilot is a separate reviewer-side agent that calls `ask_um_agent` and `ask_risk_agent` as function tools.
 
@@ -37,7 +38,7 @@ Canonical names per Microsoft Learn (verified 2026-06-10):
 
 - **Fabric data agents** (GA): one agent per persona, bound to `PayerAnalytics.SemanticModel`.
 - **Foundry Prompt agents** (GA): the 7 `*.DataAgent` definitions.
-- **Foundry Hosted agents** (PREVIEW): `PAReviewCopilot.HostedAgent` — container/zip ship, dedicated Entra identity, structured-outputs envelope.
+- **Foundry Hosted agents** (PREVIEW): `PAReviewCopilot.HostedAgent` (UM reviewer; calls UMAgent + RiskAdjustmentAgent) and `PayerRT_Copilot.HostedAgent` (RTI ops triage; 3 KQL function tools + delegates to UMAgent / CareMgmtAgent / SIUAgent).
 - **Foundry platform tools** — canonical brand names for v1.1 hookups: **Fabric IQ** (data + analytics into Fabric), **WorkIQ** (M365 work-context grounding), **SharePoint** (doc libraries).
 - **Foundry Toolbox** (preview) and **custom MCP servers on Azure Functions** (`/runtime/webhooks/mcp`) — the two MCP integration paths for v1.1 customer extensions.
 - **Eventhouse** (GA) — Phase 6 RTI backbone.
@@ -110,11 +111,27 @@ requirements-dev.txt  pyyaml, pandas, networkx, jsonschema, pytest, ruff
 | B.4 | `PAReviewCopilot.HostedAgent` made deployable (Responses API; tool stubs; live deploy path) | ✅ `b1b0826` |
 | B.5-B.7 | Tests polish + deploy.py polish + docs (this commit) | 🟡 in flight |
 
-### Stream C — RTI
+### Stream C — RTI (Eventhouse + KQL + Eventstream + Activator + hosted RTI Copilot)
 
 | Phase | What | Status |
 |---|---|---|
-| C | Eventhouse + 6 KQL notebooks + Activator + Fabric IQ hosted Copilot | ⏳ next |
+| C.1 | `eh_payer_rt` Eventhouse + `kqldb_payer_rt` KQLDatabase skeletons + tests | ✅ `d22f43f` |
+| C.2 | `es_claims_arrivals` Eventstream + NB_RTI_01 ingest notebook | ✅ `d77ea0b` |
+| C.3 | 3 RTI analytic notebooks (NB_RTI_02 auth_lifecycle / NB_RTI_03 adt_admissions / NB_RTI_04 claim_arrivals) | ✅ `5d59749` |
+| C.4 | `PayerOps_Activator.Reflex` skeleton + 2 locked rule designs (pa_denial_rate_spike, siu_intake_score_alert) | ✅ `1f676a8` |
+| C.5 | `PayerRT_Copilot.HostedAgent` (6 tools: 3 KQL function tools + 3 DataAgent delegates; routing-only; RTIOpsEnvelope) | ✅ `933e59a` |
+
+### Stream D — Eval automation + observability
+
+| Phase | What | Status |
+|---|---|---|
+| D.1 | `tools/run_evals.py` + `tests/test_eval_thresholds.py` (Foundry batch-eval for both hosted Copilots) | ⏳ next |
+| D.2 | App Insights wiring on hosted-agent deploy + `monitoring/*.json` workbooks | ⏳ next |
+
+### Deferred
+
+| Phase | What | Status |
+|---|---|---|
 | Future B.x | `NB_00_Generate_Smoke_Data` (the remaining gap before true fresh-workspace one-click) | ⏳ deferred |
 
 Detailed planning substrate: [`docs/_internal/api_delta_2026-06.md`](docs/_internal/api_delta_2026-06.md), [`docs/_internal/adopt_list.md`](docs/_internal/adopt_list.md), [`docs/_internal/known_issues.md`](docs/_internal/known_issues.md).
@@ -201,9 +218,11 @@ Each step has a toggle in the launcher's CONFIG cell
 (`UPLOAD_KNOWLEDGE_DOCS`, `RUN_ETL`, `PATCH_DATA_AGENTS`, `RUN_SANITY_CHECK`)
 so you can iterate on any single step without re-running the others.
 
-The `PAReviewCopilot.HostedAgent` hosted Foundry agent deploys separately via
+The `PAReviewCopilot.HostedAgent` and `PayerRT_Copilot.HostedAgent` hosted Foundry
+agents deploy separately via
 `python tools/deploy_data_agents.py --live --foundry-project <endpoint>` —
-it's not a fabric-cicd item type. Run `--dry-run` first to preview.
+they're not fabric-cicd item types. Run `--dry-run` first to preview
+(`hosted-agents=2`).
 
 **Known gap** before true fresh-workspace one-click: smoke CSVs must be
 present at `lh_bronze_raw/Files/synth/smoke/` for Step 2 to succeed. Today

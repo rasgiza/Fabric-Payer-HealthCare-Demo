@@ -178,7 +178,121 @@ Assistants API retires 2027-03-31.
 
 **Fix**: remove the `api_version` key from `data_agents/PAReviewCopilot.HostedAgent/agent.yaml`.
 `tests/test_pareviewcopilot_shape.py::test_agent_yaml_uses_responses_api`
-catches this in CI.
+catches this in CI. The same check runs for `PayerRT_Copilot.HostedAgent` via
+`tests/test_payerrt_copilot_shape.py::test_agent_yaml_uses_responses_api`.
+
+### `tool_call_failed: get_pa_latency_window`  (or get_emergency_admit_worklist / get_siu_suspect_claims)
+
+**Cause**: `PayerRT_Copilot.HostedAgent` v1 ships PHI-minimized **zero-count stubs** for
+the 3 KQL function tools — they return the right schema but don't actually query
+`kqldb_payer_rt` yet. If you wired the agent live before C.x ships the real KQL
+binding, the tool returns the stub envelope unchanged and the recommendation
+degrades to `monitor`.
+
+**Fix**: this is by design for v1; no action needed unless you've manually patched
+the stubs and broken the contract. Run
+`pytest tests/test_payerrt_copilot_shape.py -k validates` to re-prove input
+validation still works.
+
+### `PayerRT_Copilot` recommends something other than {dispatch_outreach, open_pa_investigation, open_siu_case, monitor}
+
+**Cause**: model drift produced a free-text recommendation outside the locked
+enum. The structured-output schema (`output_schema.json`) should refuse, but a
+mis-pinned model snapshot may bypass it.
+
+**Fix**: confirm `agent.yaml` `foundry.model` points to a structured-outputs-capable
+model (gpt-4.1-mini or newer). The recommendation enum is locked by
+`tests/test_payerrt_copilot_shape.py::test_recommendation_enum_locked`.
+
+---
+
+## RTI (Stream C) failure modes
+
+### Eventhouse `eh_payer_rt` not provisioned in workspace
+
+Symptom (Activator rule never fires; NB_RTI_02/03/04 cells fail with
+`Database 'kqldb_payer_rt' not found`):
+
+**Cause**: fabric-cicd 1.1.0 ships Eventhouse + KQLDatabase as `.platform`-only
+stubs in this repo (we don't yet have a published companion-JSON shape from a
+real Fabric Git export). On first deploy to a fresh workspace, the Eventhouse
+resource is created but the KQL DB may need a portal-side cluster bind.
+
+**Fix**:
+1. Open the workspace → `eh_payer_rt` → confirm Eventhouse status = Active.
+2. Open `kqldb_payer_rt` → if it shows "Initializing," wait 2-5 min then retry NB_RTI_01.
+3. If still failing, drop and recreate via portal; the fabric-cicd manifest is
+   idempotent on next `tools/deploy.py --env dev`.
+
+### Eventstream `es_claims_arrivals` shows 0 events/sec
+
+**Cause**: no producer is publishing to the stream. NB_RTI_01 (ingest notebook)
+only *consumes* from the stream; it doesn't generate events.
+
+**Fix**: in v1 the producer is the smoke/replay job; for live demo runs use the
+portal's built-in Sample Data source temporarily, or run
+`python tools/replay_rti.py --topic claim_arrivals` (deferred to v1.1 — see
+"Known v1.1 follow-ups" below).
+
+### `PayerOps_Activator` rule defined but never fires
+
+**Cause**: rule predicates (`pa_denial_rate_spike`: `decisions>=50 AND breach_rate>0.20`,
+`siu_intake_score_alert`: `intake_score>=0.6`) are tuned for steady traffic.
+Smoke data has fewer than 50 decisions per window so `pa_denial_rate_spike`
+intentionally suppresses.
+
+**Fix**: for demo, override thresholds in the portal rule editor (Activator UI),
+or lower the `min_decisions` floor temporarily. The locked design lives in
+`tests/test_rti_c4_skeleton.py::EXPECTED_RULES`; revert any threshold edits
+before committing.
+
+### Flip hosted-agent dry-run → live
+
+Default `python tools/deploy_data_agents.py` is `--dry-run`. To deploy
+`PAReviewCopilot.HostedAgent` and `PayerRT_Copilot.HostedAgent` for real:
+
+```powershell
+$env:FOUNDRY_PROJECT     = "https://<resource>.services.ai.azure.com/api/projects/<proj>"
+$env:FABRIC_WORKSPACE_ID = "<workspace GUID>"  # so KB upload path resolves
+az login --tenant $env:AZURE_TENANT_ID
+python tools/deploy_data_agents.py --live --foundry-project $env:FOUNDRY_PROJECT
+```
+
+Expected tail line:
+```
+[deploy] OK  function_tools=7  orchestrator=MissionControlOrchestrator  hosted=2
+```
+
+If you see `hosted=1`, one `*.HostedAgent/` folder failed payload build — check
+the `[ERR]` line above; the most common cause is a missing knowledge_source
+file referenced in `agent.yaml`.
+
+---
+
+## Known v1.1 follow-ups
+
+These are deliberate v1 gaps that customers must be warned about up front:
+
+1. **Hosted-agent KQL tool stubs.** The 3 tools on `PayerRT_Copilot.HostedAgent`
+   (`get_pa_latency_window` / `get_emergency_admit_worklist` /
+   `get_siu_suspect_claims`) return PHI-minimized zero-count envelopes in v1.
+   v1.1 wires them to the real `kqldb_payer_rt` queries shipped in
+   NB_RTI_02/03/04.
+2. **Foundry Hosted agents are PREVIEW.** Both `PAReviewCopilot.HostedAgent`
+   and `PayerRT_Copilot.HostedAgent` run on the Foundry Hosted-agent service,
+   currently in preview. Production deployments must call this out in the
+   customer's risk register.
+3. **MCP custom server runtime is preview.** The `/runtime/webhooks/mcp` path
+   (Azure Functions) used by the v1.1 customer-extension story is still in
+   preview as of 2026-06-10.
+4. **Reflex Git-exportable rule descriptor JSON is not yet published.** Microsoft
+   has not yet documented the companion-JSON shape for Reflex rules; the v1
+   `PayerOps_Activator.Reflex` ships as a `.platform`-only stub with the rule
+   designs locked in `tests/test_rti_c4_skeleton.py`. When the JSON shape lands,
+   we'll generate the descriptor from those test fixtures (no rule-design rework).
+5. **NB_00_Generate_Smoke_Data deferred.** Fresh-workspace one-click still
+   requires the user to upload smoke CSVs out-of-band (see
+   `python tools/run_local_etl.py --run-id smoke` flow above).
 
 ---
 

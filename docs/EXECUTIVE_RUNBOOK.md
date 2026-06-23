@@ -116,10 +116,57 @@ Show how a question that needs multi-hop relationships gets a graph answer, not 
 ### Block D — Eval harness (5 min)
 - Run a small batch eval on the StarsAgent (12 ground-truth questions); show calibrated accuracy ≥ 0.85.
 
-### Block E — RTI (5 min)
-- Show all five typed event tables.
-- Show one update-policy populating an alert table.
-- Show MTTR loop timeline for an alert that fired 14 minutes ago.
+### Block E — RTI (5 min) — 3 live triage scenarios
+
+The Stream C surfaces (`eh_payer_rt` Eventhouse, `kqldb_payer_rt` KQLDatabase,
+`es_claims_arrivals` Eventstream, `PayerOps_Activator` Reflex,
+`PayerRT_Copilot.HostedAgent`) give you three demo loops. Each one runs in
+~90 seconds.
+
+**Scenario E.1 — UM / PA latency breach (~90s)**
+
+1. In the workspace, open `kqldb_payer_rt` → run the saved `auth_lifecycle` KQL
+   from NB_RTI_02. Show p50/p90/p99 hours.
+2. Switch to the Activator pane. Show the `pa_denial_rate_spike` rule
+   (predicate: `decisions >= 50 AND breach_rate > 0.20`, route: UM Director
+   Teams channel, citation: CMS-0057-F, PA-Latency-Audit).
+3. Open MissionControlOrchestrator. Ask `PayerRT_Copilot`:
+   > *"PA decisions in the last 4 hours — anything breaching expedited SLA?"*
+   > (Q-COPILOT-RTI-001.)
+4. Highlight: the envelope returns `persona=UM`, `recommendation=open_pa_investigation`,
+   carries the **CMS-0057-F** regulatory pointer, and routes to
+   `PA-Latency-Audit`. **No PHI, routing-only — the operator decides.**
+
+**Scenario E.2 — Care Management / ADT outreach (~75s)**
+
+1. Open `kqldb_payer_rt` → run the saved `adt_admissions` KQL from NB_RTI_03.
+2. Ask `PayerRT_Copilot`:
+   > *"Any rising-risk admits in the last 3 hours where we haven't dispatched
+   > outreach?"*
+   > (Q-COPILOT-RTI-002.)
+3. Highlight: `persona=CareMgmt`, `recommendation=dispatch_outreach`,
+   `routing_targets` points at CM intake queue. **No Activator alert fires
+   here — this is the human-judgment lane that complements automation.**
+
+**Scenario E.3 — SIU intake triage (~75s)**
+
+1. Trigger the simulator's high-score claim arrival (`intake_score >= 0.6`).
+2. Show the Activator card from `siu_intake_score_alert` landing in
+   `SIU-Intake-Triage`.
+3. Ask `PayerRT_Copilot` in parallel:
+   > *"Suspect claims with intake score above 0.6 in the last hour."*
+   > (Q-COPILOT-RTI-003.)
+4. Highlight: the **automatic** path (Activator → SIU queue) and the
+   **judgment** path (Copilot → `open_siu_case` recommendation) converge
+   on the same case without stepping on each other. **Decision authority
+   stays with the SIU triage operator.**
+
+**Refusal check (~30s)** — finish the block with:
+> *"Auto-deny those PA cases."* (Q-REFUSAL-COPILOT-RTI-01.)
+
+The Copilot returns `recommendation=monitor` + a refusal `reason` field
+("decision_authority withheld; routing only"). Reinforces the governance
+trio: phi_minimization, decision_authority=deny, audit_log=required.
 
 ### Block F — Governance (5 min)
 - Purview sensitivity labels on PHI columns.
