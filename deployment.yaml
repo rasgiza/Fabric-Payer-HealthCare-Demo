@@ -93,4 +93,4 @@ spec:
     - NB_RTI_02_PA_Latency.Notebook            # C.3 (UM persona)
     - NB_RTI_03_ADT_Outreach.Notebook          # C.3 (CareMgmt persona)
     - NB_RTI_04_SIU_Intake_Scoring.Notebook    # C.3 (SIU persona)
-    - PayerOps_Activator.Reflex                # C.4 (planned)
+    - PayerOps_Activator.Reflex                # C.4 (2 rules: PA-denial-rate spike, SIU score threshold)

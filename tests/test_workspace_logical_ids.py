@@ -2,9 +2,9 @@
 
 `test_workspace_skeleton.py` enforces uniqueness across the 4 lakehouses only.
 This file extends that guarantee to every `.platform` file in the workspace
-skeleton (currently 27: 4 Lakehouse + 9 Notebook + 2 DataPipeline + 1
+skeleton (currently 28: 4 Lakehouse + 9 Notebook + 2 DataPipeline + 1
 SemanticModel + 1 Ontology + 7 DataAgent + 1 Eventhouse + 1 KQLDatabase
-+ 1 Eventstream).
++ 1 Eventstream + 1 Reflex).
 
 Regressions this catches:
   - Copy-pasting a Notebook folder without bumping its logicalId, which would
@@ -21,6 +21,10 @@ fabric-cicd `SUPPORTED_TYPES` ordering):
   b3000003-  Notebook
   c4000004-  DataPipeline
   d5000005-  SemanticModel, Ontology, DataAgent
+  e6000006-  Eventhouse
+  f7000007-  KQLDatabase
+  08000008-  Eventstream
+  19000019-  Reflex (Activator)
 """
 
 from __future__ import annotations
@@ -40,6 +44,7 @@ PREFIX_BY_TYPE = {
     "Eventhouse": "e6000006-",
     "KQLDatabase": "f7000007-",
     "Eventstream": "08000008-",
+    "Reflex": "19000019-",
 }
 
 
@@ -131,7 +136,7 @@ def test_logical_ids_follow_type_namespace_convention(workspace_dir: Path) -> No
 
 
 def test_expected_workspace_inventory(workspace_dir: Path) -> None:
-    """Inventory lock: 27 items today. Bump this when you add a new workspace item.
+    """Inventory lock: 28 items today. Bump this when you add a new workspace item.
 
     Stream A (deployment.yaml + parameter.yml) and tools/deploy.py SUPPORTED_TYPES
     must move together; this test forces the author of a new item to think about
@@ -152,6 +157,7 @@ def test_expected_workspace_inventory(workspace_dir: Path) -> None:
         "Eventhouse": 1,
         "KQLDatabase": 1,
         "Eventstream": 1,
+        "Reflex": 1,
     }
     assert counts == expected, (
         f"workspace inventory drift\n  expected: {expected}\n  actual:   {counts}"

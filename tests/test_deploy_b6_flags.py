@@ -46,14 +46,14 @@ def _run(repo_root: Path, *args: str, env_overrides: dict[str, str] | None = Non
 
 
 def test_check_passes_in_sync_state(repo_root: Path) -> None:
-    """`--check` must exit 0 today: parameter.yml covers all 27 logicalIds."""
+    """`--check` must exit 0 today: parameter.yml covers all 28 logicalIds."""
     res = _run(repo_root, "--check")
     assert res.returncode == 0, (
         f"--check failed: stdout={res.stdout!r}  stderr={res.stderr!r}"
     )
     assert "--check OK" in res.stdout
-    assert ".platform logicalIds: 27" in res.stdout
-    assert "parameter.yml rules (logicalId-shaped): 27" in res.stdout
+    assert ".platform logicalIds: 28" in res.stdout
+    assert "parameter.yml rules (logicalId-shaped): 28" in res.stdout
 
 
 def test_check_does_not_require_env_flag(repo_root: Path) -> None:
@@ -75,8 +75,8 @@ def test_explain_reports_unset_vars_with_nonzero_exit(repo_root: Path) -> None:
     assert "[UNSET]" in res.stdout
     # 4 lakehouse + 9 notebook (NB_00..NB_03 + launcher + NB_RTI_01..NB_RTI_04)
     # + 2 pipeline + 1 SM + 1 ontology + 7 agent + 1 Eventhouse + 1 KQLDatabase
-    # + 1 Eventstream = 27 logicalIds + 1 workspace placeholder = 28 rules.
-    assert "rules=28" in res.stdout
+    # + 1 Eventstream + 1 Reflex = 28 logicalIds + 1 workspace placeholder = 29 rules.
+    assert "rules=29" in res.stdout
     # Mentions a known unset variable
     assert "LH_BRONZE_RAW_DEV" in res.stdout
 
@@ -110,6 +110,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         "NB_RTI_02_PA_LATENCY_DEV":           "11111111-1111-1111-1111-bbbbbbbbbbb6",
         "NB_RTI_03_ADT_OUTREACH_DEV":         "11111111-1111-1111-1111-bbbbbbbbbbb7",
         "NB_RTI_04_SIU_INTAKE_SCORING_DEV":   "11111111-1111-1111-1111-bbbbbbbbbbb8",
+        "PAYEROPS_ACTIVATOR_DEV":             "11111111-1111-1111-1111-aaaaaaaa1919",
         "FABRIC_WORKSPACE_ID_DEV":    "22222222-2222-2222-2222-222222222222",
     }
     res = _run(repo_root, "--env", "dev", "--explain", env_overrides=overrides)
@@ -118,7 +119,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         f"stderr={res.stderr!r}"
     )
     assert "[UNSET]" not in res.stdout
-    assert "all 28 parameter.yml rules resolve" in res.stdout
+    assert "all 29 parameter.yml rules resolve" in res.stdout
 
 
 # ---------- --only -----------------------------------------------------------
@@ -147,11 +148,14 @@ def test_only_filter_rejects_unknown_type(repo_root: Path) -> None:
 
 
 def test_only_filter_rejects_type_with_no_folders(repo_root: Path) -> None:
-    """Reflex is in SUPPORTED_TYPES + itemOrder but has no folder on disk yet (Stream C.4)."""
-    res = _run(repo_root, "--env", "dev", "--dry-run", "--only", "Reflex")
+    """Environment is in SUPPORTED_TYPES + itemOrder but has no folder on disk.
+
+    (C.4 added a real Reflex folder, so it's no longer the no-folder canary.)
+    """
+    res = _run(repo_root, "--env", "dev", "--dry-run", "--only", "Environment")
     assert res.returncode != 0
     msg = (res.stdout + res.stderr)
-    assert "Reflex" in msg
+    assert "Environment" in msg
     # Must distinguish "type unknown to fabric-cicd" from "no folders of that type".
     # The error should reference itemOrder or "no folders" so an operator knows
     # which fix to apply (deployment.yaml vs add a workspace folder).

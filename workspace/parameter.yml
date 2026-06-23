@@ -181,6 +181,13 @@ find_replace:
       staging: "$ES_CLAIMS_ARRIVALS_STAGING"
       prod:    "$ES_CLAIMS_ARRIVALS_PROD"
 
+  # ---------------- Reflex / Activator (RTI) ----------------
+  - find_value: "19000019-0001-0001-0001-000000000001"   # PayerOps_Activator logicalId
+    replace_value:
+      dev:     "$PAYEROPS_ACTIVATOR_DEV"
+      staging: "$PAYEROPS_ACTIVATOR_STAGING"
+      prod:    "$PAYEROPS_ACTIVATOR_PROD"
+
   # ---------------- Workspace ----------------
   - find_value: "<WORKSPACE_ID>"
     replace_value:
