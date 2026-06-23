@@ -65,6 +65,24 @@ find_replace:
       staging: "$NB_RTI_01_INGEST_CLAIMS_STREAM_STAGING"
       prod:    "$NB_RTI_01_INGEST_CLAIMS_STREAM_PROD"
 
+  - find_value: "b3000003-0001-0001-0001-000000000006"   # NB_RTI_02_PA_Latency logicalId
+    replace_value:
+      dev:     "$NB_RTI_02_PA_LATENCY_DEV"
+      staging: "$NB_RTI_02_PA_LATENCY_STAGING"
+      prod:    "$NB_RTI_02_PA_LATENCY_PROD"
+
+  - find_value: "b3000003-0001-0001-0001-000000000007"   # NB_RTI_03_ADT_Outreach logicalId
+    replace_value:
+      dev:     "$NB_RTI_03_ADT_OUTREACH_DEV"
+      staging: "$NB_RTI_03_ADT_OUTREACH_STAGING"
+      prod:    "$NB_RTI_03_ADT_OUTREACH_PROD"
+
+  - find_value: "b3000003-0001-0001-0001-000000000008"   # NB_RTI_04_SIU_Intake_Scoring logicalId
+    replace_value:
+      dev:     "$NB_RTI_04_SIU_INTAKE_SCORING_DEV"
+      staging: "$NB_RTI_04_SIU_INTAKE_SCORING_STAGING"
+      prod:    "$NB_RTI_04_SIU_INTAKE_SCORING_PROD"
+
   - find_value: "b3000003-0001-0001-0001-000000000099"   # Healthcare_Launcher logicalId
     replace_value:
       dev:     "$HEALTHCARE_LAUNCHER_DEV"

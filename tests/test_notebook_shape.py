@@ -25,6 +25,9 @@ EXPECTED_NOTEBOOKS = [
     "NB_02_Silver_Transform",
     "NB_03_Gold_Build",
     "NB_RTI_01_Ingest_Claims_Stream",
+    "NB_RTI_02_PA_Latency",
+    "NB_RTI_03_ADT_Outreach",
+    "NB_RTI_04_SIU_Intake_Scoring",
 ]
 
 
