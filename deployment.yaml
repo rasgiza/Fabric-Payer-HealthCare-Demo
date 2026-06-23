@@ -88,9 +88,9 @@ spec:
   optionalItems:
     - eh_payer_rt.Eventhouse              # C.1
     - kqldb_payer_rt.KQLDatabase          # C.1
-    - NB_RTI_01_Ingest_Claims_Stream.Notebook  # C.2 (planned)
+    - es_claims_arrivals.Eventstream           # C.2
+    - NB_RTI_01_Ingest_Claims_Stream.Notebook  # C.2
     - NB_RTI_02_PA_Latency.Notebook            # C.3 (planned, UM persona)
     - NB_RTI_03_ADT_Outreach.Notebook          # C.3 (planned, CareMgmt persona)
     - NB_RTI_04_SIU_Intake_Scoring.Notebook    # C.3 (planned, SIU persona)
     - PayerOps_Activator.Reflex                # C.4 (planned)
-    - es_claims_arrivals.Eventstream           # C.2 (planned)

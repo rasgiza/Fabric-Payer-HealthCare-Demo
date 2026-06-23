@@ -59,6 +59,12 @@ find_replace:
       staging: "$NB_03_GOLD_BUILD_STAGING"
       prod:    "$NB_03_GOLD_BUILD_PROD"
 
+  - find_value: "b3000003-0001-0001-0001-000000000005"   # NB_RTI_01_Ingest_Claims_Stream logicalId
+    replace_value:
+      dev:     "$NB_RTI_01_INGEST_CLAIMS_STREAM_DEV"
+      staging: "$NB_RTI_01_INGEST_CLAIMS_STREAM_STAGING"
+      prod:    "$NB_RTI_01_INGEST_CLAIMS_STREAM_PROD"
+
   - find_value: "b3000003-0001-0001-0001-000000000099"   # Healthcare_Launcher logicalId
     replace_value:
       dev:     "$HEALTHCARE_LAUNCHER_DEV"
@@ -149,6 +155,13 @@ find_replace:
       dev:     "$KQLDB_PAYER_RT_DEV"
       staging: "$KQLDB_PAYER_RT_STAGING"
       prod:    "$KQLDB_PAYER_RT_PROD"
+
+  # ---------------- Eventstream (RTI) ----------------
+  - find_value: "08000008-0001-0001-0001-000000000001"   # es_claims_arrivals logicalId
+    replace_value:
+      dev:     "$ES_CLAIMS_ARRIVALS_DEV"
+      staging: "$ES_CLAIMS_ARRIVALS_STAGING"
+      prod:    "$ES_CLAIMS_ARRIVALS_PROD"
 
   # ---------------- Workspace ----------------
   - find_value: "<WORKSPACE_ID>"
