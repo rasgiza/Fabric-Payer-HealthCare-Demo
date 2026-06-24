@@ -57,6 +57,64 @@ Ontology → DataAgent → Eventhouse → KQLDatabase → Reflex → Eventstream
 fabric-cicd reports the inverse error, do not reorder; instead check that the
 upstream item committed in the same commit and is present on disk.
 
+> **Note (fabric-cicd 1.1.0):** the SDK has its own hard-coded publish order
+> that ignores `deployment.yaml spec.itemOrder`. We keep `itemOrder` in YAML
+> as authoritative documentation, and use `--only <Type>` to publish a single
+> slice when SDK order isn't right for a one-off re-publish.
+
+### `Data source ArtifactId cannot be an empty GUID`
+
+```
+[deploy] fabric-cicd publish failed: ... InvalidContent: Data source
+ArtifactId cannot be an empty GUID. ArtifactId: '00000000-...'
+```
+
+**Cause**: The repo source-of-truth stores `00000000-...` placeholders in every
+`<Agent>.DataAgent/Files/Config/{draft,published}/<type>-<name>/datasource.json`
+(keeps the tree portable across tenants). fabric-cicd 1.1.0 rejects empty GUIDs
+at publish time.
+
+**Fix**: `tools/deploy.py` automatically rebinds these to live workspace GUIDs
+via `tools/bind_data_agent_sources.stage_workspace()` before calling
+`publish_all_items`. The rebind reads the target workspace via Fabric REST API
+and rewrites a staged copy at `.staging/workspace/`. If you see this error,
+your active `az login` likely can't list items in the target workspace —
+verify with:
+
+```powershell
+az rest --method get --url "https://api.fabric.microsoft.com/v1/workspaces/$env:FABRIC_WORKSPACE_ID_DEV/items" --resource "https://api.fabric.microsoft.com"
+```
+
+The staged copy also removes datasource folders whose target item is absent
+(e.g. `graph-Payer_Ontology` while Ontology is in `optionalItems`).
+
+### `TMDL Format Error: InvalidLineType ... Document - './cultures/en-US'`
+
+**Cause**: Older PayerAnalytics SM revisions embedded a `linguisticMetadata`
+JSON block inside `cultures/en-US.tmdl`. The Fabric TMDL parser reads the
+JSON's `"Version": "1.0.0"` line as a malformed TMDL "Other" line type.
+
+**Fix**: keep `cultures/en-US.tmdl` minimal:
+
+```tmdl
+cultureInfo en-US
+```
+
+Fabric defaults to en-US without an explicit linguisticMetadata block.
+
+### Q&A synonyms / SM-Ontology cross-talk after parameter-replace
+
+Symptom: PayerAnalytics SM definition contains a `lineageTag` GUID that is
+byte-identical to a `Payer_Ontology` `logicalId`. fabric-cicd's parameter
+substitution treats all occurrences identically, causing wrong-target
+rewrites at publish.
+
+**Fix**: never reuse `d5...` GUIDs across item types. SM `lineageTag` values
+live entirely inside the SM TMDL and should be plain `uuid4()` — they have no
+cross-item semantics. The PayerAnalytics expression's `lineageTag` was changed
+from `d5000005-0001-0001-0001-000000000002` (collided with Ontology) to
+`d5000005-0001-0001-0001-000000000099` in v1.1.
+
 ---
 
 ## Launcher failures (`Healthcare_Launcher` Run All)
@@ -293,6 +351,15 @@ These are deliberate v1 gaps that customers must be warned about up front:
 5. **NB_00_Generate_Smoke_Data deferred.** Fresh-workspace one-click still
    requires the user to upload smoke CSVs out-of-band (see
    `python tools/run_local_etl.py --run-id smoke` flow above).
+6. **Ontology (Payer_Ontology) deferred to phase 2.** The Fabric Ontology
+   preview backend rejects fabric-cicd 1.1.0's `updateDefinition` payload
+   (`ALMOperationImportFailed`). The GA DataAgent path = SemanticModel +
+   Lakehouse (already wired); the optional graph datasource targets Ontology
+   when present. Re-enable by removing `Payer_Ontology.Ontology` from
+   `spec.optionalItems` in `deployment.yaml`. The seven DataAgents will pick
+   up the `graph-Payer_Ontology` datasource on the next
+   `tools/deploy.py --confirm` run; `tools/bind_data_agent_sources.py`
+   automatically resolves Ontology GUIDs once it appears in the workspace.
 
 ---
 

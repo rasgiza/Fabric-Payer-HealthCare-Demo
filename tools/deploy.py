@@ -157,6 +157,23 @@ def _apply_only_filter(
     return {only: items[only]}, [only]
 
 
+def _apply_skip_optional_filter(
+    items: dict[str, list[str]],
+    manifest: dict,
+) -> dict[str, list[str]]:
+    """Drop items listed under spec.optionalItems (e.g. RTI scaffolds without
+    definition files)."""
+    optional = set(manifest["spec"].get("optionalItems") or [])
+    if not optional:
+        return items
+    filtered: dict[str, list[str]] = {}
+    for kind, names in items.items():
+        kept = [n for n in names if f"{n}.{kind}" not in optional]
+        if kept:
+            filtered[kind] = kept
+    return filtered
+
+
 def _render_preview(manifest: dict, items: dict[str, list[str]], workspace_id: str) -> None:
     print("=" * 72)
     print(f"[deploy] DRY RUN — workspace_id={workspace_id}")
@@ -334,12 +351,18 @@ def _publish(
     if publish_cls is None:
         sys.exit("[deploy] fabric-cicd: FabricWorkspace not found — SDK version mismatch?")
 
+    # Rebind DataAgent datasource.json files in a staging copy of workspace/.
+    # Repo source-of-truth keeps zero-GUID placeholders (portable across tenants);
+    # fabric-cicd reads from the staged copy with live workspace+item GUIDs.
+    from bind_data_agent_sources import stage_workspace  # noqa: PLC0415
+    repository_directory = str(stage_workspace(workspace_id))
+
     # fabric-cicd v1.0.0 removed implicit credential fallback; an explicit
     # token_credential is now mandatory. DefaultAzureCredential covers az login,
     # CI service principals (AZURE_CLIENT_ID/SECRET), and workspace MSI.
     ws = publish_cls(
         workspace_id=workspace_id,
-        repository_directory=str(WORKSPACE_DIR),
+        repository_directory=repository_directory,
         item_type_in_scope=item_order,
         environment=env,
         token_credential=identity.DefaultAzureCredential(),
@@ -376,6 +399,12 @@ def main(argv: list[str] | None = None) -> int:
              "Useful for re-publishing just one slice after a rebind.",
     )
     p.add_argument(
+        "--skip-optional",
+        action="store_true",
+        help="Skip items listed under spec.optionalItems in deployment.yaml "
+             "(e.g. RTI scaffolds that need definition files before re-publish).",
+    )
+    p.add_argument(
         "--explain",
         action="store_true",
         help="Print, per parameter.yml rule, what it resolves to for the chosen --env. "
@@ -404,7 +433,13 @@ def main(argv: list[str] | None = None) -> int:
     manifest = _load_manifest()
     items = _discover_items()
     _validate(manifest, items)
+    if args.skip_optional:
+        items = _apply_skip_optional_filter(items, manifest)
     items, item_order = _apply_only_filter(items, manifest["spec"]["itemOrder"], args.only)
+    # Drop item types from scope when no items of that type remain after filtering
+    # — fabric-cicd's publish_all_items scans repository_directory directly and
+    # would otherwise still try to publish skipped items.
+    item_order = [t for t in item_order if t in items]
 
     workspace_id = (
         "<dry-run-placeholder>" if args.dry_run else _resolve_workspace_id(manifest, args.env)

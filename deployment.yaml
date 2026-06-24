@@ -35,10 +35,10 @@ spec:
     - Environment
     - Notebook
     - DataPipeline
-    - SemanticModel
+    - SemanticModel   # PayerAnalytics (Direct Lake over lh_gold_curated)
     - Report
-    - Ontology        # Payer_Ontology (B.2) — must publish before DataAgent
-    - DataAgent       # 7 agents bind to Lakehouse + SemanticModel + Ontology
+    - DataAgent       # 7 agents bind to SemanticModel + Lakehouse (GA). Optional graph datasource targets Ontology (phase 2 — see optionalItems)
+    - Ontology        # Payer_Ontology (B.2) — phase 2 / preview; ships as opt-in via optionalItems
     - Eventhouse
     - KQLDatabase
     - Reflex          # Activator
@@ -86,6 +86,7 @@ spec:
   # The other 4 personas (CFO, Stars, RA, Network) are batch by nature and
   # would be demo theater in an RTI surface. See docs/ARCHITECTURE.md.
   optionalItems:
+    - Payer_Ontology.Ontology                  # B.2 phase 2 (preview) — GA path = SemanticModel + Lakehouse; opt in once tenant has Ontology preview enabled
     - eh_payer_rt.Eventhouse              # C.1
     - kqldb_payer_rt.KQLDatabase          # C.1
     - es_claims_arrivals.Eventstream           # C.2
