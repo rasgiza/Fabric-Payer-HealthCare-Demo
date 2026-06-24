@@ -181,6 +181,23 @@ def build_hosted_agent_payload(agent_dir: Path) -> dict:
     }
     if "api_version" in foundry_cfg:
         payload["api_version"] = foundry_cfg["api_version"]
+
+    # D.2 observability: when APPLICATIONINSIGHTS_CONNECTION_STRING is set, attach
+    # the App Insights connection + OTel resource attributes so the Foundry
+    # runtime emits traces/metrics tagged with this agent's name. The env var
+    # carries a secret so we never persist it on disk; we only mark the
+    # attachment intent + resource-attrs in the payload.
+    ai_conn = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
+    if ai_conn:
+        payload["application_insights"] = {
+            "connection_string_env": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            "otel_resource_attributes": {
+                "service.name": spec["agent"],
+                "service.namespace": "fabric-payer-demo",
+                "deployment.environment": os.environ.get("FABRIC_ENV", "dev"),
+                "ai.agent.kind": spec["kind"],
+            },
+        }
     return payload
 
 

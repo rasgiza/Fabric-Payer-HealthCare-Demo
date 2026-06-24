@@ -1,0 +1,74 @@
+{
+  "version": "Notebook/1.0",
+  "$schema": "https://aka.ms/AzureMonitor/Workbook/schema",
+  "description": "PAReviewCopilot.HostedAgent observability workbook (Stream D.2). Wired by tools/deploy_data_agents.py when APPLICATIONINSIGHTS_CONNECTION_STRING is set; service.name='PAReviewCopilot' filters the queries.",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# PAReviewCopilot.HostedAgent\nUM-reviewer PA decision support. **Adjudication-adjacent, not adjudicative** \u2014 the recommendation enum is locked to `prepare_approval`, `prepare_denial_for_md_review`, `request_more_info`, `escalate_to_md`.\n\nGovernance: phi_minimization=required, decision_authority=deny (Copilot does NOT close cases), audit_log=required. CMS-0057-F policy pointers required on approve/deny envelopes."
+      }
+    },
+    {
+      "type": 3,
+      "name": "kpi_invocations",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests | where cloud_RoleName == 'PAReviewCopilot' | summarize Invocations = count(), P50_ms = percentile(duration, 50), P95_ms = percentile(duration, 95), P99_ms = percentile(duration, 99) by bin(timestamp, 5m) | render timechart",
+        "size": 0,
+        "title": "Invocations & latency (p50/p95/p99)",
+        "timeContext": {"durationMs": 86400000},
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      }
+    },
+    {
+      "type": 3,
+      "name": "tool_call_success",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies | where cloud_RoleName == 'PAReviewCopilot' and name in ('get_pa_packet','lookup_policy_citation','ask_um_agent','ask_risk_agent') | summarize Calls = count(), Failures = countif(success == false), SuccessRate = round(100.0 * countif(success == true) / count(), 2) by name | order by Calls desc",
+        "size": 0,
+        "title": "Tool-call success rate (4 tools)",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      }
+    },
+    {
+      "type": 3,
+      "name": "recommendation_mix",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents | where cloud_RoleName == 'PAReviewCopilot' and name == 'agent_response' | extend recommendation = tostring(customDimensions.recommendation) | summarize Count = count() by recommendation | order by Count desc",
+        "size": 0,
+        "title": "Recommendation mix (approval / RMI / deny-for-MD / escalate)",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      }
+    },
+    {
+      "type": 3,
+      "name": "policy_citation_attached",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents | where cloud_RoleName == 'PAReviewCopilot' and name == 'agent_response' | extend recommendation = tostring(customDimensions.recommendation), citations = tostring(customDimensions.regulatory_pointers) | where recommendation in ('prepare_approval','prepare_denial_for_md_review') | summarize Total = count(), MissingCMS0057F = countif(citations !has 'CMS-0057-F') by bin(timestamp, 1h) | render timechart",
+        "size": 0,
+        "title": "CMS-0057-F citation discipline (must be attached to approve/deny)",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      }
+    },
+    {
+      "type": 3,
+      "name": "errors",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "exceptions | where cloud_RoleName == 'PAReviewCopilot' | summarize Errors = count() by type, outerMessage | top 20 by Errors desc",
+        "size": 0,
+        "title": "Top 20 errors",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      }
+    }
+  ]
+}
