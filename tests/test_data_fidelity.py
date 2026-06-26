@@ -50,6 +50,7 @@ def test_fidelity_returns_expected_check_set(fidelity_checks: list[data_fidelity
         "rx_quantity_doses_realism",
         "pa_fill_consistency",
         "hrrp_cohort_from_dx",
+        "ontology_binding_kinds",
     }
     actual = {c.name for c in fidelity_checks}
     assert actual == expected, f"check inventory drift: missing={expected - actual}, extra={actual - expected}"

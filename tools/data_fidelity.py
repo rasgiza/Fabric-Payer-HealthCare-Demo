@@ -476,6 +476,62 @@ def check_hrrp_cohort_from_dx(d: dict[str, pd.DataFrame]) -> Check:
                  f"{rate:.2%} of {len(merged)} readmits have cohort consistent with dx (floor 70%)")
 
 
+# Phase 2 (G.2): static ontology spec check — every entity declares a
+# recognized binding_kind, and the source prefix matches the kind. Catches
+# drift the moment someone adds an entity whose source is mistyped or whose
+# binding_kind contradicts its source.
+_RECOGNIZED_KINDS = {"lakehouse_table", "kql_table", "sm_measure"}
+_KIND_PREFIXES = {
+    "lakehouse_table": ("bronze_", "silver_", "gold_"),
+    "kql_table":       ("kql_",),
+    "sm_measure":      ("sm_",),
+}
+
+
+def check_ontology_binding_kinds(d: dict[str, pd.DataFrame]) -> Check:
+    """Validate ontology/payer_ontology.yaml: each entity declares a recognized
+    binding_kind (default lakehouse_table) and its `source:` prefix matches.
+
+    Locks the Phase 2 G.2 contract that three binding kinds exist
+    (lakehouse_table, kql_table, sm_measure) and prevents an entity from
+    drifting to an unbacked or mis-prefixed source — which would silently
+    break audit_rels.py and any downstream graph build / FabricIQPreviewTool
+    wiring.
+    """
+    import yaml as _yaml
+    ont_path = Path(__file__).resolve().parent.parent / "ontology" / "payer_ontology.yaml"
+    if not ont_path.exists():
+        return Check("ontology_binding_kinds", False, f"missing {ont_path}")
+    onto = _yaml.safe_load(ont_path.read_text(encoding="utf-8"))
+    ents = onto.get("entities") or {}
+    errors: list[str] = []
+    kind_tally: dict[str, int] = {k: 0 for k in _RECOGNIZED_KINDS}
+    for name, spec in ents.items():
+        kind = (spec or {}).get("binding_kind") or "lakehouse_table"
+        src = (spec or {}).get("source", "")
+        if kind not in _RECOGNIZED_KINDS:
+            errors.append(f"{name}: binding_kind={kind!r} not in {sorted(_RECOGNIZED_KINDS)}")
+            continue
+        kind_tally[kind] = kind_tally.get(kind, 0) + 1
+        allowed = _KIND_PREFIXES[kind]
+        if not any(src.startswith(p) for p in allowed):
+            errors.append(
+                f"{name}: source={src!r} does not start with any of {allowed} for binding_kind={kind!r}"
+            )
+    aliases = onto.get("entity_aliases") or {}
+    missing_aliases = sorted(set(ents) - set(aliases))
+    if missing_aliases:
+        errors.append(f"entities without aliases: {missing_aliases}")
+    if errors:
+        return Check("ontology_binding_kinds", False, " | ".join(errors))
+    summary = ", ".join(f"{k}={v}" for k, v in sorted(kind_tally.items()))
+    return Check(
+        "ontology_binding_kinds",
+        True,
+        f"{len(ents)} entities all aliased; binding kinds: {summary}",
+    )
+
+
 def run_all(run_dir: Path) -> list[Check]:
     d = _load(run_dir)
     checks = [
@@ -501,6 +557,7 @@ def run_all(run_dir: Path) -> list[Check]:
         check_rx_quantity_doses_realism(d),
         check_pa_fill_consistency(d),
         check_hrrp_cohort_from_dx(d),
+        check_ontology_binding_kinds(d),
     ]
     return checks
 

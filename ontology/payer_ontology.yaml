@@ -35,6 +35,30 @@ entities:
   CARC:             { source: silver_claims_header,   pk: carc_code, distinct: true }
   SDOHArea:         { source: gold_dim_member,        pk: zip3, distinct: true }
 
+  # ------------------------------------------------------------------
+  # Phase 2 (G.2) extensions
+  # ------------------------------------------------------------------
+  # RTI / Eventhouse entities — backed by kqldb_payer_rt (NOT the gold
+  # lakehouse). audit_rels.py skips graph-resolution for binding_kind=kql_table.
+  ClaimArrivalEvent: { source: kql_rti_all_events,    pk: [event_id], binding_kind: kql_table }
+  PALatencyEvent:    { source: kql_auth_lifecycle,    pk: [auth_id, lifecycle_state, event_ts], binding_kind: kql_table }
+  AdtEncounterEvent: { source: kql_adt,               pk: [encounter_id, event_ts], binding_kind: kql_table }
+  SiuScoreEvent:     { source: kql_fraud_scores,      pk: [claim_id, scored_at], binding_kind: kql_table }
+
+  # Semantic-model measure entities — backed by PayerAnalytics SM DAX surface.
+  # audit_rels.py skips graph-resolution for binding_kind=sm_measure.
+  MeasureMLR:               { source: sm_PayerAnalytics_agg_mlr_monthly,     pk: [payer_id, plan_year, month], binding_kind: sm_measure }
+  MeasurePMPM:              { source: sm_PayerAnalytics_fact_member_month,   pk: [member_id, plan_year, month], binding_kind: sm_measure }
+  MeasureStarsCompliance:   { source: sm_PayerAnalytics_agg_stars_compliance, pk: [measure_id, plan_year, lob], binding_kind: sm_measure }
+
+  # Databricks-parity entities — backed by gold lakehouse (no new ETL
+  # required; filters / derived flags over existing fact tables).
+  Glp1Course:        { source: gold_fact_rx_claim,    pk: [member_id, course_start_date], filter: "ndc_code IN (...glp1 set...)", binding_kind: lakehouse_table }
+  OutOfNetworkClaim: { source: gold_fact_claim,       pk: claim_id, filter: "oon_flag = 1", binding_kind: lakehouse_table }
+  BidPmpmInput:      { source: gold_agg_mlr_monthly,  pk: [payer_id, plan_year, month], binding_kind: lakehouse_table }
+  PharmacyFeature:   { source: gold_agg_pdc_member_drugclass, pk: [member_id, drug_class, plan_year], binding_kind: lakehouse_table }
+  CareGapSla:        { source: gold_fact_quality_event, pk: [member_id, measure_id, plan_year], filter: "sla_breach_flag = 1", binding_kind: lakehouse_table }
+
 relationships:
   # member identity + enrollment
   - { name: hasSubscriber,     from: Member,           to: Subscriber,      via: gold_dim_member, on: [member_id, subscriber_id], built: false }
@@ -80,4 +104,72 @@ relationships:
   # SIU / FWA traversal
   - { name: providerToReferral, from: Provider,        to: Provider,        via: gold_fact_claim, on: [provider_npi], synthetic: true, comment: "computed via member co-visit graph in Phase 6" }
 
-# total: 25 entities, 27 first-class relationships (+ 1 synthetic provider-referral edge built in Phase 6)
+  # ------------------------------------------------------------------
+  # Phase 2 (G.2) relationships — bridge the new entity kinds back to
+  # the lakehouse-resident core so a graph traversal that starts at a
+  # Member can reach an RTI event, an SM measure, or a parity entity.
+  # All edges below are `built: false` because they cross binding_kinds
+  # (no single SQL join can resolve them). audit_rels.py treats them
+  # as deferred (Phase 3 wiring).
+  # ------------------------------------------------------------------
+  - { name: claimArrived,       from: Claim,            to: ClaimArrivalEvent,      via: kql_rti_all_events,    on: [claim_id, event_id],     built: false }
+  - { name: authHasLatencyEvent, from: Authorization,   to: PALatencyEvent,         via: kql_auth_lifecycle,    on: [auth_id],                built: false }
+  - { name: memberHadAdt,       from: Member,           to: AdtEncounterEvent,      via: kql_adt,               on: [member_id, encounter_id],built: false }
+  - { name: claimSiuScored,     from: Claim,            to: SiuScoreEvent,          via: kql_fraud_scores,      on: [claim_id, scored_at],    built: false }
+  - { name: payerHasMlrMeasure, from: Payer,            to: MeasureMLR,             via: sm_PayerAnalytics_agg_mlr_monthly,     on: [payer_id, plan_year, month],     built: false }
+  - { name: memberHasPmpm,      from: Member,           to: MeasurePMPM,            via: sm_PayerAnalytics_fact_member_month,   on: [member_id, plan_year, month],    built: false }
+  - { name: lobHasStarsMeasure, from: LOB,              to: MeasureStarsCompliance, via: sm_PayerAnalytics_agg_stars_compliance, on: [lob_id, measure_id, plan_year], built: false }
+  - { name: memberOnGlp1Course, from: Member,           to: Glp1Course,             via: gold_fact_rx_claim,    on: [member_id, course_start_date], built: false }
+  - { name: claimIsOutOfNetwork, from: Claim,           to: OutOfNetworkClaim,      via: gold_fact_claim,       on: [claim_id],               built: false }
+  - { name: payerHasBidInput,   from: Payer,            to: BidPmpmInput,           via: gold_agg_mlr_monthly,  on: [payer_id, plan_year, month], built: false }
+  - { name: memberHasPharmacyFeature, from: Member,     to: PharmacyFeature,        via: gold_agg_pdc_member_drugclass, on: [member_id, drug_class, plan_year], built: false }
+  - { name: qualityEventHasSlaBreach, from: QualityEvent, to: CareGapSla,           via: gold_fact_quality_event, on: [member_id, measure_id, plan_year], built: false }
+
+# total: 36 entities (24 core + 12 G.2), 39 first-class relationships + 1 synthetic.
+# Binding kinds used (audit_rels.py is aware of all three):
+#   lakehouse_table  — bronze/silver/gold Delta. Default for un-annotated entities.
+#   kql_table        — kqldb_payer_rt Eventhouse (RTI lane). Skipped in graph build.
+#   sm_measure       — PayerAnalytics SM DAX surface. Skipped in graph build.
+
+# ---------------------------------------------------------------------
+# Aliases — synonyms the Foundry IQ KB + Fabric IQ data-agent surface
+# accept for each entity. Keep lower-case + space-separated for case-
+# insensitive matching at the agent layer.
+# ---------------------------------------------------------------------
+entity_aliases:
+  Member:                   [beneficiary, enrollee, patient, subscriber dependent, life]
+  Subscriber:               [policyholder, primary insured, certificate holder]
+  EligibilitySpan:          [enrollment span, coverage period, member month band]
+  Plan:                     [benefit plan, contract benefit, plan design]
+  Product:                  [contract product, plan product, lob product]
+  LOB:                      [line of business, plan type, market segment]
+  Payer:                    [health plan, insurer, carrier, mco]
+  Provider:                 [practitioner, clinician, treating provider, billing provider, npi]
+  Claim:                    [medical claim, professional claim, institutional claim, encounter claim]
+  ClaimLine:                [claim service line, service line, line item]
+  RxClaim:                  [pharmacy claim, rx fill, prescription claim, drug claim]
+  Authorization:            [prior auth, pa, preauthorization, precertification, service auth]
+  Appeal:                   [member appeal, provider appeal, dispute, grievance]
+  Diagnosis:                [dx, icd code, condition code, primary dx]
+  Procedure:                [cpt, hcpcs, service code, procedure code]
+  Drug:                     [ndc, medication, pharmaceutical, rx product]
+  HCC:                      [hierarchical condition category, v28 hcc, raf condition]
+  Condition:                [clinical condition, chronic condition, member condition]
+  HEDISMeasure:             [quality measure, stars measure, ncqa measure, hedis my2026]
+  QualityEvent:             [hedis numerator hit, quality numerator event, gap closure]
+  Premium:                  [premium payment, plan premium, monthly premium]
+  RAFScore:                 [raf, risk adjustment factor, member raf, plan raf]
+  CARC:                     [claim adjustment reason code, denial reason code, x12 carc]
+  SDOHArea:                 [zip3, geographic area, social determinant area, sdoh region]
+  ClaimArrivalEvent:        [rti claim event, claim arrival, eventhouse claim envelope]
+  PALatencyEvent:           [pa latency snapshot, pa sla event, auth lifecycle event]
+  AdtEncounterEvent:        [adt event, admit/discharge/transfer, ed admit event, inpatient admit event]
+  SiuScoreEvent:            [fraud score event, siu suspect score, rti fraud score]
+  MeasureMLR:               [mlr measure, medical loss ratio measure, mlr rebate measure]
+  MeasurePMPM:              [pmpm measure, per member per month measure, cost pmpm]
+  MeasureStarsCompliance:   [stars compliance measure, cms stars compliance, measure-level star]
+  Glp1Course:                [glp1 starter course, glp-1 therapy course, glp1 utilization course]
+  OutOfNetworkClaim:        [oon claim, out-of-network claim, nsa eligible claim, balance bill candidate]
+  BidPmpmInput:             [bid pmpm input, mlr-based bid input, bid analytic input]
+  PharmacyFeature:          [pharmacy adherence feature, pdc feature, member-drug feature]
+  CareGapSla:               [care gap sla breach, gap closure sla, quality gap sla]

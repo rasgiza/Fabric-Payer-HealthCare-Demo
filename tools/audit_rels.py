@@ -25,6 +25,18 @@ def main() -> int:
     onto = yaml.safe_load(Path(args.ontology).read_text())
     declared_rels = {r["name"]: (r["from"], r["to"]) for r in onto["relationships"]}
 
+    # Entities backed by non-lakehouse sources (kql_table / sm_measure)
+    # are not in the built networkx graph; their relationships are deferred
+    # to Phase 3 cross-binding wiring. Skip them from the graph-resolution
+    # check so the gate only blocks on real lakehouse drift.
+    entity_kind = {
+        name: (spec.get("binding_kind") or "lakehouse_table")
+        for name, spec in onto["entities"].items()
+    }
+    non_lakehouse_entities = {
+        name for name, kind in entity_kind.items() if kind != "lakehouse_table"
+    }
+
     gpath = ROOT / "data" / "graph" / args.run_id / "payer_graph.gpickle"
     if not gpath.exists():
         print(f"[audit] missing graph {gpath}", file=sys.stderr)
@@ -75,14 +87,27 @@ def main() -> int:
         print("\n  declared relationships with 0 edges in graph:")
         for r in declared_missing:
             spec = next((x for x in onto["relationships"] if x["name"] == r), {})
+            endpoints = (spec.get("from"), spec.get("to"))
+            non_lakehouse_hit = any(e in non_lakehouse_entities for e in endpoints)
             if spec.get("synthetic"):
                 tag = "(synthetic - Phase 6)"
+            elif non_lakehouse_hit:
+                tag = "(cross-binding - kql/sm endpoint, Phase 3 wiring)"
             elif not spec.get("built", True):
                 tag = "(built: false - Phase 7 deploy only)"
             else:
                 tag = "(MISSING)"
                 total_violations += 1
             print(f"    - {r} {tag}")
+
+    # Binding-kind summary for human review.
+    print()
+    print("  binding-kind summary (entity count):")
+    kind_counts: dict[str, int] = {}
+    for kind in entity_kind.values():
+        kind_counts[kind] = kind_counts.get(kind, 0) + 1
+    for kind in sorted(kind_counts):
+        print(f"    {kind:18s} {kind_counts[kind]:>3d}")
 
     print()
     if total_violations == 0:
