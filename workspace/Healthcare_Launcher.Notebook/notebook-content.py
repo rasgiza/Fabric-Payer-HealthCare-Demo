@@ -102,6 +102,7 @@ if UPLOAD_KNOWLEDGE_DOCS:
         "kff_high_cost_methodology.md",
         "nhcaa_fraud_schemes.md",
         "oig_radv_audit_guidance.md",
+        "onelake_security_model.md",
         "policy_citation_pattern.md",
         "README.md",
         "rti_ops_runbook.md",
