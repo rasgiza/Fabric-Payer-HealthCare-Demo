@@ -57,12 +57,14 @@ def test_tool_stubs_match_schema(tool_schemas: list[dict]) -> None:
         get_emergency_admit_worklist,
         get_pa_latency_window,
         get_siu_suspect_claims,
+        query_fabric_iq,
     )
 
     impls = {
         "get_pa_latency_window":        get_pa_latency_window.get_pa_latency_window,
         "get_emergency_admit_worklist": get_emergency_admit_worklist.get_emergency_admit_worklist,
         "get_siu_suspect_claims":       get_siu_suspect_claims.get_siu_suspect_claims,
+        "query_fabric_iq":              query_fabric_iq.query_fabric_iq,
     }
     for schema in tool_schemas:
         name = schema["name"]
@@ -120,6 +122,22 @@ def test_get_siu_suspect_claims_validates() -> None:
         get_siu_suspect_claims(60, 1.5)
 
 
+def test_query_fabric_iq_validates() -> None:
+    from tools.foundry_tools.query_fabric_iq import query_fabric_iq
+
+    out = query_fabric_iq("what is current PA latency?", scope="all")
+    forbidden = {"member_id", "member_hash", "provider_id", "auth_id", "claim_id"}
+    leak = forbidden & set(out.keys())
+    assert not leak, f"PHI leak in query_fabric_iq response: {leak}"
+    assert out["scope"] == "all"
+    assert set(out["surfaces_consulted"]) == {"ontology", "data_agent", "semantic_model"}
+    assert "answer_envelope" in out and "citations" in out
+    with pytest.raises(ValueError, match="question"):
+        query_fabric_iq("", scope="all")
+    with pytest.raises(ValueError, match="scope"):
+        query_fabric_iq("x", scope="bogus")
+
+
 def test_delegating_tools_resolve_to_existing_dataagents(agent_yaml: dict) -> None:
     """`ask_um_agent` -> UMAgent, `ask_care_mgmt_agent` -> CareMgmtAgent,
     `ask_siu_agent` -> SIUAgent. All three upstream DataAgents must exist
@@ -173,7 +191,7 @@ def test_build_hosted_agent_payload_shape() -> None:
     assert payload["governance"]["phi_minimization"] == "required"
     assert payload["governance"]["decision_authority"] == "deny"
     assert payload["governance"]["audit_log"] == "required"
-    assert len(payload["tools"]) == 6  # 3 KQL + 3 delegating
+    assert len(payload["tools"]) == 7  # 3 KQL + 3 delegating + 1 FabricIQ wrapper (Phase 3 G.3)
     assert payload["structured_output"]["schema"]["title"] == "RTIOpsEnvelope"
     assert "api_version" not in payload
 

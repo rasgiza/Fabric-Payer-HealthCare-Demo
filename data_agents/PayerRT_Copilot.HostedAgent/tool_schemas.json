@@ -79,5 +79,19 @@
       "required": ["question"]
     },
     "max_items": 1
+  },
+  {
+    "type": "function",
+    "name": "query_fabric_iq",
+    "description": "Issue an ontology-grounded question to FabricIQPreviewTool. Uses the three PayerRT_Copilot connections (FabricGraph for Payer_Ontology, FabricDataAgentRouter for UM/CareMgmt/SIU routing, FabricSemanticModel for PayerAnalytics measures). Prefer this over the explicit ask_*_agent tools when the operator asks an open-ended cross-persona question; fall back to the explicit tools when the persona is already known. PHI-minimized — never returns raw member or provider identifiers.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "question": { "type": "string" },
+        "scope":    { "type": "string", "enum": ["ontology", "data_agent", "semantic_model", "all"], "description": "Which IQ surface(s) to consult. Use 'all' for cross-surface questions." }
+      },
+      "required": ["question", "scope"]
+    },
+    "max_items": 1
   }
 ]

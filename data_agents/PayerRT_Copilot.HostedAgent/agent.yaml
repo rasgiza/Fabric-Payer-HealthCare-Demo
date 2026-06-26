@@ -45,6 +45,18 @@ tools:
   type: function
   upstream_agent: SIUAgent
   max_items: 1
+- name: query_fabric_iq           # FabricIQPreviewTool wrapper (Phase 3 G.3): 3 connections — FabricGraph + FabricDataAgentRouter + FabricSemanticModel
+  type: function
+  schema: tool_schemas.json
+  fabric_iq:
+    enabled: true
+    connections:
+    - kind: FabricGraph
+      env_var: FABRIC_IQ_CONN_ONTOLOGY
+    - kind: FabricDataAgentRouter
+      env_var: FABRIC_IQ_CONN_DATA_AGENT
+    - kind: FabricSemanticModel
+      env_var: FABRIC_IQ_CONN_SEMANTIC_MODEL
 knowledge_sources:
 - payer_knowledge/cms_0057_f_pa_rule.md
 - payer_knowledge/rti_ops_runbook.md
