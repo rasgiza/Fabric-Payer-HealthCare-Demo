@@ -27,6 +27,16 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
 
+# Audit-log run state — emitted at end of notebook into lh_gold_curated.audit_log.
+import time as _time, uuid as _uuid, os as _os
+_audit_started_at = datetime.utcnow()
+_audit_t0 = _time.perf_counter()
+_audit_run_uuid = str(_uuid.uuid4())
+_audit_run_id = globals().get("run_id", _os.environ.get("AUDIT_RUN_ID", "auto"))
+_audit_pipeline = _os.environ.get("AUDIT_PIPELINE", "PL_Payer_Master")
+_audit_user = _os.environ.get("USER") or _os.environ.get("USERNAME") or "unknown"
+_audit_git_sha = _os.environ.get("GIT_SHA")
+
 # Fabric Spark + Delta tuning — mirrors NB_01/02. Gold tables back Direct Lake
 # in PayerAnalytics.SemanticModel and ground the 9 Foundry data agents; V-Order
 # is non-negotiable here or DL falls back to DirectQuery.
@@ -309,3 +319,56 @@ for t in _ALL_GOLD:
 print(f"[gold] VACUUM complete for {len(_ALL_GOLD)} tables")
 
 print("[gold] PASS — 35 tables in lh_gold_curated (10 dims + 16 facts + 9 aggs)")
+
+# METADATA **{"language":"python"}**
+
+# CELL **{"language":"python"}**
+
+# Audit-log emit — see NB_01 for full doc. The default lakehouse here IS
+# lh_gold_curated so the table name is unqualified.
+from pyspark.sql.types import (
+    IntegerType, LongType, StringType, StructField, StructType, TimestampType,
+)
+
+_audit_completed_at = datetime.utcnow()
+_audit_duration_ms = int((_time.perf_counter() - _audit_t0) * 1000)
+
+_audit_rowcount_out = 0
+for _t in _ALL_GOLD:
+    _audit_rowcount_out += spark.sql(f"SELECT COUNT(*) AS n FROM {_t}").collect()[0]["n"]
+_audit_table_count = len(_ALL_GOLD)
+
+_AUDIT_SCHEMA = StructType([
+    StructField("audit_id", StringType(), False),
+    StructField("run_id", StringType(), False),
+    StructField("pipeline", StringType(), False),
+    StructField("layer", StringType(), False),
+    StructField("stage_name", StringType(), False),
+    StructField("rowcount_in", LongType(), True),
+    StructField("rowcount_out", LongType(), True),
+    StructField("table_count", IntegerType(), True),
+    StructField("duration_ms", LongType(), True),
+    StructField("status", StringType(), False),
+    StructField("error_msg", StringType(), True),
+    StructField("started_at", TimestampType(), False),
+    StructField("completed_at", TimestampType(), False),
+    StructField("user_principal", StringType(), True),
+    StructField("git_sha", StringType(), True),
+])
+
+_audit_df = spark.createDataFrame([(
+    _audit_run_uuid, _audit_run_id, _audit_pipeline, "gold", "NB_03_Gold_Build",
+    None, _audit_rowcount_out, _audit_table_count, _audit_duration_ms,
+    "success", None, _audit_started_at, _audit_completed_at,
+    _audit_user, _audit_git_sha,
+)], _AUDIT_SCHEMA)
+
+try:
+    (_audit_df.write
+        .mode("append")
+        .format("delta")
+        .option("mergeSchema", "true")
+        .saveAsTable("audit_log"))
+    print(f"[gold] audit_log row appended (run={_audit_run_uuid[:8]} rows={_audit_rowcount_out} dur_ms={_audit_duration_ms})")
+except Exception as e:
+    print(f"[gold] WARN audit_log write failed: {type(e).__name__}: {e}")

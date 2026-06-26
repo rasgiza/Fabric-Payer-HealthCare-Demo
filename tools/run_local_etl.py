@@ -434,13 +434,54 @@ def main() -> int:
     out = LAKE / args.run_id
     print(f"[etl] {src} -> {out}")
 
+    # Lazy import so audit_log stays optional for users who patch this file.
+    from audit_log import audit_stage  # noqa: PLC0415
+
     con = duckdb.connect(":memory:")
     print("[etl] bronze...")
-    bronze(con, src, out / "bronze")
+    with audit_stage(args.run_id, "local_etl", "bronze", "run_local_etl.bronze") as a:
+        bronze(con, src, out / "bronze")
+        a.rowcount_out = int(con.execute(
+            "SELECT SUM(c) FROM (" + " UNION ALL ".join(
+                f"SELECT COUNT(*) AS c FROM bronze_{t}" for t in BRONZE_TABLES
+            ) + ")"
+        ).fetchone()[0] or 0)
+        a.table_count = len(BRONZE_TABLES)
+
     print("[etl] silver...")
-    silver(con, out / "silver")
+    with audit_stage(args.run_id, "local_etl", "silver", "run_local_etl.silver") as a:
+        silver(con, out / "silver")
+        # Count by scanning what silver wrote (excluding registered bronze tables).
+        silver_names = [r[0] for r in con.execute(
+            "SELECT table_name FROM information_schema.tables "
+            "WHERE table_name LIKE 'silver_%'"
+        ).fetchall()]
+        a.rowcount_in = int(con.execute(
+            "SELECT SUM(c) FROM (" + " UNION ALL ".join(
+                f"SELECT COUNT(*) AS c FROM bronze_{t}" for t in BRONZE_TABLES
+            ) + ")"
+        ).fetchone()[0] or 0)
+        a.rowcount_out = int(con.execute(
+            "SELECT SUM(c) FROM (" + " UNION ALL ".join(
+                f"SELECT COUNT(*) AS c FROM {n}" for n in silver_names
+            ) + ")"
+        ).fetchone()[0] or 0)
+        a.table_count = len(silver_names)
+
     print("[etl] gold...")
-    gold(con, out / "gold")
+    with audit_stage(args.run_id, "local_etl", "gold", "run_local_etl.gold") as a:
+        gold(con, out / "gold")
+        gold_names = [r[0] for r in con.execute(
+            "SELECT table_name FROM information_schema.tables "
+            "WHERE table_name LIKE 'gold_%'"
+        ).fetchall()]
+        a.rowcount_out = int(con.execute(
+            "SELECT SUM(c) FROM (" + " UNION ALL ".join(
+                f"SELECT COUNT(*) AS c FROM {n}" for n in gold_names
+            ) + ")"
+        ).fetchone()[0] or 0)
+        a.table_count = len(gold_names)
+
     fails = smoke_checks(con)
     if fails:
         print(f"\n[etl] FAIL - {fails} check(s)")
