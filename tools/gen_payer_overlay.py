@@ -36,6 +36,46 @@ PRODUCT_MIX_BY_LOB = {
 STATE_MIX = {"TX": 0.25, "FL": 0.22, "CA": 0.22, "NY": 0.18, "MI": 0.13}
 RACE_MIX = {"White": 0.58, "Black": 0.14, "Hispanic": 0.18, "Asian": 0.06, "Other": 0.04}
 
+# USPS zip3 ranges per state (inclusive). Sampling from these bands instead of
+# random 100-999 makes member.state ↔ member.zip3 consistent for geo analytics.
+STATE_ZIP3_BANDS = {
+    "TX": [(750, 799), (770, 779), (780, 789)],
+    "FL": [(320, 349)],
+    "CA": [(900, 961)],
+    "NY": [(100, 149)],
+    "MI": [(480, 499)],
+}
+
+# Real-world CARC concentration. Top-5 codes typically cover ~55% of denials.
+# Reference distribution synthesized from public OIG/CMS denial analyses; the
+# long tail beyond top-10 picks up the remaining codes in carc_codes.csv at
+# uniform weight. Tighten with payer-specific weights in production overlays.
+CARC_REAL_WEIGHTS = {
+    "50":  0.22,  # Non-covered services — not medically necessary
+    "97":  0.13,  # Benefit included in payment of another service
+    "16":  0.10,  # Lacks information or has billing error
+    "1":   0.09,  # Deductible amount
+    "45":  0.07,  # Charge exceeds fee schedule
+    "18":  0.05,  # Exact duplicate
+    "204": 0.05,  # Service not covered under patient's plan
+    "96":  0.04,  # Non-covered charges
+    "29":  0.03,  # Time limit for filing expired
+    "27":  0.02,  # Expenses incurred after coverage terminated
+}
+
+# Doses per day per drug class. quantity_dispensed = days_supply × doses/day
+# rounded to nearest pack size. Captures real pharmacy realism: most chronic
+# meds are once-daily (qty == days_supply); metformin is BID (qty = 2×);
+# GLP-1 is weekly injection (qty = days/7 pens); specialty biologics q2w.
+DRUG_DOSES_PER_DAY = {
+    "MAH-PDC":       1.0,    # antihypertensive — once daily
+    "MAD-PDC":       2.0,    # diabetes (metformin BID dominant)
+    "MAC-PDC":       1.0,    # statin — once daily
+    "SPC-PDC":       1.0,    # antipsychotic — once daily
+    "GLP1":          1/7,    # once weekly pen
+    "SPECIALTY-IMM": 1/14,   # biologic q2w injection
+}
+
 PCP_SPECIALTIES = ["Family Medicine", "Internal Medicine", "Pediatrics", "Geriatrics"]
 SPECIALIST_SPECIALTIES = ["Cardiology", "Endocrinology", "Nephrology", "Pulmonology",
                           "Oncology", "Psychiatry", "Orthopedics", "Neurology",
@@ -168,6 +208,16 @@ def gen_members(cfg: GenConfig, rng: np.random.Generator, ref: dict) -> pd.DataF
     member_ids = [f"M{1_000_000 + i:08d}" for i in range(n)]
     plan_year = cfg.start_year
 
+    # Geo-realistic zip3: pick a band for the member's state and sample within it.
+    def _zip3_for(st: str) -> str:
+        bands = STATE_ZIP3_BANDS.get(st)
+        if not bands:
+            return f"{rng.integers(100, 1000):03d}"
+        lo, hi = bands[int(rng.integers(0, len(bands)))]
+        return f"{rng.integers(lo, hi + 1):03d}"
+
+    zip3 = [_zip3_for(s) for s in state]
+
     # CMS Health Equity Index cohort eligibility (low-income subsidy / dual-eligible
     # OR disability). LIS/DE share is high in Dual and Medicaid, low in Commercial.
     lis_de_flag = np.array([
@@ -190,7 +240,7 @@ def gen_members(cfg: GenConfig, rng: np.random.Generator, ref: dict) -> pd.DataF
         "sex": sex,
         "age_at_year_end": age,
         "dob_year": [d.year for d in dob],
-        "zip3": [f"{rng.integers(100, 1000):03d}" for _ in range(n)],
+        "zip3": zip3,
         "payer_id": payer_ids,
         "plan_id": [f"PLN-{p[-3:]}-{i % 8 + 1:02d}" for i, p in enumerate(products)],
         "pcp_provider_id": [f"PRV-{rng.integers(10000, 99999)}" for _ in range(n)],
@@ -295,11 +345,52 @@ def gen_conditions(rng: np.random.Generator, members: pd.DataFrame, ref: dict) -
 def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                providers: pd.DataFrame, conditions: pd.DataFrame, ref: dict):
     carc = ref["carc"]
+    # Real-world CARC weighting: assigned weights from CARC_REAL_WEIGHTS for the
+    # top codes; long tail gets a tiny uniform weight so it can still show up.
+    carc_codes_list = carc["carc_code"].astype(str).tolist()
+    carc_weights = np.array([
+        CARC_REAL_WEIGHTS.get(str(c), 0.005) for c in carc_codes_list
+    ])
+    carc_weights = carc_weights / carc_weights.sum()
+
     pcp_ids = providers[providers["is_pcp"]]["provider_npi"].tolist() or providers["provider_npi"].tolist()
     spec_ids = providers[~providers["is_pcp"]]["provider_npi"].tolist() or providers["provider_npi"].tolist()
 
+    # Companion CPTs for multi-line claims. Real claims rarely come as a single
+    # line — an office visit often pairs with a lab (HbA1c, glucose, lipid panel
+    # or EKG); inpatient stays bundle room+board, drug admin, imaging, supplies.
+    OFFICE_COMPANIONS  = ["82947", "83036", "80061", "93000", "97110"]
+    ED_COMPANIONS      = ["93000", "70551", "97110"]
+    INPATIENT_COMPANIONS = ["83036", "80061", "93000", "70551", "97110", "92012"]
+
+    def _line_count(cpt: str, is_inpatient: bool, is_ed: bool) -> int:
+        if is_inpatient: return int(rng.integers(3, 9))   # room/board + ancillaries
+        if is_ed:        return int(rng.integers(2, 5))   # E/M + imaging/supplies
+        # Higher-complexity office visits often have add-on labs
+        if cpt in ("99214", "99215", "99204"): return int(rng.integers(2, 5))
+        return int(rng.choice([1, 2, 3], p=[0.40, 0.40, 0.20]))
+
+    def _split_amount(total: float, n_parts: int) -> list[float]:
+        """Split a total across n parts using a Dirichlet draw so one line
+        dominates (the primary CPT) and ancillaries are smaller."""
+        alpha = np.concatenate([[4.0], np.full(max(n_parts - 1, 0), 1.2)])
+        weights = rng.dirichlet(alpha) if n_parts > 0 else np.array([1.0])
+        amounts = [round(float(total * w), 2) for w in weights]
+        # Fix rounding drift so lines sum exactly to header.
+        amounts[0] = round(total - sum(amounts[1:]), 2)
+        return amounts
+
     headers, lines = [], []
     member_cond_map = conditions.groupby("member_id")["condition_code"].apply(list).to_dict()
+    # condition_code → ICD-10 lookup so primary_dx_code on the claim is a real
+    # ICD-10 value (E11.9, I50.9, J44.9…) instead of an internal condition key.
+    # Real claims always carry ICD-10; HRRP cohort assignment and risk scoring
+    # downstream both key on the ICD-10 prefix.
+    cond_to_icd10 = dict(zip(
+        ref["conditions"]["condition_code"].astype(str),
+        ref["conditions"]["icd10"].astype(str),
+        strict=False,
+    ))
     claim_idx = 0
     for _, m in members.iterrows():
         mid = m["member_id"]
@@ -330,11 +421,15 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                 pos = "21" if is_inpatient else ("23" if is_ed else "11")
 
                 base = CPT_ENCOUNTER.get(cpt, ("Unknown", 100.0))[1]
-                billed = base * float(rng.uniform(1.5, 2.4))
+                # Log-normal billed amount: mean ~1.7× base with a long right
+                # tail (occasional 3-5× outliers). Real charge data is heavily
+                # right-skewed; uniform multipliers hide that and make
+                # denial/SIU analytics look artificially flat.
+                billed = base * (1.4 + float(rng.lognormal(0, 0.35)))
                 allowed = base * float(rng.uniform(0.8, 1.05))
                 denied = rng.random() < 0.135
-                carc_code = carc.sample(1, weights=[1]*len(carc),
-                                        random_state=int(rng.integers(0, 2**31)))["carc_code"].iloc[0] if denied else None
+                carc_code = (rng.choice(carc_codes_list, p=carc_weights)
+                             if denied else None)
                 if denied:
                     paid = 0.0; member_liability = 0.0
                 else:
@@ -344,6 +439,9 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
 
                 primary_dx = (rng.choice(member_conds) if member_conds and rng.random() < 0.7
                               else rng.choice(["Z00.00", "Z23", "R51", "M54.5", "J06.9"]))
+                # Translate internal condition_code → ICD-10 when applicable;
+                # leave the generic acute codes untouched (already ICD-10).
+                primary_dx = cond_to_icd10.get(primary_dx, primary_dx)
 
                 # Network status: most claims in-network; ~8% out-of-network. NSA
                 # Section 116 cost-sharing protections attach when OON AND emergent
@@ -355,13 +453,15 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                 two_midnight_flag = bool(is_inpatient and m["lob"] in ("MA", "Dual")
                                          and rng.random() < 0.82)
 
+                billed_r = round(billed, 2)
+                allowed_r = round(allowed, 2)
                 headers.append({
                     "claim_id": claim_id, "member_id": mid, "provider_npi": provider,
                     "payer_id": m["payer_id"], "plan_year": yr, "service_date": dos,
                     "claim_type": "institutional" if is_inpatient else "professional",
                     "place_of_service": pos,
                     "primary_dx_code": primary_dx,
-                    "billed_amount": round(billed, 2), "allowed_amount": round(allowed, 2),
+                    "billed_amount": billed_r, "allowed_amount": allowed_r,
                     "paid_amount": paid, "member_liability": member_liability,
                     "denied_flag": denied, "carc_code": carc_code,
                     "pa_required_flag": cpt in PA_REQUIRED_CPTS,
@@ -371,12 +471,30 @@ def gen_claims(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame,
                     "two_midnight_flag": two_midnight_flag,
                     "service_line": "inpatient" if is_inpatient else ("ed" if is_ed else "office"),
                 })
-                lines.append({
-                    "claim_id": claim_id, "line_no": 1, "cpt_hcpcs": cpt,
-                    "units": 1, "modifier": None,
-                    "billed_amount": round(billed, 2), "allowed_amount": round(allowed, 2),
-                    "paid_amount": paid,
-                })
+
+                # Multi-line emission: primary CPT on line 1, ancillaries on
+                # subsequent lines. Line billed/allowed/paid splits sum exactly
+                # to the header so line_header_consistency passes.
+                n_lines = _line_count(cpt, is_inpatient, is_ed)
+                companions_pool = (INPATIENT_COMPANIONS if is_inpatient
+                                   else ED_COMPANIONS if is_ed
+                                   else OFFICE_COMPANIONS)
+                line_cpts = [cpt] + [
+                    str(rng.choice(companions_pool)) for _ in range(n_lines - 1)
+                ]
+                billed_parts  = _split_amount(billed_r,  n_lines)
+                allowed_parts = _split_amount(allowed_r, n_lines)
+                paid_parts    = _split_amount(paid,      n_lines) if paid > 0 \
+                                else [0.0] * n_lines
+                for line_no, (lcpt, lb, la, lp) in enumerate(
+                    zip(line_cpts, billed_parts, allowed_parts, paid_parts,
+                        strict=False), start=1):
+                    lines.append({
+                        "claim_id": claim_id, "line_no": line_no, "cpt_hcpcs": lcpt,
+                        "units": 1, "modifier": None,
+                        "billed_amount": lb, "allowed_amount": la,
+                        "paid_amount": lp,
+                    })
     return pd.DataFrame(headers), pd.DataFrame(lines)
 
 
@@ -395,12 +513,17 @@ def gen_pharmacy(cfg: GenConfig, rng: np.random.Generator, members: pd.DataFrame
     def _emit_fill(mid, payer_id, klass, ndc, drug_name, unit_cost, yr, month, days_supply, prescriber):
         nonlocal rx_idx
         rx_idx += 1
+        # quantity_dispensed = days_supply * doses_per_day, rounded up to whole
+        # units (pills/pens/syringes). Captures pharmacy realism: chronic oral
+        # meds == days_supply, metformin BID == 2× days, GLP-1 weekly == ÷7.
+        dpd = DRUG_DOSES_PER_DAY.get(klass, 1.0)
+        qty = max(1, int(round(days_supply * dpd + 0.4999)))
         rows.append({
             "rx_claim_id": f"RX-{rx_idx:010d}", "member_id": mid,
             "ndc_code": ndc, "drug_name": drug_name, "drug_class": klass,
             "fill_date": date(yr, month, int(rng.integers(1, 28))),
             "days_supply": days_supply,
-            "quantity_dispensed": days_supply,
+            "quantity_dispensed": qty,
             "prescriber_npi": prescriber,
             "billed_amount": round(unit_cost * days_supply * 1.4, 2),
             "paid_amount": round(unit_cost * days_supply, 2),
@@ -710,6 +833,10 @@ def gen_readmission(rng: np.random.Generator, claims_header: pd.DataFrame) -> pd
     """30-day all-cause readmissions on HRRP cohorts [CIT:CMS-HRRP-2025].
 
     Approximated from inpatient claims; ~14.8% national baseline, varied by cohort.
+    Cohort is derived deterministically from primary_dx_code prefix (real HRRP
+    methodology). Diagnoses outside the 5 measured cohorts are dropped from the
+    readmission table — they're not in HRRP scope and shouldn't show up in the
+    Stars / care-mgmt readmission demos.
     """
     inpatient = claims_header[claims_header["place_of_service"] == "21"].copy()
     if len(inpatient) == 0:
@@ -717,9 +844,24 @@ def gen_readmission(rng: np.random.Generator, claims_header: pd.DataFrame) -> pd
                                      "hrrp_cohort", "index_dis_date", "readmit_date",
                                      "days_to_readmit", "readmit_within_30d",
                                      "plan_year"])
+
+    # ICD-10 prefix → HRRP cohort (CMS HRRP measure cohort definitions).
+    # Anything not in the table is left as None and excluded.
+    def _cohort_from_dx(dx: str | None) -> str | None:
+        if not isinstance(dx, str): return None
+        if dx.startswith("I21"):                       return "AMI"
+        if dx.startswith("I50"):                       return "HF"
+        if dx.startswith("J18") or dx.startswith("J15"): return "PNEUMONIA"
+        if dx.startswith("J44"):                       return "COPD"
+        if dx.startswith("M17") or dx.startswith("M16"): return "THA_TKA"
+        if dx.startswith("I25"):                       return "CABG"
+        return None
+
     rows = []
     for idx, c in inpatient.iterrows():
-        cohort = rng.choice(HRRP_COHORTS, p=[0.18, 0.16, 0.24, 0.20, 0.12, 0.10])
+        cohort = _cohort_from_dx(c["primary_dx_code"])
+        if cohort is None:
+            continue
         readmit_p = {"AMI": 0.17, "COPD": 0.20, "HF": 0.22, "PNEUMONIA": 0.16,
                      "CABG": 0.12, "THA_TKA": 0.05}[cohort]
         readmit = rng.random() < readmit_p
@@ -762,6 +904,10 @@ def gen_sdoh_assessment(rng: np.random.Generator, members: pd.DataFrame) -> pd.D
         capture_p = 0.18 if (m["hei_eligible_flag"] or m["lob"] == "Medicaid") else 0.06
         if rng.random() > capture_p:
             continue
+        # One screening visit covers all domains — a single assessment_date is
+        # reused across rows for this member. Captures real-world workflow
+        # (PRAPARE/AHC HRSN tools score all domains in one encounter).
+        visit_date = date(2026, int(rng.integers(1, 13)), int(rng.integers(1, 28)))
         for domain, flag in domain_to_member_flag.items():
             base = bool(m[flag]) if flag else False
             positive = (base and rng.random() < 0.85) or (not base and rng.random() < 0.05)
@@ -770,7 +916,7 @@ def gen_sdoh_assessment(rng: np.random.Generator, members: pd.DataFrame) -> pd.D
             rows.append({
                 "member_id": m["member_id"],
                 "domain": domain,
-                "assessment_date": date(2026, int(rng.integers(1, 13)), int(rng.integers(1, 28))),
+                "assessment_date": visit_date,
                 "positive_screen": positive,
                 "z_code": z_codes[domain],
                 "intervention_referred": positive and rng.random() < 0.62,
@@ -881,14 +1027,26 @@ def main(argv=None) -> int:
 
     print(f"[gen] scale={cfg.scale} seed={cfg.seed} years={cfg.n_years} out={out}")
 
-    print("[gen] members...");      members  = gen_members(cfg, rng, ref);      members.to_csv(out / "members.csv", index=False)
+    print("[gen] members...");      members  = gen_members(cfg, rng, ref)
     print(f"  -> {len(members):,}")
     print("[gen] enrollment...");   enroll   = gen_enrollment(cfg, rng, members); enroll.to_csv(out / "enrollment_spans.csv", index=False)
     print(f"  -> {len(enroll):,}")
     print("[gen] providers...");    provs    = gen_providers(cfg, rng);          provs.to_csv(out / "providers.csv", index=False)
     print(f"  -> {len(provs):,}")
-    pcp_npis = provs[provs["is_pcp"]]["provider_npi"].tolist() or provs["provider_npi"].tolist()
-    members["pcp_provider_id"] = rng.choice(pcp_npis, size=len(members))
+    # PCP geo-alignment: assign each member a same-state PCP 85% of the time
+    # (real-world rate per HEDIS access-of-care attribution). Falls back to any
+    # PCP if the member's state has no in-network PCP in the panel.
+    pcp_by_state = (provs[provs["is_pcp"]]
+                    .groupby("state")["provider_npi"].apply(list).to_dict())
+    all_pcps = provs[provs["is_pcp"]]["provider_npi"].tolist() or provs["provider_npi"].tolist()
+
+    def _pick_pcp(member_state: str) -> str:
+        same_state = pcp_by_state.get(member_state, [])
+        if same_state and rng.random() < 0.85:
+            return str(rng.choice(same_state))
+        return str(rng.choice(all_pcps))
+
+    members["pcp_provider_id"] = [_pick_pcp(s) for s in members["state"]]
     members.to_csv(out / "members.csv", index=False)
     print("[gen] conditions...");   conds    = gen_conditions(rng, members, ref); conds.to_csv(out / "conditions.csv", index=False)
     print(f"  -> {len(conds):,}")
@@ -910,6 +1068,28 @@ def main(argv=None) -> int:
 
     print("[gen] pharmacy_pa...");           pha     = gen_pharmacy_pa(rng, rx, provs);                     pha.to_csv(out / "pharmacy_pa.csv", index=False)
     print(f"  -> {len(pha):,}")
+    # PA → fill consistency: any rx fill whose (member, ndc, plan_year) was
+    # denied by PA must be dropped (it would never have been filled in real
+    # life). Re-save rx_claims after the filter so downstream Stars/PDC tables
+    # see only valid fills.
+    if len(pha) > 0 and "decision" in pha.columns:
+        denied = pha[pha["decision"] == "deny"]
+        if len(denied) > 0:
+            denied_keys = set(zip(
+                denied["member_id"].astype(str),
+                denied["ndc_code"].astype(str),
+                denied["plan_year"].astype(int),
+                strict=False,
+            ))
+            keep_mask = [
+                (str(m), str(n), int(y)) not in denied_keys
+                for m, n, y in zip(
+                    rx["member_id"], rx["ndc_code"], rx["plan_year"], strict=False)
+            ]
+            rx_before = len(rx)
+            rx = rx[keep_mask].reset_index(drop=True)
+            rx.to_csv(out / "rx_claims.csv", index=False)
+            print(f"  -> filtered {rx_before - len(rx):,} fills denied by PA; rx now {len(rx):,}")
     print("[gen] provider_sanctions...");    sanc    = gen_provider_sanctions(rng, provs);                  sanc.to_csv(out / "provider_sanctions.csv", index=False)
     print(f"  -> {len(sanc):,}")
     print("[gen] directory_attestation..."); attest  = gen_provider_directory_attestation(rng, provs);      attest.to_csv(out / "provider_directory_attestation.csv", index=False)

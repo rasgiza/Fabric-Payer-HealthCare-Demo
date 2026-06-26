@@ -326,6 +326,156 @@ def check_leie_provider_share(d: dict[str, pd.DataFrame]) -> Check:
     return Check("leie_provider_share", ok, detail)
 
 
+# Approximate ZIP3 bands per state (must match generator STATE_ZIP3_BANDS).
+# Keeping the table in two places is deliberate so the gate is independent of
+# generator internals and won't false-pass if the generator's table drifts.
+_STATE_ZIP3_BANDS = {
+    "TX": [(750, 799), (770, 779), (780, 789)],
+    "FL": [(320, 349)],
+    "CA": [(900, 961)],
+    "NY": [(100, 149)],
+    "MI": [(480, 499)],
+}
+
+
+def check_claim_line_multiplicity(d: dict[str, pd.DataFrame]) -> Check:
+    """Real claims average ~2-4 lines per header. A flat 1.0 lines/claim is a
+    dead giveaway that the synth generator is a placeholder. Floor 1.8."""
+    h = d["claims_header"]
+    li = d["claims_line"]
+    if len(h) == 0 or len(li) == 0:
+        return Check("claim_line_multiplicity", True, "empty")
+    avg = len(li) / len(h)
+    ok = avg >= 1.8
+    return Check("claim_line_multiplicity", ok,
+                 f"avg={avg:.2f} lines/claim across {len(h):,} headers (floor 1.8)")
+
+
+def check_carc_top5_concentration(d: dict[str, pd.DataFrame]) -> Check:
+    """Top-5 CARC codes should cover >=50% of all denials. Real adjudication
+    is heavily concentrated on a handful of codes (50, 97, 16, 1, 45)."""
+    c = d["claims_header"]
+    if len(c) == 0:
+        return Check("carc_top5_concentration", True, "empty")
+    denials = c[c["denied_flag"] == 1]
+    if len(denials) < 50:
+        return Check("carc_top5_concentration", True, f"only {len(denials)} denials, skipping")
+    top5 = denials["carc_code"].value_counts(normalize=True).head(5).sum()
+    ok = top5 >= 0.50
+    return Check("carc_top5_concentration", ok,
+                 f"top-5 CARC share={top5:.2%} of {len(denials)} denials (floor 50%)")
+
+
+def check_state_zip_alignment(d: dict[str, pd.DataFrame]) -> Check:
+    """At least 80% of members must have a zip3 inside the geographic ZIP
+    band for their state. A random 3-digit zip per member breaks territory,
+    network adequacy, and geo-targeted Stars analytics."""
+    m = d["members"]
+    if len(m) == 0:
+        return Check("state_zip_alignment", True, "empty")
+    def _aligned(row) -> bool:
+        bands = _STATE_ZIP3_BANDS.get(row["state"])
+        if not bands: return True       # state has no band defined — neutral
+        try:
+            z = int(str(row["zip3"]).lstrip("0") or "0")
+        except (ValueError, TypeError):
+            return False
+        return any(lo <= z <= hi for lo, hi in bands)
+    aligned = m.apply(_aligned, axis=1)
+    rate = aligned.mean()
+    ok = rate >= 0.80
+    return Check("state_zip_alignment", ok,
+                 f"{rate:.2%} of {len(m)} members have zip3 inside state band (floor 80%)")
+
+
+def check_pcp_geo_alignment(d: dict[str, pd.DataFrame]) -> Check:
+    """At least 75% of members should have a PCP in the same state. HEDIS
+    access-of-care attribution and provider directory accuracy depend on it."""
+    m = d["members"]
+    p = d["providers"]
+    if len(m) == 0 or len(p) == 0:
+        return Check("pcp_geo_alignment", True, "empty")
+    if "pcp_provider_id" not in m.columns:
+        return Check("pcp_geo_alignment", True, "no pcp_provider_id column")
+    prov_state = dict(zip(p["provider_npi"].astype(str),
+                          p["state"].astype(str), strict=False))
+    same = sum(1 for _, row in m.iterrows()
+               if prov_state.get(str(row["pcp_provider_id"])) == row["state"])
+    rate = same / len(m)
+    ok = rate >= 0.75
+    return Check("pcp_geo_alignment", ok,
+                 f"{rate:.2%} of {len(m)} members have same-state PCP (floor 75%)")
+
+
+def check_rx_quantity_doses_realism(d: dict[str, pd.DataFrame]) -> Check:
+    """At least one drug class must have quantity_dispensed != days_supply on
+    >=80% of its fills. A generator that always sets qty = days_supply is
+    pretending every drug is one-dose-a-day, which fails for metformin (BID),
+    GLP-1 (weekly), and specialty injectables."""
+    rx = d["rx_claims"]
+    if len(rx) == 0:
+        return Check("rx_quantity_doses_realism", True, "empty")
+    rx = rx.copy()
+    rx["qty_neq_days"] = rx["quantity_dispensed"] != rx["days_supply"]
+    per_class = rx.groupby("drug_class")["qty_neq_days"].mean()
+    above = per_class[per_class >= 0.80]
+    ok = len(above) >= 1
+    return Check("rx_quantity_doses_realism", ok,
+                 f"{len(above)} drug classes with >=80% qty!=days_supply "
+                 f"(top: {per_class.sort_values(ascending=False).head(3).to_dict()})")
+
+
+def check_pa_fill_consistency(d: dict[str, pd.DataFrame]) -> Check:
+    """No rx fill may exist where the PA was denied for the same (member,
+    ndc, plan_year). If this fails, the PBM logic in silver is broken or
+    the generator is emitting impossible fills."""
+    rx = d["rx_claims"]
+    pa = d["pharmacy_pa"]
+    if len(rx) == 0 or len(pa) == 0:
+        return Check("pa_fill_consistency", True, "empty")
+    denied = pa[pa["decision"] == "deny"]
+    if len(denied) == 0:
+        return Check("pa_fill_consistency", True, "no denied PAs")
+    denied_keys = set(zip(
+        denied["member_id"].astype(str),
+        denied["ndc_code"].astype(str),
+        denied["plan_year"].astype(int),
+        strict=False,
+    ))
+    bad = sum(1 for m, n, y in zip(
+        rx["member_id"].astype(str),
+        rx["ndc_code"].astype(str),
+        rx["plan_year"].astype(int),
+        strict=False) if (m, n, y) in denied_keys)
+    ok = bad == 0
+    return Check("pa_fill_consistency", ok,
+                 f"{bad} rx fills exist after PA denial (must be 0)")
+
+
+def check_hrrp_cohort_from_dx(d: dict[str, pd.DataFrame]) -> Check:
+    """HRRP cohort assignment must be consistent with the indexed admission's
+    primary_dx_code. AMI rows should be I21*, HF should be I50*, etc. Random
+    cohort assignment breaks readmission-rate-by-cohort analytics."""
+    rdm = d["readmission"]
+    hdr = d["claims_header"]
+    if len(rdm) == 0 or len(hdr) == 0:
+        return Check("hrrp_cohort_from_dx", True, "empty")
+    merged = rdm.merge(hdr[["claim_id", "primary_dx_code"]],
+                       left_on="index_claim_id", right_on="claim_id", how="left")
+    prefix = {"AMI": "I21", "HF": "I50", "PNEUMONIA": ("J18", "J15"),
+              "COPD": "J44", "THA_TKA": ("M17", "M16"), "CABG": "I25"}
+    def _matches(row) -> bool:
+        pat = prefix.get(row["hrrp_cohort"])
+        dx = str(row["primary_dx_code"])
+        if pat is None: return True
+        if isinstance(pat, tuple): return any(dx.startswith(p) for p in pat)
+        return dx.startswith(pat)
+    rate = merged.apply(_matches, axis=1).mean()
+    ok = rate >= 0.70
+    return Check("hrrp_cohort_from_dx", ok,
+                 f"{rate:.2%} of {len(merged)} readmits have cohort consistent with dx (floor 70%)")
+
+
 def run_all(run_dir: Path) -> list[Check]:
     d = _load(run_dir)
     checks = [
@@ -344,6 +494,13 @@ def run_all(run_dir: Path) -> list[Check]:
         check_sdoh_capture_rate(d),
         check_oon_ed_share(d),
         check_leie_provider_share(d),
+        check_claim_line_multiplicity(d),
+        check_carc_top5_concentration(d),
+        check_state_zip_alignment(d),
+        check_pcp_geo_alignment(d),
+        check_rx_quantity_doses_realism(d),
+        check_pa_fill_consistency(d),
+        check_hrrp_cohort_from_dx(d),
     ]
     return checks
 
