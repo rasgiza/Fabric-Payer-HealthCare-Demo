@@ -80,6 +80,12 @@ jobs:
       - name: Data fidelity
         run: python tools/data_fidelity.py --run-dir data/synth/smoke
 
+      - name: Schema contracts (E.0a)
+        run: python tools/dq_checks.py --run-id smoke
+
+      - name: Audit log emitted (E.0b)
+        run: python tools/audit_log.py show --run-id smoke
+
   deploy-dryrun:
     name: Deploy dry-run (validate workspace tree)
     runs-on: ubuntu-latest
