@@ -153,7 +153,7 @@ def test_expected_workspace_inventory(workspace_dir: Path) -> None:
         "DataPipeline": 2,
         "SemanticModel": 1,
         "Ontology": 1,
-        "DataAgent": 7,
+        "DataAgent": 8,
         "Eventhouse": 1,
         "KQLDatabase": 1,
         "Eventstream": 1,

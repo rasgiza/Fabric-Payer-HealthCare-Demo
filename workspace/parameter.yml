@@ -161,6 +161,12 @@ find_replace:
       staging: "$UMAGENT_STAGING"
       prod:    "$UMAGENT_PROD"
 
+  - find_value: "d5000005-0001-0001-0001-000000000010"   # ClaimsRawExplorer logicalId
+    replace_value:
+      dev:     "$CLAIMSRAWEXPLORER_DEV"
+      staging: "$CLAIMSRAWEXPLORER_STAGING"
+      prod:    "$CLAIMSRAWEXPLORER_PROD"
+
   # ---------------- Eventhouse / KQLDatabase (RTI) ----------------
   - find_value: "e6000006-0001-0001-0001-000000000001"   # eh_payer_rt logicalId
     replace_value:

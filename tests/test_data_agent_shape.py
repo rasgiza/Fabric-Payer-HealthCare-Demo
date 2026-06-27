@@ -1,4 +1,4 @@
-"""B.3 drift gate — locks the shape of the 7 Foundry DataAgent items.
+"""B.3 drift gate — locks the shape of the 8 Foundry DataAgent items.
 
 Catches the drift class where authoring inputs (`data_agents/<Name>.DataAgent/binding.yaml`,
 aiInstructions.md) drift from the published Fabric Git Integration v2 artifacts under
@@ -27,13 +27,14 @@ EXPECTED_AGENTS = [
     "CareMgmtAgent",
     "NetworkAgent",
     "UMAgent",
+    "ClaimsRawExplorer",
 ]
 EXPECTED_DATASOURCES = {
     "lakehouse-tables-lh_gold_curated",
     "semantic-model-PayerAnalytics",
     "graph-Payer_Ontology",
 }
-LOGICAL_ID_RE = re.compile(r"^d5000005-0001-0001-0001-0000000000(0[3-9])$")
+LOGICAL_ID_RE = re.compile(r"^d5000005-0001-0001-0001-0000000000(?:0[3-9]|10)$")
 
 
 def _load_json(p: Path) -> dict:
@@ -98,9 +99,9 @@ def test_platform_descriptors():
         # tools/deploy.py guards: .platform displayName must equal folder stem.
         assert plat["metadata"]["displayName"] == agent, f"{agent}: displayName drift"
         lid = plat["config"]["logicalId"]
-        assert LOGICAL_ID_RE.match(lid), f"{agent}: logicalId {lid!r} not in d5000005-...-0003..0009"
+        assert LOGICAL_ID_RE.match(lid), f"{agent}: logicalId {lid!r} not in d5000005-...-0003..0010"
         seen_logical_ids.add(lid)
-    assert len(seen_logical_ids) == 7, "duplicate DataAgent logicalIds"
+    assert len(seen_logical_ids) == 8, "duplicate DataAgent logicalIds"
 
 
 def test_no_duplicate_logical_ids_repo_wide():

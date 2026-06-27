@@ -26,6 +26,7 @@ subagents:
   - { name: CareMgmtAgent,       function_tool: ask_caremgmt_agent,   max_items: 1 }
   - { name: NetworkAgent,        function_tool: ask_network_agent,    max_items: 1 }
   - { name: UMAgent,             function_tool: ask_um_agent,         max_items: 1 }
+  - { name: ClaimsRawExplorer,   function_tool: ask_claims_explorer,  max_items: 1 }
 
 # Keyword routing (lowercased question must contain one keyword to fire).
 # Order = priority. First match wins. Multi-fire goes to highest-confidence.
@@ -134,6 +135,18 @@ routing:
     - gold-card
     - gold card
     - gold-carding
+  ClaimsRawExplorer:
+    - claim_id
+    - adjudication
+    - carc distribution
+    - paid-vs-billed
+    - reconciliation
+    - appeal trail
+    - authorization records
+    - no matching paid claim
+    - line-level
+    - every line for
+    - claim line detail
 
 # Refusal patterns - any orchestrator-level refusal short-circuits routing.
 refusal_patterns:

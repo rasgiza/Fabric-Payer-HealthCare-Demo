@@ -54,7 +54,7 @@ GITHUB_TOKEN  = ""   # optional PAT for private repos; leave empty for public
 # --- Post-deploy toggles ---
 UPLOAD_KNOWLEDGE_DOCS = True   # Cell 1: fetch payer_knowledge/*.md → lh_gold_curated
 RUN_ETL               = True   # Cell 2: medallion chain NB_01 → NB_02 → NB_03
-PATCH_DATA_AGENTS     = True   # Cell 3: rebind 7 DataAgent placeholder GUIDs to real ids
+PATCH_DATA_AGENTS     = True   # Cell 3: rebind 8 DataAgent placeholder GUIDs to real ids
 RUN_SANITY_CHECK      = True   # Cell 4: gold-tier 8-table + publish-state summary
 
 # --- ETL options (apply only when RUN_ETL=True) ---
@@ -216,7 +216,7 @@ if PATCH_DATA_AGENTS:
 
     AGENT_NAMES = (
         "CFOAgent", "StarsAgent", "RiskAdjustmentAgent", "SIUAgent",
-        "CareMgmtAgent", "NetworkAgent", "UMAgent",
+        "CareMgmtAgent", "NetworkAgent", "UMAgent", "ClaimsRawExplorer",
     )
     ZERO_GUID = "00000000-0000-0000-0000-000000000000"
 

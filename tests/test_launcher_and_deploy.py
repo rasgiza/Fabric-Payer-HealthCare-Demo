@@ -95,12 +95,12 @@ def test_launcher_uploads_all_payer_knowledge_docs(workspace_dir: Path, repo_roo
         )
 
 
-def test_launcher_patches_all_seven_data_agents(workspace_dir: Path) -> None:
-    """Cell 3 must rebind exactly the 7 DataAgents shipped in Stream B.3."""
+def test_launcher_patches_all_eight_data_agents(workspace_dir: Path) -> None:
+    """Cell 3 must rebind exactly the 8 DataAgents shipped (B.3 + C.4 ClaimsRawExplorer)."""
     content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
     for agent in (
         "CFOAgent", "StarsAgent", "RiskAdjustmentAgent", "SIUAgent",
-        "CareMgmtAgent", "NetworkAgent", "UMAgent",
+        "CareMgmtAgent", "NetworkAgent", "UMAgent", "ClaimsRawExplorer",
     ):
         assert f'"{agent}"' in content, f"launcher DataAgent patch list missing {agent}"
     # And it must drive Fabric REST API LRO (getDefinition / updateDefinition)

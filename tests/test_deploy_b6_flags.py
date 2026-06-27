@@ -46,14 +46,14 @@ def _run(repo_root: Path, *args: str, env_overrides: dict[str, str] | None = Non
 
 
 def test_check_passes_in_sync_state(repo_root: Path) -> None:
-    """`--check` must exit 0 today: parameter.yml covers all 28 logicalIds."""
+    """`--check` must exit 0 today: parameter.yml covers all 29 logicalIds."""
     res = _run(repo_root, "--check")
     assert res.returncode == 0, (
         f"--check failed: stdout={res.stdout!r}  stderr={res.stderr!r}"
     )
     assert "--check OK" in res.stdout
-    assert ".platform logicalIds: 28" in res.stdout
-    assert "parameter.yml rules (logicalId-shaped): 28" in res.stdout
+    assert ".platform logicalIds: 29" in res.stdout
+    assert "parameter.yml rules (logicalId-shaped): 29" in res.stdout
 
 
 def test_check_does_not_require_env_flag(repo_root: Path) -> None:
@@ -74,9 +74,9 @@ def test_explain_reports_unset_vars_with_nonzero_exit(repo_root: Path) -> None:
     )
     assert "[UNSET]" in res.stdout
     # 4 lakehouse + 9 notebook (NB_00..NB_03 + launcher + NB_RTI_01..NB_RTI_04)
-    # + 2 pipeline + 1 SM + 1 ontology + 7 agent + 1 Eventhouse + 1 KQLDatabase
-    # + 1 Eventstream + 1 Reflex = 28 logicalIds + 1 workspace placeholder = 29 rules.
-    assert "rules=29" in res.stdout
+    # + 2 pipeline + 1 SM + 1 ontology + 8 agent + 1 Eventhouse + 1 KQLDatabase
+    # + 1 Eventstream + 1 Reflex = 29 logicalIds + 1 workspace placeholder = 30 rules.
+    assert "rules=30" in res.stdout
     # Mentions a known unset variable
     assert "LH_BRONZE_RAW_DEV" in res.stdout
 
@@ -103,6 +103,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         "CAREMGMTAGENT_DEV":          "11111111-1111-1111-1111-ddddddddddd7",
         "NETWORKAGENT_DEV":           "11111111-1111-1111-1111-ddddddddddd8",
         "UMAGENT_DEV":                "11111111-1111-1111-1111-ddddddddddd9",
+        "CLAIMSRAWEXPLORER_DEV":      "11111111-1111-1111-1111-dddddddddda0",
         "EH_PAYER_RT_DEV":            "11111111-1111-1111-1111-eeeeeeeeeee1",
         "KQLDB_PAYER_RT_DEV":         "11111111-1111-1111-1111-fffffffffff1",
         "ES_CLAIMS_ARRIVALS_DEV":     "11111111-1111-1111-1111-eeeeeeee0008",
@@ -119,7 +120,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         f"stderr={res.stderr!r}"
     )
     assert "[UNSET]" not in res.stdout
-    assert "all 29 parameter.yml rules resolve" in res.stdout
+    assert "all 30 parameter.yml rules resolve" in res.stdout
 
 
 # ---------- --only -----------------------------------------------------------
@@ -129,12 +130,12 @@ def test_only_filter_restricts_dry_run_to_one_type(repo_root: Path) -> None:
     res = _run(repo_root, "--env", "dev", "--dry-run", "--only", "DataAgent")
     assert res.returncode == 0, f"--only DataAgent dry-run failed: {res.stderr!r}"
     out = res.stdout
-    # Only DataAgent section should appear, with all 7 agents listed.
+    # Only DataAgent section should appear, with all 8 agents listed.
     assert "[DataAgent]" in out
     assert "Order:    DataAgent" in out
-    assert "7 item(s) would be published" in out
+    assert "8 item(s) would be published" in out
     for agent in ("CFOAgent", "StarsAgent", "RiskAdjustmentAgent", "SIUAgent",
-                  "CareMgmtAgent", "NetworkAgent", "UMAgent"):
+                  "CareMgmtAgent", "NetworkAgent", "UMAgent", "ClaimsRawExplorer"):
         assert agent in out
     # Other item types must NOT appear
     for kind in ("[Lakehouse]", "[Notebook]", "[DataPipeline]", "[SemanticModel]"):
