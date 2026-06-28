@@ -32,23 +32,29 @@ catalog:
   audience: "Exec first-look"
   est_minutes: 5
 
-# Architecture diagram (Mermaid). Required for every tier and enforced in CI by
-# tools/validate_jumpstart.py. The same source is rendered into this tier's
-# README.md so the catalog page and the repo stay in lockstep.
+# Architecture diagram (Mermaid) in the Fabric Jumpstart Diagram Generator
+# format: registered :::ItemType classes pick up official Fabric icons, emoji
+# codepoint classes (:::U<hex>) mark non-Fabric nodes, and `subgraph
+# Fabric:::Workspace` frames the workspace. No classDef blocks — the generator
+# supplies styling. Required for every tier and enforced in CI by
+# tools/validate_jumpstart.py (manifest block + rendered light/dark SVGs).
+# Regenerate SVGs: https://jumpstart.fabric.microsoft.com/tools/diagram-generator
+# (paste this block, slug "quickstart").
 mermaid_diagram: |
   graph LR
-      GOLD[("Pre-baked gold parquet · 14 tables")]:::Source
-
-      subgraph Fabric["Fabric workspace"]
+      %% EXTERNAL SOURCES
+      GOLD["Pre-baked gold parquet"]:::U1F5C4
+      %% FABRIC WORKSPACE
+      subgraph Fabric:::Workspace
           direction LR
-          LAUNCH["quickstart_launcher"]:::Notebook
-          LH["lh_gold_curated"]:::Lakehouse
-          SM["PayerAnalytics"]:::SemanticModel
-          RPT["PayerAnalytics report · 2 pages"]:::Report
-          CFO["CFOAgent"]:::DataAgent
-          STARS["StarsAgent"]:::DataAgent
+          LAUNCH[quickstart_launcher]:::Notebook
+          LH[lh_gold_curated]:::Lakehouse
+          SM[PayerAnalytics]:::SemanticModel
+          RPT[PayerAnalytics]:::Report
+          CFO[CFOAgent]:::DataAgent
+          STARS[StarsAgent]:::DataAgent
       end
-
+      %% FLOWS
       GOLD -.-> LAUNCH
       LAUNCH --> LH
       LH --> SM
@@ -57,13 +63,6 @@ mermaid_diagram: |
       SM --> STARS
       LH --> CFO
       LH --> STARS
-
-      classDef Source fill:#f5f5f5,stroke:#9e9e9e,color:#333,stroke-dasharray:4 3;
-      classDef Notebook fill:#e8f0fe,stroke:#4285f4,color:#10357a;
-      classDef Lakehouse fill:#e6f4ea,stroke:#34a853,color:#0b5d2e;
-      classDef SemanticModel fill:#fef7e0,stroke:#f9ab00,color:#6b4e00;
-      classDef Report fill:#fce8e6,stroke:#ea4335,color:#8c1d13;
-      classDef DataAgent fill:#f3e8fd,stroke:#a142f4,color:#54187f;
 
 # ---------------------------------------------------------------------------
 # Workspace items cherry-picked from the full deployment (workspace/).

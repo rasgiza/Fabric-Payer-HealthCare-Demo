@@ -20,7 +20,8 @@ artifact it references resolves on disk:
   7. Tier ordering: a higher tier's items/tables/knowledge must be a superset
      of every lower tier's (promotion safety — upgrading never drops content).
   8. Architecture diagram: every tier declares a non-empty ``mermaid_diagram``
-     block AND renders it as a ```mermaid block in the tier README.
+     block AND ships rendered light/dark SVGs under assets/images/diagrams/
+     that the tier README references via a <picture> element.
 
 Exits non-zero on any violation. Run from repo root::
 
@@ -156,20 +157,23 @@ def validate_one(manifest_path: Path) -> list[str]:
         if uc.get("surface") not in surfaces:
             errors.append(f"{rel}: use_case {uc.get('id')}: surface '{uc.get('surface')}' not shipped")
 
-    # 7. architecture diagram present (manifest field + rendered README block)
+    # 7. architecture diagram present (manifest field + rendered SVGs + README ref)
     errors.extend(_validate_mermaid(manifest_path, m, rel))
 
     return errors
 
 
 def _validate_mermaid(manifest_path: Path, m: dict, rel: Path) -> list[str]:
-    """Every tier must ship a Mermaid architecture diagram.
+    """Every tier must ship a Mermaid architecture diagram and rendered SVGs.
 
     The machine-readable source lives in the manifest's ``mermaid_diagram``
-    block; the same diagram must also be rendered into the tier README so the
-    catalog page and the repo stay in lockstep. CI blocks if either is missing.
+    block (Diagram Generator format). The same diagram must be rendered into
+    light + dark SVGs under ``assets/images/diagrams/<slug>_{light,dark}.svg``
+    and referenced from the tier README so the catalog page renders. CI blocks
+    if the manifest block, either SVG, or the README reference is missing.
     """
     errors: list[str] = []
+    slug = manifest_path.parent.name
     diagram = m.get("mermaid_diagram")
     if not isinstance(diagram, str) or not diagram.strip():
         errors.append(f"{rel}: missing required 'mermaid_diagram' (architecture diagram)")
@@ -180,13 +184,25 @@ def _validate_mermaid(manifest_path: Path, m: dict, rel: Path) -> list[str]:
                 f"{rel}: mermaid_diagram must start with a 'graph'/'flowchart' directive (got '{first}')"
             )
 
+    diagrams_dir = REPO_ROOT / "assets" / "images" / "diagrams"
+    for variant in ("light", "dark"):
+        svg = diagrams_dir / f"{slug}_{variant}.svg"
+        if not svg.exists():
+            errors.append(
+                f"{rel}: missing rendered diagram assets/images/diagrams/{slug}_{variant}.svg"
+            )
+
     readme = manifest_path.parent / "README.md"
     if not readme.exists():
-        errors.append(f"{rel}: tier README.md missing (mermaid diagram must be rendered there)")
-    elif "```mermaid" not in readme.read_text(encoding="utf-8"):
-        errors.append(
-            f"{rel}: tier README.md has no ```mermaid block (render the manifest diagram there)"
-        )
+        errors.append(f"{rel}: tier README.md missing (architecture diagram must be referenced there)")
+    else:
+        text = readme.read_text(encoding="utf-8")
+        for variant in ("light", "dark"):
+            if f"{slug}_{variant}.svg" not in text:
+                errors.append(
+                    f"{rel}: tier README.md does not reference {slug}_{variant}.svg "
+                    "(embed the rendered diagram via a <picture> element)"
+                )
     return errors
 
 

@@ -252,7 +252,7 @@ def test_index_readme_lists_all_tiers(repo_root: Path) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# Architecture diagram (Mermaid) — required per tier, enforced in CI
+# Architecture diagram (Mermaid + rendered SVGs) — required per tier, enforced in CI
 # --------------------------------------------------------------------------- #
 
 
@@ -268,15 +268,31 @@ def test_each_tier_manifest_has_valid_mermaid(manifests: dict[int, dict]) -> Non
         )
 
 
-def test_each_tier_readme_renders_mermaid(repo_root: Path) -> None:
+def test_each_tier_has_rendered_svgs(repo_root: Path) -> None:
+    diagrams = repo_root / "assets" / "images" / "diagrams"
     for tier, rel in TIERS.items():
-        readme = (repo_root / rel).parent / "README.md"
-        text = readme.read_text(encoding="utf-8")
-        assert "```mermaid" in text, f"tier {tier} README missing a ```mermaid block"
+        slug = (repo_root / rel).parent.name
+        for variant in ("light", "dark"):
+            svg = diagrams / f"{slug}_{variant}.svg"
+            assert svg.exists(), f"tier {tier} missing rendered diagram {svg.name}"
+            assert "<svg" in svg.read_text(encoding="utf-8"), (
+                f"tier {tier} {svg.name} is not a valid SVG"
+            )
+
+
+def test_each_tier_readme_references_svgs(repo_root: Path) -> None:
+    for tier, rel in TIERS.items():
+        parent = (repo_root / rel).parent
+        slug = parent.name
+        text = (parent / "README.md").read_text(encoding="utf-8")
+        for variant in ("light", "dark"):
+            assert f"{slug}_{variant}.svg" in text, (
+                f"tier {tier} README does not reference {slug}_{variant}.svg"
+            )
 
 
 def test_validator_blocks_missing_mermaid(repo_root: Path, tmp_path: Path) -> None:
-    """CI must fail when a tier omits its architecture diagram."""
+    """CI must fail when a tier omits its architecture diagram or README ref."""
     import tools.validate_jumpstart as vj
 
     src = yaml.safe_load((repo_root / TIERS[1]).read_text(encoding="utf-8"))
@@ -288,5 +304,5 @@ def test_validator_blocks_missing_mermaid(repo_root: Path, tmp_path: Path) -> No
 
     errors = vj._validate_mermaid(bad / "manifest.yaml", src, Path("manifest.yaml"))
     assert any("mermaid_diagram" in e for e in errors)
-    assert any("```mermaid" in e for e in errors)
+    assert any(".svg" in e for e in errors)
 
