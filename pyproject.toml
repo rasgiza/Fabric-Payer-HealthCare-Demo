@@ -29,6 +29,7 @@ exclude = [
   # parse cleanly as a normal Python module. Drift is locked by
   # tests/test_notebook_shape.py instead.
   "workspace/**/notebook-content.py",
+  "jumpstarts/**/notebook-content.py",
 ]
 
 [tool.ruff.lint]

@@ -102,5 +102,8 @@ jobs:
       - name: Deploy --check (parameter.yml <-> workspace drift)
         run: python tools/deploy.py --check
 
+      - name: Validate quickstart jumpstart manifest (Tier 1)
+        run: python tools/validate_jumpstart.py
+
       - name: Deploy dry-run (dev)
         run: python tools/deploy.py --env dev --dry-run

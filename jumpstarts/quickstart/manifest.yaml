@@ -1,0 +1,110 @@
+# Tier 1 — Quickstart Jumpstart
+#
+# The smallest deployable slice of the Payer Healthcare Demo: a curated gold
+# lakehouse, the PayerAnalytics semantic model, two Foundry DataAgents
+# (CFOAgent + StarsAgent), and a two-page Power BI report. It ships pre-baked
+# gold Delta/parquet so an analyst can land data in minutes with no ETL run.
+#
+# This manifest is the single source of truth for the quickstart tier. Every
+# item path below resolves against the repository root and is validated by
+# `tools/validate_jumpstart.py` (gated in CI via tests/test_jumpstart_quickstart.py).
+#
+# Promotion path: Quickstart (Tier 1) -> Analytics Accelerator (Tier 2) ->
+# Fabric IQ + Foundry IQ + RTI Accelerator (Tier 3). A Tier 1 install is a
+# strict subset of the full workspace, so upgrading never re-lands data.
+
+apiVersion: jumpstart/v1
+kind: Jumpstart
+tier: 1
+name: quickstart
+display_name: "Payer Quickstart"
+description: >-
+  Gold lakehouse + PayerAnalytics semantic model + CFO and Stars/Quality
+  Foundry DataAgents + a 2-page executive/quality Power BI report. Pre-baked
+  gold data, one-click launcher, three guided use cases.
+
+# ---------------------------------------------------------------------------
+# Workspace items cherry-picked from the full deployment (workspace/).
+# Paths are repo-relative directories that fabric-cicd / the Jumpstart
+# installer deploy as-is.
+# ---------------------------------------------------------------------------
+items:
+  lakehouse:
+    - name: lh_gold_curated
+      source: workspace/lh_gold_curated.Lakehouse
+  semantic_model:
+    - name: PayerAnalytics
+      source: workspace/PayerAnalytics.SemanticModel
+  data_agents:
+    - name: CFOAgent
+      source: workspace/CFOAgent.DataAgent
+      authoring: data_agents/CFOAgent.DataAgent
+    - name: StarsAgent
+      source: workspace/StarsAgent.DataAgent
+      authoring: data_agents/StarsAgent.DataAgent
+  report:
+    - name: PayerAnalytics
+      source: powerbi/PayerAnalytics.Report
+      pages:
+        - "01_Executive"
+        - "03_StarsQuality"
+  notebook:
+    - name: quickstart_launcher
+      source: jumpstarts/quickstart/quickstart_launcher.Notebook
+
+# ---------------------------------------------------------------------------
+# Pre-baked gold tables (Delta/parquet) shipped under data/gold/. This is the
+# union of the table_allowlist from CFOAgent + StarsAgent bindings, so the two
+# agents and the 2-page report have every surface they reference. Validated to
+# exist on disk by tools/validate_jumpstart.py.
+# ---------------------------------------------------------------------------
+data:
+  gold_dir: jumpstarts/quickstart/data/gold
+  tables:
+    # facts
+    - fact_claim
+    - fact_appeal
+    - fact_premium
+    - fact_member_month
+    - fact_quality_event
+    # pre-aggregated marts
+    - agg_mlr_monthly
+    - agg_denial_by_payer
+    - agg_stars_compliance
+    # dimensions
+    - dim_member
+    - dim_payer
+    - dim_product
+    - dim_lob
+    - dim_provider
+    - dim_date
+
+# ---------------------------------------------------------------------------
+# Knowledge documents uploaded to lh_gold_curated/Files/payer_knowledge/ by the
+# launcher. Limited to the sources the two quickstart agents cite.
+# ---------------------------------------------------------------------------
+knowledge:
+  source_dir: payer_knowledge
+  docs:
+    - carc_reference.md
+    - hfma_glossary.md
+    - hedis_my2026_measures.md
+    - stars_2026_cutpoints.md
+
+# ---------------------------------------------------------------------------
+# The three guided scenarios documented in README.md. Each names the agent or
+# report surface that answers it; kept in sync with the README use cases.
+# ---------------------------------------------------------------------------
+use_cases:
+  - id: UC-Q1
+    title: "Where is medical loss ratio trending and which payer is driving it?"
+    surface: CFOAgent
+    measures: [MedicalLossRatio, TotalPaidAmount, TotalPremiumRevenue]
+  - id: UC-Q2
+    title: "Which CARC codes drive our denials and how often are appeals overturned?"
+    surface: CFOAgent
+    measures: [DenialRate, DeniedClaimCount, AppealOverturnRate]
+  - id: UC-Q3
+    title: "Which HEDIS measures are below the Stars cut point this measurement year?"
+    surface: StarsAgent
+    measures: [HEDISCompliancePct, StarsContractRating]
