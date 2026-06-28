@@ -1,0 +1,214 @@
+# Tier 3 — Fabric IQ + Foundry IQ + RTI Accelerator Jumpstart
+#
+# The complete payer platform: everything in Tier 2 (Analytics Accelerator)
+# PLUS the Payer_Ontology semantic graph (Fabric IQ), the real-time
+# intelligence stack (Eventstream -> Eventhouse -> KQL DB -> Reflex Activator
+# + four RTI notebooks), and the two Foundry hosted copilots (Foundry IQ) that
+# orchestrate the eight DataAgents, the ontology graph, and the RTI surfaces.
+#
+# This is a strict superset of Tier 2 (and therefore Tier 1): every agent,
+# gold table, and knowledge doc from the lower tiers is present, so promotion
+# is purely additive.
+#
+# Validated by tools/validate_jumpstart.py (gated in CI).
+
+apiVersion: jumpstart/v1
+kind: Jumpstart
+tier: 3
+name: fabric-iq-rti
+display_name: "Payer Fabric IQ + Foundry IQ + RTI Accelerator"
+description: >-
+  Everything in Tier 2 plus the Payer_Ontology semantic graph (Fabric IQ), the
+  real-time intelligence stack (Eventstream -> Eventhouse -> KQL DB -> Reflex
+  + 4 RTI notebooks), and two Foundry hosted copilots (Foundry IQ) over the 8
+  DataAgents, the graph, and the RTI surfaces. Nine guided use cases.
+
+# ---------------------------------------------------------------------------
+# Workspace items deployed by fabric-cicd / the Jumpstart installer.
+# Hosted Foundry copilots deploy separately via tools/deploy_foundry.py and
+# declare 'authoring' only (no fabric-cicd 'source').
+# ---------------------------------------------------------------------------
+items:
+  lakehouse:
+    - { name: lh_bronze_raw,    source: workspace/lh_bronze_raw.Lakehouse }
+    - { name: lh_silver_ods,    source: workspace/lh_silver_ods.Lakehouse }
+    - { name: lh_silver_stage,  source: workspace/lh_silver_stage.Lakehouse }
+    - { name: lh_gold_curated,  source: workspace/lh_gold_curated.Lakehouse }
+  semantic_model:
+    - { name: PayerAnalytics, source: workspace/PayerAnalytics.SemanticModel }
+  ontology:
+    - { name: Payer_Ontology, source: workspace/Payer_Ontology.Ontology }
+  data_agents:
+    - { name: CFOAgent,            source: workspace/CFOAgent.DataAgent,            authoring: data_agents/CFOAgent.DataAgent }
+    - { name: StarsAgent,          source: workspace/StarsAgent.DataAgent,          authoring: data_agents/StarsAgent.DataAgent }
+    - { name: RiskAdjustmentAgent, source: workspace/RiskAdjustmentAgent.DataAgent, authoring: data_agents/RiskAdjustmentAgent.DataAgent }
+    - { name: SIUAgent,            source: workspace/SIUAgent.DataAgent,            authoring: data_agents/SIUAgent.DataAgent }
+    - { name: CareMgmtAgent,       source: workspace/CareMgmtAgent.DataAgent,       authoring: data_agents/CareMgmtAgent.DataAgent }
+    - { name: NetworkAgent,        source: workspace/NetworkAgent.DataAgent,        authoring: data_agents/NetworkAgent.DataAgent }
+    - { name: UMAgent,             source: workspace/UMAgent.DataAgent,             authoring: data_agents/UMAgent.DataAgent }
+    - { name: ClaimsRawExplorer,   source: workspace/ClaimsRawExplorer.DataAgent,   authoring: data_agents/ClaimsRawExplorer.DataAgent }
+  hosted_agents:
+    - { name: PAReviewCopilot, authoring: data_agents/PAReviewCopilot.HostedAgent }
+    - { name: PayerRT_Copilot, authoring: data_agents/PayerRT_Copilot.HostedAgent }
+  report:
+    - name: PayerAnalytics
+      source: powerbi/PayerAnalytics.Report
+      pages:
+        - "01_Executive"
+        - "02_DenialsAppeals"
+        - "03_StarsQuality"
+        - "04_RiskAdjustment"
+        - "05_PALifecycle"
+        - "06_Member360"
+        - "07_ClaimCaseSummary"
+  notebook:
+    - { name: NB_00_Generate_Smoke_Data,    source: workspace/NB_00_Generate_Smoke_Data.Notebook }
+    - { name: NB_01_Bronze_Ingest,          source: workspace/NB_01_Bronze_Ingest.Notebook }
+    - { name: NB_02_Silver_Transform,       source: workspace/NB_02_Silver_Transform.Notebook }
+    - { name: NB_03_Gold_Build,             source: workspace/NB_03_Gold_Build.Notebook }
+    - { name: Healthcare_Launcher,          source: workspace/Healthcare_Launcher.Notebook }
+    - { name: NB_RTI_01_Ingest_Claims_Stream, source: workspace/NB_RTI_01_Ingest_Claims_Stream.Notebook }
+    - { name: NB_RTI_02_PA_Latency,         source: workspace/NB_RTI_02_PA_Latency.Notebook }
+    - { name: NB_RTI_03_ADT_Outreach,       source: workspace/NB_RTI_03_ADT_Outreach.Notebook }
+    - { name: NB_RTI_04_SIU_Intake_Scoring, source: workspace/NB_RTI_04_SIU_Intake_Scoring.Notebook }
+  data_pipeline:
+    - { name: PL_Payer_Master,    source: workspace/PL_Payer_Master.DataPipeline }
+    - { name: PL_Payer_Full_Load, source: workspace/PL_Payer_Full_Load.DataPipeline }
+  eventhouse:
+    - { name: eh_payer_rt, source: workspace/eh_payer_rt.Eventhouse }
+  eventstream:
+    - { name: es_claims_arrivals, source: workspace/es_claims_arrivals.Eventstream }
+  kqldatabase:
+    - { name: kqldb_payer_rt, source: workspace/kqldb_payer_rt.KQLDatabase }
+  reflex:
+    - { name: PayerOps_Activator, source: workspace/PayerOps_Activator.Reflex }
+  orchestrator:
+    - { name: MissionControlRouter, source: mission_control }
+
+# ---------------------------------------------------------------------------
+# Gold tables produced by the medallion ETL chain (generated). Identical gold
+# slice to Tier 2 — the real-time tables live in the KQL database (see rti
+# below), not the gold lakehouse.
+# ---------------------------------------------------------------------------
+data:
+  generated: true
+  tables:
+    # facts
+    - fact_claim
+    - fact_appeal
+    - fact_auth
+    - fact_premium
+    - fact_member_month
+    - fact_quality_event
+    - fact_raf_score
+    - fact_rx_claim
+    - fact_pharmacy_pa
+    - fact_cahps_response
+    - fact_readmission
+    - fact_outreach
+    - fact_sdoh_assessment
+    - fact_vbc_attribution
+    - fact_provider_directory_attestation
+    - fact_provider_sanction
+    # pre-aggregated marts
+    - agg_mlr_monthly
+    - agg_denial_by_payer
+    - agg_stars_compliance
+    - agg_pa_tat
+    - agg_readmissions
+    - agg_sdoh_burden
+    - agg_health_equity_index_proxy
+    - agg_glp1_pa_yield
+    - agg_oon_directory_inaccuracy
+    # dimensions
+    - dim_member
+    - dim_payer
+    - dim_product
+    - dim_lob
+    - dim_provider
+    - dim_date
+    - dim_diagnosis
+    - dim_procedure
+    - dim_drug
+    - dim_hcc
+
+# ---------------------------------------------------------------------------
+# Real-time intelligence surfaces (descriptive; landed by the RTI notebooks
+# into the KQL database, not the gold lakehouse).
+# ---------------------------------------------------------------------------
+rti:
+  eventstream: es_claims_arrivals
+  eventhouse: eh_payer_rt
+  kqldatabase: kqldb_payer_rt
+  activator: PayerOps_Activator
+  notebooks:
+    - NB_RTI_01_Ingest_Claims_Stream
+    - NB_RTI_02_PA_Latency
+    - NB_RTI_03_ADT_Outreach
+    - NB_RTI_04_SIU_Intake_Scoring
+
+# ---------------------------------------------------------------------------
+# Full payer-knowledge corpus (adds the RTI ops runbook to the Tier 2 set).
+# ---------------------------------------------------------------------------
+knowledge:
+  source_dir: payer_knowledge
+  docs:
+    - README.md
+    - carc_reference.md
+    - hfma_glossary.md
+    - hedis_my2026_measures.md
+    - stars_2026_cutpoints.md
+    - hcc_v28_weights.md
+    - ama_prior_auth_survey.md
+    - cms_0057_f_pa_rule.md
+    - cms_network_adequacy.md
+    - hcp_lan_apm_framework.md
+    - kff_high_cost_methodology.md
+    - nhcaa_fraud_schemes.md
+    - oig_radv_audit_guidance.md
+    - onelake_security_model.md
+    - policy_citation_pattern.md
+    - sdoh_hcp_lan_framework.md
+    - rti_ops_runbook.md
+
+# ---------------------------------------------------------------------------
+# Nine guided scenarios across analytics, ontology, RTI, and the hosted
+# copilots. Documented in README.md.
+# ---------------------------------------------------------------------------
+use_cases:
+  - id: UC-F1
+    title: "Where is MLR trending and which payer/LOB drives it?"
+    surface: CFOAgent
+    measures: [MedicalLossRatio, TotalPaidAmount, TotalPremiumRevenue]
+  - id: UC-F2
+    title: "Which HEDIS measures sit below the Stars cut point this year?"
+    surface: StarsAgent
+    measures: [HEDISCompliancePct, StarsContractRating]
+  - id: UC-F3
+    title: "Where are our suspected HCC gaps and what RAF lift do they imply?"
+    surface: RiskAdjustmentAgent
+    measures: [RAFScoreAvg, SuspectedHCCGap, HCCMemberCount]
+  - id: UC-F4
+    title: "Which providers show FWA-suspect billing patterns?"
+    surface: SIUAgent
+    measures: [DeniedClaimCount, DenialRate]
+  - id: UC-F5
+    title: "Which prior-auth lines are breaching SLA and where is TAT worst?"
+    surface: UMAgent
+    measures: [AuthCount, AuthSLAMetPct, AuthMedianTAT]
+  - id: UC-F6
+    title: "Trace a claim across the ontology graph: member -> provider -> auth -> appeal."
+    surface: ClaimsRawExplorer
+    measures: [DeniedClaimCount]
+  - id: UC-F7
+    title: "Real-time: which claim streams are breaching PA latency right now?"
+    surface: PayerRT_Copilot
+    measures: []
+  - id: UC-F8
+    title: "Assemble a prior-auth review packet with policy citations for a member."
+    surface: PAReviewCopilot
+    measures: []
+  - id: UC-F9
+    title: "Network: where do OON leakage and directory inaccuracy concentrate?"
+    surface: NetworkAgent
+    measures: []

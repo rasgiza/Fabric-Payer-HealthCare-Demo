@@ -102,8 +102,34 @@ jobs:
       - name: Deploy --check (parameter.yml <-> workspace drift)
         run: python tools/deploy.py --check
 
-      - name: Validate quickstart jumpstart manifest (Tier 1)
+      - name: Validate all jumpstart manifests + tier ordering
         run: python tools/validate_jumpstart.py
 
       - name: Deploy dry-run (dev)
         run: python tools/deploy.py --env dev --dry-run
+
+  validate-jumpstarts:
+    name: Validate jumpstart (${{ matrix.tier }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tier: "Tier 1 — quickstart"
+            manifest: jumpstarts/quickstart/manifest.yaml
+          - tier: "Tier 2 — analytics"
+            manifest: jumpstarts/analytics/manifest.yaml
+          - tier: "Tier 3 — fabric-iq-rti"
+            manifest: jumpstarts/fabric-iq-rti/manifest.yaml
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+
+      - name: Validate ${{ matrix.tier }}
+        run: python tools/validate_jumpstart.py --manifest ${{ matrix.manifest }}
