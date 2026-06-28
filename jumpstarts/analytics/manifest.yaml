@@ -23,6 +23,15 @@ description: >-
   notebook chain and orchestration pipelines + full payer-knowledge corpus.
   ETL-generated gold (full lineage), six guided use cases.
 
+# Catalog metadata — drives the jumpstarts/README.md catalog table. Item and
+# use-case counts are derived from this manifest (22 items, 6 use cases) and
+# verified by tests; the fields below are authored positioning attributes.
+catalog:
+  type: Accelerator
+  difficulty: Intermediate
+  audience: "Tech eval / adoption"
+  est_minutes: 20
+
 # ---------------------------------------------------------------------------
 # Workspace items deployed by fabric-cicd / the Jumpstart installer.
 # ---------------------------------------------------------------------------

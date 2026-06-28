@@ -4,11 +4,15 @@ Three packaged, validated entry points into the Fabric Payer Healthcare demo.
 Each tier is a **strict superset** of the one below it, so you can start small
 and promote without ever re-landing data or re-authoring agents.
 
-| Tier | Jumpstart | Best for | Data | Agents | Highlights |
-| --- | --- | --- | --- | --- | --- |
-| **1** | [Quickstart](quickstart/) | Minutes-to-value demo, no ETL | **Pre-baked** gold parquet | 2 (`CFOAgent`, `StarsAgent`) | 1 lakehouse, 2-page report, 4 knowledge docs |
-| **2** | [Analytics Accelerator](analytics/) | Full batch analytics with lineage | **Generated** by medallion chain | 8 DataAgents | 4-layer lakehouse, 7-page report, 2 pipelines, Mission Control router, 16-doc corpus |
-| **3** | [Fabric IQ + Foundry IQ + RTI Accelerator](fabric-iq-rti/) | Real-time + graph + hosted copilots | **Generated** + KQL real-time | 8 DataAgents + 2 hosted copilots | Adds `Payer_Ontology` graph, Eventstream→Eventhouse→KQL→Reflex, 4 RTI notebooks, 17-doc corpus |
+| Tier | Jumpstart | Type | Difficulty | Audience | Time | Items | Use cases | Agents | Data | Highlights |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **1** | [Quickstart](quickstart/) | Demo | Beginner | Exec first-look | ~5 min | 6 | 3 | 2 (`CFOAgent`, `StarsAgent`) | **Pre-baked** gold parquet | 1 lakehouse, 2-page report, 4 knowledge docs |
+| **2** | [Analytics Accelerator](analytics/) | Accelerator | Intermediate | Tech eval / adoption | ~20 min | 22 | 6 | 8 DataAgents | **Generated** by medallion chain | 4-layer lakehouse, 7-page report, 2 pipelines, Mission Control router, 16-doc corpus |
+| **3** | [Fabric IQ + Foundry IQ + RTI Accelerator](fabric-iq-rti/) | Accelerator | Advanced | Champion / lighthouse | ~45 min | 33 | 9 | 8 DataAgents + 2 hosted copilots | **Generated** + KQL real-time | Adds `Payer_Ontology` graph, Eventstream→Eventhouse→KQL→Reflex, 4 RTI notebooks, 17-doc corpus |
+
+> **Item / use-case counts** are derived from each `manifest.yaml` (deployable
+> `items` + `use_cases`) and verified in CI. **Type / Difficulty / Audience /
+> Time** come from each manifest's `catalog:` block.
 
 ## Promotion path
 

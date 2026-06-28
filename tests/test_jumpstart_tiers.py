@@ -187,6 +187,51 @@ def test_tier3_nine_use_cases(manifests: dict[int, dict]) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# Catalog metadata (drives the index README catalog table)
+# --------------------------------------------------------------------------- #
+
+EXPECTED_CATALOG = {
+    1: {"type": "Demo", "difficulty": "Beginner",
+        "audience": "Exec first-look", "est_minutes": 5},
+    2: {"type": "Accelerator", "difficulty": "Intermediate",
+        "audience": "Tech eval / adoption", "est_minutes": 20},
+    3: {"type": "Accelerator", "difficulty": "Advanced",
+        "audience": "Champion / lighthouse", "est_minutes": 45},
+}
+
+# Deployable items (sum over the items map) and guided use cases per tier.
+EXPECTED_ITEM_COUNT = {1: 6, 2: 22, 3: 33}
+EXPECTED_USE_CASE_COUNT = {1: 3, 2: 6, 3: 9}
+
+
+def _item_count(m: dict) -> int:
+    return sum(len(v) for v in m["items"].values())
+
+
+def test_catalog_block_matches(manifests: dict[int, dict]) -> None:
+    for tier, expected in EXPECTED_CATALOG.items():
+        assert manifests[tier]["catalog"] == expected, f"tier {tier} catalog drift"
+
+
+def test_item_and_use_case_counts(manifests: dict[int, dict]) -> None:
+    for tier in TIERS:
+        assert _item_count(manifests[tier]) == EXPECTED_ITEM_COUNT[tier], (
+            f"tier {tier} item count drift"
+        )
+        assert len(manifests[tier]["use_cases"]) == EXPECTED_USE_CASE_COUNT[tier], (
+            f"tier {tier} use-case count drift"
+        )
+
+
+def test_index_readme_catalog_table_is_exact(repo_root: Path) -> None:
+    index = (repo_root / "jumpstarts" / "README.md").read_text(encoding="utf-8")
+    for tier, cat in EXPECTED_CATALOG.items():
+        for value in (cat["type"], cat["difficulty"], cat["audience"]):
+            assert value in index, f"index README missing tier {tier} catalog value {value!r}"
+        assert f"~{cat['est_minutes']} min" in index, f"index README missing tier {tier} time"
+
+
+# --------------------------------------------------------------------------- #
 # READMEs
 # --------------------------------------------------------------------------- #
 

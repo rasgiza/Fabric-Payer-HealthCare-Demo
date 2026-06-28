@@ -23,6 +23,15 @@ description: >-
   Foundry DataAgents + a 2-page executive/quality Power BI report. Pre-baked
   gold data, one-click launcher, three guided use cases.
 
+# Catalog metadata — drives the jumpstarts/README.md catalog table. Item and
+# use-case counts are derived from this manifest (6 items, 3 use cases) and
+# verified by tests; the fields below are authored positioning attributes.
+catalog:
+  type: Demo
+  difficulty: Beginner
+  audience: "Exec first-look"
+  est_minutes: 5
+
 # ---------------------------------------------------------------------------
 # Workspace items cherry-picked from the full deployment (workspace/).
 # Paths are repo-relative directories that fabric-cicd / the Jumpstart

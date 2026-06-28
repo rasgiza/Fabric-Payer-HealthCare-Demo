@@ -23,6 +23,15 @@ description: >-
   + 4 RTI notebooks), and two Foundry hosted copilots (Foundry IQ) over the 8
   DataAgents, the graph, and the RTI surfaces. Nine guided use cases.
 
+# Catalog metadata — drives the jumpstarts/README.md catalog table. Item and
+# use-case counts are derived from this manifest (33 items, 9 use cases) and
+# verified by tests; the fields below are authored positioning attributes.
+catalog:
+  type: Accelerator
+  difficulty: Advanced
+  audience: "Champion / lighthouse"
+  est_minutes: 45
+
 # ---------------------------------------------------------------------------
 # Workspace items deployed by fabric-cicd / the Jumpstart installer.
 # Hosted Foundry copilots deploy separately via tools/deploy_foundry.py and
