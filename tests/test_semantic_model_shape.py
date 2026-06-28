@@ -39,6 +39,12 @@ EXPECTED_GOLD_TABLES = {
 }
 
 GOLD_LH_LOGICAL_ID = "a2000002-0001-0001-0001-000000000004"
+# Workspace-id placeholder for the DirectLake-on-OneLake URL's first path
+# segment. It is rewritten to the target workspace id by parameter.yml and is
+# intentionally distinct from the lakehouse logicalId (the second segment) so
+# Analysis Services does not reject the refresh with a "Workspace Id should be
+# consistent" error.
+WORKSPACE_PLACEHOLDER = "a0000000-0001-0001-0001-000000000000"
 SM_LOGICAL_ID = "d5000005-0001-0001-0001-000000000001"
 
 
@@ -87,10 +93,18 @@ def test_every_table_is_direct_lake(sm_root: Path) -> None:
 def test_expression_points_at_gold_lakehouse(sm_root: Path) -> None:
     text = (sm_root / "definition" / "expressions.tmdl").read_text(encoding="utf-8")
     assert "'DirectLake - lh_gold_curated'" in text
-    # the URL must reference the gold lakehouse logicalId twice (workspace and
-    # lakehouse path components) per OneLake DFS shape
-    assert text.count(GOLD_LH_LOGICAL_ID) >= 2, (
-        f"expressions.tmdl must reference {GOLD_LH_LOGICAL_ID} (workspace/lakehouse path)"
+    # The OneLake DFS URL has two path segments: /{workspaceId}/{lakehouseId}.
+    # The first MUST be the workspace placeholder (not the lakehouse id) or AS
+    # rejects the refresh; the second is the gold lakehouse logicalId.
+    assert text.count(WORKSPACE_PLACEHOLDER) >= 1, (
+        f"expressions.tmdl must reference {WORKSPACE_PLACEHOLDER} (workspace path segment)"
+    )
+    assert text.count(GOLD_LH_LOGICAL_ID) >= 1, (
+        f"expressions.tmdl must reference {GOLD_LH_LOGICAL_ID} (lakehouse path segment)"
+    )
+    assert f"{WORKSPACE_PLACEHOLDER}/{GOLD_LH_LOGICAL_ID}" in text, (
+        "DirectLake URL must be /{workspacePlaceholder}/{lakehouseLogicalId} "
+        "(distinct segments) to avoid the AS workspace-id-consistency error"
     )
     assert "[HierarchicalNavigation=true]" in text
 

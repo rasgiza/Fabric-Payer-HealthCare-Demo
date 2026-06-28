@@ -34,6 +34,20 @@ find_replace:
       staging: "$LH_GOLD_CURATED_STAGING"
       prod:    "$LH_GOLD_CURATED_PROD"
 
+  # ---------------- Target workspace (DirectLake-on-OneLake URL) ----------------
+  # The PayerAnalytics semantic model's expressions.tmdl points its DirectLake
+  # source at OneLake using a two-segment URL: /{workspaceId}/{lakehouseId}.
+  # The first segment MUST resolve to the *target workspace* id (not the
+  # lakehouse id) or Analysis Services rejects the refresh with a
+  # "Workspace Id should be consistent" error. This sentinel is a dedicated
+  # workspace placeholder (NOT a real item logicalId, so it has no .platform
+  # file — tools/deploy.py exempts it from the dead-rule drift gate).
+  - find_value: "a0000000-0001-0001-0001-000000000000"   # target workspace id (DirectLake URL)
+    replace_value:
+      dev:     "$FABRIC_WORKSPACE_ID_DEV"
+      staging: "$FABRIC_WORKSPACE_ID_STAGING"
+      prod:    "$FABRIC_WORKSPACE_ID_PROD"
+
   # ---------------- Notebooks ----------------
   - find_value: "b3000003-0001-0001-0001-000000000004"   # NB_00_Generate_Smoke_Data logicalId
     replace_value:

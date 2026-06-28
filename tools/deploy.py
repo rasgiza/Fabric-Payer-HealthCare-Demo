@@ -296,8 +296,26 @@ def _render_check() -> int:
         if isinstance(r.get("find_value"), str) and len(r["find_value"]) == 36
     }
 
+    # Workspace-id placeholders (e.g. the PayerAnalytics DirectLake URL's
+    # workspace segment) are intentional non-item sentinels: they rewrite to the
+    # target workspace id, not to any workspace/<*> item, so they have no
+    # `.platform` logicalId. Exempt them from the dead-rule gate.
+    def _is_workspace_placeholder(rule: dict) -> bool:
+        rv = rule.get("replace_value")
+        if not isinstance(rv, dict):
+            return False
+        return any(
+            isinstance(v, str) and v.startswith("$FABRIC_WORKSPACE_ID")
+            for v in rv.values()
+        )
+
+    workspace_placeholder_lids = {
+        r["find_value"] for r in rules
+        if isinstance(r.get("find_value"), str) and _is_workspace_placeholder(r)
+    }
+
     missing_rules = sorted(set(platform_lids) - rule_lids)
-    dead_rules = sorted(rule_lids - set(platform_lids))
+    dead_rules = sorted(rule_lids - set(platform_lids) - workspace_placeholder_lids)
 
     print("=" * 72)
     print("[deploy] --check  (parameter.yml <-> workspace/ drift)")

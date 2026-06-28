@@ -46,14 +46,16 @@ def _run(repo_root: Path, *args: str, env_overrides: dict[str, str] | None = Non
 
 
 def test_check_passes_in_sync_state(repo_root: Path) -> None:
-    """`--check` must exit 0 today: parameter.yml covers all 29 logicalIds."""
+    """`--check` must exit 0: parameter.yml covers all 29 logicalIds, plus one
+    workspace-id placeholder rule (logicalId-shaped but exempt from the
+    dead-rule gate because it rewrites to the target workspace id)."""
     res = _run(repo_root, "--check")
     assert res.returncode == 0, (
         f"--check failed: stdout={res.stdout!r}  stderr={res.stderr!r}"
     )
     assert "--check OK" in res.stdout
     assert ".platform logicalIds: 29" in res.stdout
-    assert "parameter.yml rules (logicalId-shaped): 29" in res.stdout
+    assert "parameter.yml rules (logicalId-shaped): 30" in res.stdout
 
 
 def test_check_does_not_require_env_flag(repo_root: Path) -> None:
@@ -75,8 +77,9 @@ def test_explain_reports_unset_vars_with_nonzero_exit(repo_root: Path) -> None:
     assert "[UNSET]" in res.stdout
     # 4 lakehouse + 9 notebook (NB_00..NB_03 + launcher + NB_RTI_01..NB_RTI_04)
     # + 2 pipeline + 1 SM + 1 ontology + 8 agent + 1 Eventhouse + 1 KQLDatabase
-    # + 1 Eventstream + 1 Reflex = 29 logicalIds + 1 workspace placeholder = 30 rules.
-    assert "rules=30" in res.stdout
+    # + 1 Eventstream + 1 Reflex = 29 logicalIds + 1 workspace-id placeholder
+    # (DirectLake URL) = 31 rules.
+    assert "rules=31" in res.stdout
     # Mentions a known unset variable
     assert "LH_BRONZE_RAW_DEV" in res.stdout
 
@@ -120,7 +123,7 @@ def test_explain_resolves_when_env_vars_set(repo_root: Path) -> None:
         f"stderr={res.stderr!r}"
     )
     assert "[UNSET]" not in res.stdout
-    assert "all 30 parameter.yml rules resolve" in res.stdout
+    assert "all 31 parameter.yml rules resolve" in res.stdout
 
 
 # ---------- --only -----------------------------------------------------------
