@@ -19,6 +19,8 @@ artifact it references resolves on disk:
   6. Each ``use_cases`` entry names a shipped agent or report surface.
   7. Tier ordering: a higher tier's items/tables/knowledge must be a superset
      of every lower tier's (promotion safety — upgrading never drops content).
+  8. Architecture diagram: every tier declares a non-empty ``mermaid_diagram``
+     block AND renders it as a ```mermaid block in the tier README.
 
 Exits non-zero on any violation. Run from repo root::
 
@@ -154,6 +156,37 @@ def validate_one(manifest_path: Path) -> list[str]:
         if uc.get("surface") not in surfaces:
             errors.append(f"{rel}: use_case {uc.get('id')}: surface '{uc.get('surface')}' not shipped")
 
+    # 7. architecture diagram present (manifest field + rendered README block)
+    errors.extend(_validate_mermaid(manifest_path, m, rel))
+
+    return errors
+
+
+def _validate_mermaid(manifest_path: Path, m: dict, rel: Path) -> list[str]:
+    """Every tier must ship a Mermaid architecture diagram.
+
+    The machine-readable source lives in the manifest's ``mermaid_diagram``
+    block; the same diagram must also be rendered into the tier README so the
+    catalog page and the repo stay in lockstep. CI blocks if either is missing.
+    """
+    errors: list[str] = []
+    diagram = m.get("mermaid_diagram")
+    if not isinstance(diagram, str) or not diagram.strip():
+        errors.append(f"{rel}: missing required 'mermaid_diagram' (architecture diagram)")
+    else:
+        first = diagram.strip().splitlines()[0].strip()
+        if not first.startswith(("graph ", "flowchart ", "graph\n", "flowchart\n")):
+            errors.append(
+                f"{rel}: mermaid_diagram must start with a 'graph'/'flowchart' directive (got '{first}')"
+            )
+
+    readme = manifest_path.parent / "README.md"
+    if not readme.exists():
+        errors.append(f"{rel}: tier README.md missing (mermaid diagram must be rendered there)")
+    elif "```mermaid" not in readme.read_text(encoding="utf-8"):
+        errors.append(
+            f"{rel}: tier README.md has no ```mermaid block (render the manifest diagram there)"
+        )
     return errors
 
 

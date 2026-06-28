@@ -11,6 +11,58 @@ the medallion lineage end to end.
 > Fabric IQ + Foundry IQ + RTI Accelerator (Tier 3). Tier 2 is a strict
 > superset of Tier 1 — every agent, table, and knowledge doc carries forward.
 
+## Architecture
+
+```mermaid
+graph LR
+    RAW[("Synthetic payer raw · NB_00 generator")]:::Source
+
+    subgraph Fabric["Fabric workspace"]
+        direction LR
+
+        subgraph ETL["Medallion ETL"]
+            direction LR
+            NB1["NB_01_Bronze_Ingest"]:::Notebook
+            NB2["NB_02_Silver_Transform"]:::Notebook
+            NB3["NB_03_Gold_Build"]:::Notebook
+            BRONZE["lh_bronze_raw"]:::Lakehouse
+            SILVER["lh_silver_stage · lh_silver_ods"]:::Lakehouse
+            GOLD["lh_gold_curated"]:::Lakehouse
+        end
+
+        PIPE["PL_Payer_Master · PL_Payer_Full_Load"]:::DataPipeline
+        LAUNCH["Healthcare_Launcher"]:::Notebook
+        SM["PayerAnalytics"]:::SemanticModel
+        RPT["PayerAnalytics report · 7 pages"]:::Report
+        ROUTER["MissionControlRouter"]:::Orchestrator
+        AGENTS["8 DataAgents · CFO, Stars, RiskAdj, SIU, CareMgmt, Network, UM, ClaimsRaw"]:::DataAgent
+    end
+
+    RAW -.-> NB1
+    NB1 --> BRONZE --> NB2 --> SILVER --> NB3 --> GOLD
+    GOLD --> SM
+    SM --> RPT
+    SM --> AGENTS
+    GOLD --> AGENTS
+    ROUTER --> AGENTS
+    LAUNCH --> PIPE
+    PIPE --> NB1
+    PIPE --> NB2
+    PIPE --> NB3
+
+    classDef Source fill:#f5f5f5,stroke:#9e9e9e,color:#333,stroke-dasharray:4 3;
+    classDef Notebook fill:#e8f0fe,stroke:#4285f4,color:#10357a;
+    classDef Lakehouse fill:#e6f4ea,stroke:#34a853,color:#0b5d2e;
+    classDef SemanticModel fill:#fef7e0,stroke:#f9ab00,color:#6b4e00;
+    classDef Report fill:#fce8e6,stroke:#ea4335,color:#8c1d13;
+    classDef DataAgent fill:#f3e8fd,stroke:#a142f4,color:#54187f;
+    classDef DataPipeline fill:#e0f7fa,stroke:#00acc1,color:#005662;
+    classDef Orchestrator fill:#fff3e0,stroke:#fb8c00,color:#7a3e00;
+```
+
+> The diagram source of truth is the `mermaid_diagram` block in
+> [`manifest.yaml`](manifest.yaml); CI fails if a tier is missing it.
+
 ## What's in the box
 
 | Component | Items |

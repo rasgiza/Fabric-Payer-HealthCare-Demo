@@ -249,3 +249,44 @@ def test_index_readme_lists_all_tiers(repo_root: Path) -> None:
     index = (repo_root / "jumpstarts" / "README.md").read_text(encoding="utf-8")
     for name in ("quickstart", "analytics", "fabric-iq-rti"):
         assert name in index, f"index README missing {name}"
+
+
+# --------------------------------------------------------------------------- #
+# Architecture diagram (Mermaid) — required per tier, enforced in CI
+# --------------------------------------------------------------------------- #
+
+
+def test_each_tier_manifest_has_valid_mermaid(manifests: dict[int, dict]) -> None:
+    for tier in TIERS:
+        diagram = manifests[tier].get("mermaid_diagram")
+        assert isinstance(diagram, str) and diagram.strip(), (
+            f"tier {tier} manifest missing 'mermaid_diagram'"
+        )
+        first = diagram.strip().splitlines()[0].strip()
+        assert first.startswith(("graph ", "flowchart ")), (
+            f"tier {tier} mermaid_diagram must start with a graph/flowchart directive"
+        )
+
+
+def test_each_tier_readme_renders_mermaid(repo_root: Path) -> None:
+    for tier, rel in TIERS.items():
+        readme = (repo_root / rel).parent / "README.md"
+        text = readme.read_text(encoding="utf-8")
+        assert "```mermaid" in text, f"tier {tier} README missing a ```mermaid block"
+
+
+def test_validator_blocks_missing_mermaid(repo_root: Path, tmp_path: Path) -> None:
+    """CI must fail when a tier omits its architecture diagram."""
+    import tools.validate_jumpstart as vj
+
+    src = yaml.safe_load((repo_root / TIERS[1]).read_text(encoding="utf-8"))
+    src.pop("mermaid_diagram", None)
+    bad = tmp_path / "quickstart"
+    bad.mkdir()
+    (bad / "manifest.yaml").write_text(yaml.safe_dump(src), encoding="utf-8")
+    (bad / "README.md").write_text("# no diagram here\n", encoding="utf-8")
+
+    errors = vj._validate_mermaid(bad / "manifest.yaml", src, Path("manifest.yaml"))
+    assert any("mermaid_diagram" in e for e in errors)
+    assert any("```mermaid" in e for e in errors)
+

@@ -9,6 +9,42 @@ report — with **pre-baked gold data**, so there is no ETL run to wait on.
 > Fabric IQ + Foundry IQ + RTI Accelerator (Tier 3). A Tier 1 install is a
 > strict subset of the full workspace, so upgrading never re-lands this data.
 
+## Architecture
+
+```mermaid
+graph LR
+    GOLD[("Pre-baked gold parquet · 14 tables")]:::Source
+
+    subgraph Fabric["Fabric workspace"]
+        direction LR
+        LAUNCH["quickstart_launcher"]:::Notebook
+        LH["lh_gold_curated"]:::Lakehouse
+        SM["PayerAnalytics"]:::SemanticModel
+        RPT["PayerAnalytics report · 2 pages"]:::Report
+        CFO["CFOAgent"]:::DataAgent
+        STARS["StarsAgent"]:::DataAgent
+    end
+
+    GOLD -.-> LAUNCH
+    LAUNCH --> LH
+    LH --> SM
+    SM --> RPT
+    SM --> CFO
+    SM --> STARS
+    LH --> CFO
+    LH --> STARS
+
+    classDef Source fill:#f5f5f5,stroke:#9e9e9e,color:#333,stroke-dasharray:4 3;
+    classDef Notebook fill:#e8f0fe,stroke:#4285f4,color:#10357a;
+    classDef Lakehouse fill:#e6f4ea,stroke:#34a853,color:#0b5d2e;
+    classDef SemanticModel fill:#fef7e0,stroke:#f9ab00,color:#6b4e00;
+    classDef Report fill:#fce8e6,stroke:#ea4335,color:#8c1d13;
+    classDef DataAgent fill:#f3e8fd,stroke:#a142f4,color:#54187f;
+```
+
+> The diagram source of truth is the `mermaid_diagram` block in
+> [`manifest.yaml`](manifest.yaml); CI fails if a tier is missing it.
+
 ## What's in the box
 
 | Component | Item | Source |
