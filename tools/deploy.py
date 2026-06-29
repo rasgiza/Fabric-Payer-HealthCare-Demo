@@ -244,6 +244,10 @@ def _render_explain(env: str) -> int:
             print(f"  {find}")
             print(f"    [no rule for env={env}]")
             continue
+        if isinstance(raw, str) and raw.startswith(("$workspace", "$items")):
+            print(f"  {find}")
+            print(f"    -> {raw}  [fabric-cicd token]")
+            continue
         if isinstance(raw, str) and raw.startswith("$"):
             var = raw.lstrip("$")
             val = os.environ.get(var)
@@ -305,7 +309,7 @@ def _render_check() -> int:
         if not isinstance(rv, dict):
             return False
         return any(
-            isinstance(v, str) and v.startswith("$FABRIC_WORKSPACE_ID")
+            isinstance(v, str) and (v.startswith("$FABRIC_WORKSPACE_ID") or v.startswith("$workspace"))
             for v in rv.values()
         )
 

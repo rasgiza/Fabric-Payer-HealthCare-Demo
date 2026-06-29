@@ -9,6 +9,15 @@ report — with **pre-baked gold data**, so there is no ETL run to wait on.
 > Fabric IQ + Foundry IQ + RTI Accelerator (Tier 3). A Tier 1 install is a
 > strict subset of the full workspace, so upgrading never re-lands this data.
 
+## Catalog landing page
+
+A self-contained, theme-aware **dashboard app** ships in [`app/index.html`](app/index.html) —
+a 3-tab interactive preview (Executive Summary, Denials &amp; Appeals, Stars &amp;
+Quality) rendered from real sample-data aggregates that mirror the live
+`PayerQuickstart` report. Open it locally or surface it as the tier's catalog
+preview so users see the dashboard as an app. No build step or external
+dependencies beyond a single charting CDN.
+
 ## Architecture
 
 <picture>

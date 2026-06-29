@@ -279,3 +279,7 @@ evals/
 .git-commit-msg.txt
 .pr-body.md
 
+
+# Tier-1 local scratch
+_t1_live.py
+.pbir/

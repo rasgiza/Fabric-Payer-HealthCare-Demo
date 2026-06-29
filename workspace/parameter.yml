@@ -44,9 +44,9 @@ find_replace:
   # file — tools/deploy.py exempts it from the dead-rule drift gate).
   - find_value: "a0000000-0001-0001-0001-000000000000"   # target workspace id (DirectLake URL)
     replace_value:
-      dev:     "$FABRIC_WORKSPACE_ID_DEV"
-      staging: "$FABRIC_WORKSPACE_ID_STAGING"
-      prod:    "$FABRIC_WORKSPACE_ID_PROD"
+      dev:     "$workspace.$id"
+      staging: "$workspace.$id"
+      prod:    "$workspace.$id"
 
   # ---------------- Notebooks ----------------
   - find_value: "b3000003-0001-0001-0001-000000000004"   # NB_00_Generate_Smoke_Data logicalId
@@ -211,6 +211,6 @@ find_replace:
   # ---------------- Workspace ----------------
   - find_value: "<WORKSPACE_ID>"
     replace_value:
-      dev:     "$FABRIC_WORKSPACE_ID_DEV"
-      staging: "$FABRIC_WORKSPACE_ID_STAGING"
-      prod:    "$FABRIC_WORKSPACE_ID_PROD"
+      dev:     "$workspace.$id"
+      staging: "$workspace.$id"
+      prod:    "$workspace.$id"

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payer Quickstart Dashboard — Tier 1</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme = param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root{color-scheme:light;--cp-bg:#f7f4ef;--cp-bg-elevated:#fcfbf8;--cp-surface:#fff;--cp-surface-soft:#f5f5f5;--cp-border:#dedede;--cp-border-strong:#919191;--cp-text:#242424;--cp-text-muted:#5c5c5c;--cp-text-soft:#6f6f6f;--cp-accent:#b11f4b;--cp-accent-hover:#9a1a41;--cp-accent-soft:rgba(177,31,75,.08);--cp-accent-fg:#fff;--cp-success:#16a34a;--cp-danger:#dc2626;--cp-warning:#f59e0b;--cp-link:#0078d4;--cp-shadow:0 18px 48px rgba(0,0,0,.12);--cp-highlight:rgba(177,31,75,.12)}
+    html[data-theme="dark"]{color-scheme:dark;--cp-bg:#3d3b3a;--cp-bg-elevated:#343231;--cp-surface:#292929;--cp-surface-soft:#2e2e2e;--cp-border:#474747;--cp-border-strong:#5f5f5f;--cp-text:#dedede;--cp-text-muted:#919191;--cp-text-soft:#b0b0b0;--cp-accent:#fd8ea1;--cp-accent-hover:#fb7b91;--cp-accent-soft:rgba(253,142,161,.14);--cp-accent-fg:#1a1a1a;--cp-success:#4ade80;--cp-danger:#f87171;--cp-warning:#fbbf24;--cp-link:#4da6ff;--cp-shadow:0 18px 48px rgba(0,0,0,.32);--cp-highlight:rgba(253,142,161,.12)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Segoe UI",Aptos,Calibri,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--cp-bg);color:var(--cp-text);-webkit-font-smoothing:antialiased}
+    .top{background:var(--cp-bg-elevated);border-bottom:1px solid var(--cp-border);padding:18px 26px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .top h1{font-size:19px;letter-spacing:-.01em}.top .badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--cp-accent);background:var(--cp-accent-soft);border:1px solid var(--cp-accent);border-radius:999px;padding:3px 10px;margin-left:10px}
+    .top .sub{font-size:12px;color:var(--cp-text-soft)}
+    nav{display:flex;gap:6px;padding:14px 26px 0;flex-wrap:wrap}
+    nav button{border:1px solid var(--cp-border);background:var(--cp-surface);color:var(--cp-text-muted);border-radius:10px 10px 0 0;padding:9px 18px;font-size:14px;font-weight:600;cursor:pointer;border-bottom:none}
+    nav button.on{color:var(--cp-accent);background:var(--cp-bg);border-color:var(--cp-accent)}
+    main{padding:18px 26px 40px}.page{display:none}.page.on{display:block}
+    .row{display:grid;gap:16px;margin-bottom:16px}.k5{grid-template-columns:repeat(5,1fr)}.k3{grid-template-columns:repeat(3,1fr)}.c2{grid-template-columns:2fr 1fr}.c11{grid-template-columns:1fr 1fr}
+    @media(max-width:880px){.k5,.k3,.c2,.c11{grid-template-columns:1fr}}
+    .card{background:var(--cp-surface);border:1px solid var(--cp-border);border-radius:16px;padding:18px;box-shadow:0 0 2px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.14)}
+    .kpi .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--cp-text-soft)}.kpi .num{font-size:28px;font-weight:700;color:var(--cp-accent);margin-top:4px}
+    .ttl{font-size:13px;font-weight:700;color:var(--cp-text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--cp-border)}th{color:var(--cp-text-soft);text-transform:uppercase;font-size:11px;letter-spacing:.04em}td.r,th.r{text-align:right}
+    canvas{height:300px!important}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div><h1 style="display:inline">Payer Quickstart<span class="badge">Tier 1 Live</span></h1><div class="sub">PayerAnalytics · 14 tables · 10 measures · pre-baked gold</div></div>
+    <div class="sub">CFOAgent · StarsAgent · sample data</div>
+  </div>
+  <nav>
+    <button class="on" data-p="exec">Executive Summary</button>
+    <button data-p="den">Denials &amp; Appeals</button>
+    <button data-p="stars">Stars &amp; Quality</button>
+  </nav>
+  <main>
+    <section class="page on" id="exec">
+      <div class="row k5">
+        <div class="card kpi"><div class="lbl">Total Claims</div><div class="num">33.1K</div></div>
+        <div class="card kpi"><div class="lbl">Total Paid</div><div class="num">$8.70M</div></div>
+        <div class="card kpi"><div class="lbl">Denial Rate</div><div class="num">13.4%</div></div>
+        <div class="card kpi"><div class="lbl">Avg MLR</div><div class="num">37.4%</div></div>
+        <div class="card kpi"><div class="lbl">Avg Stars</div><div class="num">74.8%</div></div>
+      </div>
+      <div class="row c2">
+        <div class="card"><div class="ttl">Paid Trend by Month</div><canvas id="cTrend"></canvas></div>
+        <div class="card"><div class="ttl">Avg MLR by Line of Business</div><canvas id="cMlr"></canvas></div>
+      </div>
+      <div class="card"><div class="ttl">Payer Performance</div>
+        <table><thead><tr><th>Payer</th><th class="r">Claims</th><th class="r">Paid</th><th class="r">Denial %</th></tr></thead><tbody id="tPayer"></tbody></table>
+      </div>
+    </section>
+    <section class="page" id="den">
+      <div class="row k3">
+        <div class="card kpi"><div class="lbl">Denial Rate</div><div class="num">13.4%</div></div>
+        <div class="card kpi"><div class="lbl">Total Appeals</div><div class="num">668</div></div>
+        <div class="card kpi"><div class="lbl">Total Claims</div><div class="num">33.1K</div></div>
+      </div>
+      <div class="row c11">
+        <div class="card"><div class="ttl">Claims by CARC Code</div><canvas id="cCarc"></canvas></div>
+        <div class="card"><div class="ttl">Avg Denial Rate by Payer</div><canvas id="cDenP"></canvas></div>
+      </div>
+      <div class="card"><div class="ttl">Appeals by Decision</div>
+        <table><thead><tr><th>Decision</th><th class="r">Appeals</th></tr></thead><tbody id="tApp"></tbody></table>
+      </div>
+    </section>
+    <section class="page" id="stars">
+      <div class="row k3">
+        <div class="card kpi"><div class="lbl">Avg Stars Compliance</div><div class="num">74.8%</div></div>
+        <div class="card kpi"><div class="lbl">Members</div><div class="num">500</div></div>
+        <div class="card kpi"><div class="lbl">Payers</div><div class="num">14</div></div>
+      </div>
+      <div class="row c11">
+        <div class="card"><div class="ttl">Compliance by HEDIS Measure</div><canvas id="cMeas"></canvas></div>
+        <div class="card"><div class="ttl">Compliance by Line of Business</div><canvas id="cLob"></canvas></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script>
+    const D = {"paid":{"labels":["2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10","2026-11","2026-12"],"values":[134630,209852,150092,156608,88892,174980,146686,186558,145130,199735,158982,119206,106508,124902,163562,140827,113409,98471,125938,156861,131996,121633,94292,164520,150034,152126,178406,123132,144256,188055,121031,112266,135711,134416,157368,141788,149808,106014,165277,103201,198589,106723,165441,121202,120199,136142,199684,158899,190600,149917,191385,183764,156320,82721,108936,167289,109191,105885,140118,233966]},
+      "mlr":{"labels":["Commercial","MA","Medicaid"],"values":[34.9,34.8,46.1]},
+      "payer":[["UnitedHealthcare Medicare",6174,1603348,12.7],["Aetna Medicare",5845,1399532,12.5],["Molina Medicaid",3639,1057256,15.0],["Humana Medicare",3666,1033736,13.6],["Centene Medicaid",3363,958465,13.8],["Elevance MA",3273,844691,12.8],["WellCare",2226,601246,14.2],["Cigna",814,294531,13.8],["UnitedHealthcare",1506,274665,15.8],["Aetna",1165,232491,13.1],["Health Net Medi-Cal",679,198541,11.2],["Anthem BCBS",508,149639,15.6],["BCBS Michigan",149,44271,13.4],["Kaiser Permanente",76,11717,3.9]],
+      "carc":{"labels":["50","97","16","45","204","18","96"],"values":[1268,781,583,395,328,291,214]},
+      "denP":{"labels":["UnitedHealthcare","BCBS Michigan","Anthem BCBS","WellCare","Molina Medicaid","Centene Medicaid","Humana Medicare","Cigna","Elevance MA","Aetna"],"values":[15.7,15.3,14.6,14.5,14.4,14.2,14.0,13.8,13.1,13.1]},
+      "app":[["uphold",437],["overturn",231]],
+      "meas":{"labels":["MAH-PDC","MAD-PDC","MAC-PDC","SPC-PDC","PCR","SUPD","BCS","CCS","CDC-HBA1C","CMR","CBP","TRC","CDC-EYE","FMC","COL"],"values":[100,100,100,100,92.8,86.8,81.8,70.8,68.8,68.4,67.5,63.8,63.1,62.4,61.9]},
+      "lob":{"labels":["Commercial","MA","Medicaid"],"values":[67.7,79.0,72.3]}};
+    const cs=()=>getComputedStyle(document.documentElement),A=()=>cs().getPropertyValue('--cp-accent').trim(),G=()=>cs().getPropertyValue('--cp-border').trim(),T=()=>cs().getPropertyValue('--cp-text-muted').trim();
+    document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.getElementById(b.dataset.p).classList.add('on')});
+    const tp=document.getElementById('tPayer');D.payer.forEach(r=>tp.innerHTML+=`<tr><td>${r[0]}</td><td class="r">${r[1].toLocaleString()}</td><td class="r">$${(r[2]/1e6).toFixed(2)}M</td><td class="r">${r[3]}%</td></tr>`);
+    const ta=document.getElementById('tApp');D.app.forEach(r=>ta.innerHTML+=`<tr><td>${r[0]}</td><td class="r">${r[1]}</td></tr>`);
+    Chart.defaults.color=T();Chart.defaults.borderColor=G();Chart.defaults.font.family='"Segoe UI",sans-serif';Chart.defaults.maintainAspectRatio=false;
+    const usd=v=>'$'+(v>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(0)+'K'),pct=v=>v+'%';
+    const bar={plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}};
+    const barP={plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>pct(c.parsed.y)}}},scales:{x:{grid:{display:false}}}};
+    const barPH={plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>pct(c.parsed.x)}}},indexAxis:'y',scales:{x:{grid:{display:false}}}};
+    new Chart(cTrend,{type:'line',data:{labels:D.paid.labels,datasets:[{data:D.paid.values,borderColor:A(),backgroundColor:A(),tension:.3,fill:false,pointRadius:0}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>usd(c.parsed.y)}}},scales:{y:{ticks:{callback:usd}}}}});
+    new Chart(cMlr,{type:'bar',data:{labels:D.mlr.labels,datasets:[{data:D.mlr.values,backgroundColor:A()}]},options:barP});
+    new Chart(cCarc,{type:'bar',data:{labels:D.carc.labels,datasets:[{data:D.carc.values,backgroundColor:A()}]},options:{...bar,indexAxis:'y'}});
+    new Chart(cDenP,{type:'bar',data:{labels:D.denP.labels,datasets:[{data:D.denP.values,backgroundColor:A()}]},options:barP});
+    new Chart(cMeas,{type:'bar',data:{labels:D.meas.labels,datasets:[{data:D.meas.values,backgroundColor:A()}]},options:barPH});
+    new Chart(cLob,{type:'bar',data:{labels:D.lob.labels,datasets:[{data:D.lob.values,backgroundColor:A()}]},options:barP});
+  </script>
+</body>
+</html>
