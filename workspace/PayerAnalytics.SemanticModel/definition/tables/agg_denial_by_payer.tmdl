@@ -18,7 +18,7 @@ table agg_denial_by_payer
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000002a02
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: plan_year
 
 		annotation SummarizationSetBy = Automatic
@@ -44,7 +44,7 @@ table agg_denial_by_payer
 	column denial_rate
 		dataType: double
 		lineageTag: d5000005-0001-0001-0001-00000000002a05
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: denial_rate
 
 		annotation SummarizationSetBy = Automatic

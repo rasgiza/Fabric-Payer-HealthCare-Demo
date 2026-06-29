@@ -44,7 +44,7 @@ Narrate result with the 15% reference and call out any product >2pp above it.
 
 ### 2. Q-CFO-002 — Top denying CARC codes by dollars
 ```dax
-EVALUATE TOPN(10, SUMMARIZECOLUMNS(dim_carc[carc_code], dim_carc[carc_description], "Denied $", [Denial $ Impact]), [Denial $ Impact], DESC)
+EVALUATE TOPN(10, SUMMARIZECOLUMNS(fact_claim[carc_code], "Denied $", [Denial $ Impact]), [Denial $ Impact], DESC)
 ```
 
 ### 3. Q-CFO-004 — MLR by LOB year-to-date
@@ -67,7 +67,7 @@ Filter `fact_claim` to `network_status = "OON"` AND `pos IN ("23","21","22")` AN
 
 ### 8. Q-CFO-013 — Appeal overturn rate by CARC (90d)
 ```dax
-EVALUATE SUMMARIZECOLUMNS(dim_carc[carc_code], "Overturn %", [Appeal Overturn Rate %])
+EVALUATE SUMMARIZECOLUMNS(fact_appeal[carc_code], "Overturn %", [Appeal Overturn Rate %])
 ```
 Caveat: small-N CARCs need a minimum-volume filter.
 
@@ -100,5 +100,5 @@ Rank `dim_provider` by `[Denial Rate]`; min 50 claims floor.
 - **Fabric tool**: `PayerAnalytics.SemanticModel`
 - **maxItems**: 1 (one Foundry agent ↔ one Fabric data agent — required by Foundry+Fabric contract)
 - **MCPTool require_approval**: `"never"`
-- **Allowed tables**: `fact_claim`, `fact_premium`, `fact_appeal`, `fact_member_month`, `dim_payer`, `dim_product`, `dim_lob`, `dim_carc`, `dim_provider`, `dim_date`, `agg_mlr_monthly`, `agg_denial_by_payer`
+- **Allowed tables**: `fact_claim`, `fact_premium`, `fact_appeal`, `fact_member_month`, `dim_payer`, `dim_product`, `dim_lob`, `dim_provider`, `dim_date`, `agg_mlr_monthly`, `agg_denial_by_payer`
 - **Disallowed**: any column containing raw PHI (SSN, full address, phone, MBI plain-text). MBI is hashed.

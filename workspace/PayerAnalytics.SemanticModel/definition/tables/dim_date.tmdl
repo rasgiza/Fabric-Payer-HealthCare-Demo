@@ -42,7 +42,7 @@ table dim_date
 		dataType: int64
 		formatString: 0
 		lineageTag: 1a096e57-c35f-46fd-94a1-65d0ab228290
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: quarter
 
 		annotation SummarizationSetBy = Automatic

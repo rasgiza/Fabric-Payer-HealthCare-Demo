@@ -70,7 +70,7 @@ table dim_member
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001109
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: age_at_year_end
 
 		annotation SummarizationSetBy = Automatic
@@ -79,7 +79,7 @@ table dim_member
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-0000000000110a
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: dob_year
 
 		annotation SummarizationSetBy = Automatic
@@ -88,7 +88,7 @@ table dim_member
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-0000000000110b
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: zip3
 
 		annotation SummarizationSetBy = Automatic

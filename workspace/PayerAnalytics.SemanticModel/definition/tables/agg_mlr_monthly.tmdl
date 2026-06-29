@@ -18,7 +18,7 @@ table agg_mlr_monthly
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000002b02
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: plan_year
 
 		annotation SummarizationSetBy = Automatic
@@ -64,7 +64,7 @@ table agg_mlr_monthly
 	column mlr_monthly_est
 		dataType: double
 		lineageTag: d5000005-0001-0001-0001-00000000002b07
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: mlr_monthly_est
 
 		annotation SummarizationSetBy = Automatic

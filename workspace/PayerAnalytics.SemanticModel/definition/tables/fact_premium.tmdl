@@ -14,7 +14,7 @@ table fact_premium
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001e02
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: plan_year
 
 		annotation SummarizationSetBy = Automatic
@@ -47,7 +47,7 @@ table fact_premium
 	column premium_pmpm
 		dataType: double
 		lineageTag: d5000005-0001-0001-0001-00000000001e06
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: premium_pmpm
 
 		annotation SummarizationSetBy = Automatic

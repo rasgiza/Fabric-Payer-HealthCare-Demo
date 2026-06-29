@@ -41,7 +41,7 @@ table fact_claim
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001a02
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: line_no
 
 		annotation SummarizationSetBy = Automatic
@@ -92,7 +92,7 @@ table fact_claim
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001a08
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: plan_year
 
 		annotation SummarizationSetBy = Automatic
@@ -109,7 +109,7 @@ table fact_claim
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001a0a
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: place_of_service
 
 		annotation SummarizationSetBy = Automatic
@@ -199,7 +199,7 @@ table fact_claim
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001a14
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: denied_int
 
 		annotation SummarizationSetBy = Automatic
@@ -208,7 +208,7 @@ table fact_claim
 		dataType: int64
 		formatString: 0
 		lineageTag: d5000005-0001-0001-0001-00000000001a15
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: paid_int
 
 		annotation SummarizationSetBy = Automatic
