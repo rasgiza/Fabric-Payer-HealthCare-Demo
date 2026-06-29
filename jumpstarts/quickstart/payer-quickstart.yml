@@ -1,0 +1,34 @@
+id: 26   # TODO: confirm a unique unused id before PR (highest in registry today is 25)
+logical_id: payer-quickstart
+name: Tier-1 Payer Analytics Quickstart
+description: >-
+  Land a curated gold lakehouse, PayerAnalytics semantic model, two Foundry
+  data agents (CFO + Stars), and a 2-page Power BI report in minutes. Ships
+  pre-baked gold data with a one-click launcher and three guided use cases.
+date_added: 06/28/2026
+workload_tags:
+  - Data Engineering
+  - Data Science
+  - Power BI
+scenario_tags:
+  - Healthcare
+type: Demo
+source:
+  repo_url: https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo.git
+  repo_ref: v1.0.0
+  workspace_path: jumpstarts/quickstart/
+items_in_scope:
+  - Lakehouse
+  - SemanticModel
+  - Report
+  - DataAgent
+  - Notebook
+jumpstart_docs_uri: ''
+entry_point: quickstart_launcher.Notebook
+test_suite: ''
+owner_email: kwamesefah@microsoft.com
+minutes_to_deploy: 5
+minutes_to_complete_jumpstart: 10
+video_url: ''
+difficulty: Beginner
+last_updated: "2026-06-28"
