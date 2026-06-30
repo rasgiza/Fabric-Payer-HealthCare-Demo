@@ -118,7 +118,7 @@ items:
     - { name: ClaimsRawExplorer,   source: workspace/ClaimsRawExplorer.DataAgent,   authoring: data_agents/ClaimsRawExplorer.DataAgent }
   report:
     - name: PayerAnalytics
-      source: powerbi/PayerAnalytics.Report
+      source: workspace/PayerAnalytics.Report
       pages:
         - "01_Executive"
         - "02_DenialsAppeals"
@@ -209,6 +209,32 @@ knowledge:
     - onelake_security_model.md
     - policy_citation_pattern.md
     - sdoh_hcp_lan_framework.md
+
+# ---------------------------------------------------------------------------
+# Governance & PHI protection. Tier 2 ships HIPAA-aware OneLake data access
+# controls and Microsoft Purview sensitivity labelling so the medallion gold
+# is demo-safe for PHI. Documented in payer_knowledge/onelake_security_model.md
+# and applied by the launcher's governance step. Carried forward to Tier 3.
+# ---------------------------------------------------------------------------
+governance:
+  doc: onelake_security_model.md
+  onelake_security:
+    lakehouse: lh_gold_curated
+    # Least-privilege roles enforced on gold; member PHI columns are read-gated.
+    roles:
+      - name: payer_analyst
+        grant: read
+        tables: [agg_mlr_monthly, agg_denial_by_payer, agg_stars_compliance, dim_payer, dim_lob, dim_product, dim_date]
+      - name: phi_steward
+        grant: read
+        tables: [dim_member, fact_claim, fact_member_month]
+    column_masking:
+      dim_member: [member_name, dob, ssn_last4]
+  purview:
+    sensitivity_labels:
+      - { label: "Highly Confidential — PHI", applies_to: [dim_member, fact_claim, fact_member_month, fact_quality_event] }
+      - { label: "Confidential — Financial",  applies_to: [fact_premium, agg_mlr_monthly] }
+    classifications: [HIPAA, PII, "U.S. Health Insurance Claim Number"]
 
 # ---------------------------------------------------------------------------
 # Six guided scenarios spanning the persona agents. Documented in README.md.

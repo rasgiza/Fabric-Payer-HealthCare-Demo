@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": { "value": "${AZURE_ENV_NAME}" },
+    "location": { "value": "${AZURE_LOCATION}" },
+    "deployingPrincipalId": { "value": "${AZURE_PRINCIPAL_ID}" },
+    "fabricWorkspaceId": { "value": "${FABRIC_WORKSPACE_ID}" },
+    "semanticModel": { "value": "${PAYER_SEMANTIC_MODEL=PayerAnalytics}" },
+    "modelName": { "value": "${FOUNDRY_MODEL_NAME=gpt-4.1-mini}" },
+    "modelVersion": { "value": "${FOUNDRY_MODEL_VERSION=2025-04-14}" },
+    "modelSkuName": { "value": "${FOUNDRY_MODEL_SKU=GlobalStandard}" },
+    "modelCapacity": { "value": "${FOUNDRY_MODEL_CAPACITY=50}" }
+  }
+}

@@ -1,0 +1,40 @@
+id: 27   # TODO: confirm a unique unused id before PR (highest in registry today is 25; 26 reserved for payer-quickstart)
+logical_id: payer-analytics
+name: Tier-2 Payer Analytics Accelerator
+description: >-
+  Stand up a full payer analytics medallion in Fabric: 4 lakehouses, 35 gold
+  tables across a star schema, a PayerAnalytics semantic model, 8 Foundry data
+  agents (CFO, Stars, Risk, SIU, Care Management, Network, UM, Claims) routed
+  through a Mission Control orchestrator, and a 7-page Power BI report. ETL is
+  generated from raw sources (no pre-baked gold). Ships OneLake security roles,
+  column masking, and Purview sensitivity labels (PHI / Financial) so payers
+  get governed analytics out of the box.
+date_added: 06/28/2026
+workload_tags:
+  - Data Engineering
+  - Data Science
+  - Power BI
+  - Real-Time Intelligence
+scenario_tags:
+  - Healthcare
+type: Demo
+source:
+  repo_url: https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo.git
+  repo_ref: v1.0.0
+  workspace_path: jumpstarts/analytics/
+items_in_scope:
+  - Lakehouse
+  - SemanticModel
+  - Report
+  - DataAgent
+  - Notebook
+  - DataPipeline
+jumpstart_docs_uri: ''
+entry_point: Healthcare_Launcher.Notebook
+test_suite: ''
+owner_email: kwamesefah@microsoft.com
+minutes_to_deploy: 20
+minutes_to_complete_jumpstart: 45
+video_url: ''
+difficulty: Intermediate
+last_updated: "2026-06-28"

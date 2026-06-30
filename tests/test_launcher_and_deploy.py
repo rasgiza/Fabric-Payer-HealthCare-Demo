@@ -61,10 +61,29 @@ def test_launcher_gold_sanity_check_covers_key_aggregates(workspace_dir: Path) -
 
 
 def test_launcher_has_b35_cell_count(workspace_dir: Path) -> None:
-    """Launcher must keep its 6-cell shape (1 markdown + 5 python)."""
+    """Launcher must keep its 6-cell shape (1 markdown + 5 python).
+
+    Accepts both Fabric notebook serialisations of the cell delimiter:
+      - canonical export:  `# CELL ********************` / `# MARKDOWN ****...`
+        (cell language lives in the following `# META {...}` block), and
+      - legacy inline:     `# CELL **{"language":"python"}**`.
+    Only the cell *shape* (1 markdown + 5 python) is asserted, not the token
+    spelling, so a format round-trip through Fabric doesn't break the gate.
+    """
+    import re
+
     content = (workspace_dir / f"{LAUNCHER}.Notebook" / "notebook-content.py").read_text(encoding="utf-8")
-    md = content.count('# MARKDOWN **{"language":"markdown"}**')
-    py = content.count('# CELL **{"language":"python"}**')
+
+    md_inline = len(re.findall(r'# MARKDOWN \*\*\{', content))
+    py_inline = len(re.findall(r'# CELL \*\*\{"language":"python"\}\*\*', content))
+    if md_inline or py_inline:
+        md, py = md_inline, py_inline
+    else:
+        # Canonical format: delimiters are bare asterisks; language is in META.
+        md = len(re.findall(r'^# MARKDOWN \*{4,}\s*$', content, re.MULTILINE))
+        cells = len(re.findall(r'^# CELL \*{4,}\s*$', content, re.MULTILINE))
+        py = cells  # all non-markdown cells in the launcher are python
+
     assert md == 1, f"expected 1 markdown cell, found {md}"
     assert py == 5, f"expected 5 python cells (CONFIG + 4 steps), found {py}"
 

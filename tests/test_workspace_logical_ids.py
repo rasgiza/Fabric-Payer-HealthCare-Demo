@@ -21,6 +21,7 @@ fabric-cicd `SUPPORTED_TYPES` ordering):
   b3000003-  Notebook
   c4000004-  DataPipeline
   d5000005-  SemanticModel, Ontology, DataAgent
+  e5000005-  Report
   e6000006-  Eventhouse
   f7000007-  KQLDatabase
   08000008-  Eventstream
@@ -41,6 +42,7 @@ PREFIX_BY_TYPE = {
     "SemanticModel": "d5000005-",
     "Ontology": "d5000005-",
     "DataAgent": "d5000005-",
+    "Report": "e5000005-",
     "Eventhouse": "e6000006-",
     "KQLDatabase": "f7000007-",
     "Eventstream": "08000008-",
@@ -136,7 +138,7 @@ def test_logical_ids_follow_type_namespace_convention(workspace_dir: Path) -> No
 
 
 def test_expected_workspace_inventory(workspace_dir: Path) -> None:
-    """Inventory lock: 28 items today. Bump this when you add a new workspace item.
+    """Inventory lock: 30 items today. Bump this when you add a new workspace item.
 
     Stream A (deployment.yaml + parameter.yml) and tools/deploy.py SUPPORTED_TYPES
     must move together; this test forces the author of a new item to think about
@@ -154,6 +156,7 @@ def test_expected_workspace_inventory(workspace_dir: Path) -> None:
         "SemanticModel": 1,
         "Ontology": 1,
         "DataAgent": 8,
+        "Report": 1,
         "Eventhouse": 1,
         "KQLDatabase": 1,
         "Eventstream": 1,

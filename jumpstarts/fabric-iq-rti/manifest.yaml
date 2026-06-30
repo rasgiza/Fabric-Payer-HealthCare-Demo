@@ -152,7 +152,7 @@ items:
     - { name: PayerRT_Copilot, authoring: data_agents/PayerRT_Copilot.HostedAgent }
   report:
     - name: PayerAnalytics
-      source: powerbi/PayerAnalytics.Report
+      source: workspace/PayerAnalytics.Report
       pages:
         - "01_Executive"
         - "02_DenialsAppeals"

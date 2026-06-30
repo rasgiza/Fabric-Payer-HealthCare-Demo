@@ -1,7 +1,21 @@
 """
-build_pbi_report.py - Generate PBIR report files from powerbi/pages.yaml.
+build_pbi_report.py - [DEPRECATED] Schematic PBIR generator from powerbi/pages.yaml.
 
-Output:
+.. deprecated::
+    The authoritative, deployable report now lives at
+    ``workspace/PayerAnalytics.Report`` and is generated as REAL Power BI PBIR
+    (v4.0) bound to the live PayerAnalytics semantic model using the ``pbir``
+    CLI (see the ``_build_payer_report.py`` driver at the repo root). That report
+    is the one fabric-cicd deploys (it is listed in ``deployment.yaml`` itemOrder
+    and the jumpstart manifests point ``items.report.source`` at it).
+
+    This script emits a *schematic* (not visual-pixel-perfect) report into the
+    legacy ``powerbi/PayerAnalytics.Report`` folder using a custom simplified
+    JSON shape that Power BI will NOT render. It is retained only as a reference
+    for the ``powerbi/pages.yaml`` design intent and is no longer wired into any
+    deploy path. Running it requires the explicit ``--force-legacy`` flag.
+
+Output (legacy):
   powerbi/PayerAnalytics.Report/
     definition.pbir              (points at the semantic model)
     definition/
@@ -10,12 +24,8 @@ Output:
       pages/<id>/page.json       (per-page definition)
       pages/<id>/visuals/<id>.json
 
-Phase 7 fabric-cicd deploys this to a Fabric workspace and rebinds the dataset
-reference to the published PayerAnalytics semantic model.
-
 The output is intentionally schematic (not visual-pixel-perfect). Visual
-positions use a 4-column grid auto-layout. Power BI reads PBIR JSON and
-materializes visuals; humans can refine in Power BI Desktop after deploy.
+positions use a 4-column grid auto-layout.
 """
 from __future__ import annotations
 
@@ -106,9 +116,27 @@ def emit_visual(visual, idx) -> str:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser()
+    p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--clean", action="store_true")
+    p.add_argument(
+        "--force-legacy",
+        action="store_true",
+        help="Acknowledge this generator is DEPRECATED and emit the schematic "
+             "powerbi/PayerAnalytics.Report anyway. The deployable report is "
+             "workspace/PayerAnalytics.Report (built via pbir).",
+    )
     args = p.parse_args()
+
+    if not args.force_legacy:
+        print(
+            "[pbir] build_pbi_report.py is DEPRECATED. The deployable report is "
+            "workspace/PayerAnalytics.Report (real PBIR bound to the live "
+            "semantic model, built via the pbir CLI / _build_payer_report.py). "
+            "Re-run with --force-legacy only if you specifically need the old "
+            "schematic powerbi/PayerAnalytics.Report.",
+            file=sys.stderr,
+        )
+        return 2
 
     if not PAGES_YAML.exists():
         print(f"[pbir] missing {PAGES_YAML}", file=sys.stderr)

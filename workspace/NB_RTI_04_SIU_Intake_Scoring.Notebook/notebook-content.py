@@ -1,8 +1,20 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_RTI_04 - SIU Intake Scoring (SIU persona)
 #
@@ -37,9 +49,13 @@ kql_cluster_uri = ""
 kql_database = "kqldb_payer_rt"
 dry_run = True
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked scored-output schema. C.4 Activator rule + C.6 RUNBOOK consume
 # this projection; do not edit either side in isolation.
@@ -60,9 +76,13 @@ assert 0.0 <= score_threshold <= 1.0, (
 assert lookback_min >= 1, f"lookback_min must be >= 1, got {lookback_min}"
 assert kql_database, "kql_database must be non-empty"
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked KQL: simple additive intake score from three signals. C.4
 # Activator predicate is `intake_score >= score_threshold`. Update both
@@ -106,9 +126,13 @@ rendered_kql = SIU_SCORING_KQL.format(
 print("[rti_04] KQL query:")
 print(rendered_kql)
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 if dry_run:
     print(f"[rti_04] dry_run=True -> skipping query against "

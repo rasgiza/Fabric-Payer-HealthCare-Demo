@@ -11,17 +11,12 @@
 # every notebook session.
 
 # Microsoft AI / Foundry stack (GA pieces). The new Foundry Agent Service (GA)
-# uses the Responses API; the classic Assistants API surface and the
-# `2026-04-01-preview` api_version are deprecated (retires 2027-03-31).
-azure-ai-projects==1.0.0
-azure-ai-agents==1.0.0
-azure-identity==1.19.0
-openai==1.55.0
-
-# Microsoft Agent Framework 1.9.0 (latest; used by PayerOpsAgent + hosted
-# Foundry agents). 1.10 does not exist on PyPI — do not bump until released.
-agent-framework==1.9.0
-agent-framework-azure-ai==1.9.0
+# uses the Responses API via azure-ai-projects. tools/deploy_data_agents.py
+# --live creates declarative prompt agents through
+# AIProjectClient.agents.create_version(... PromptAgentDefinition ...).
+azure-ai-projects>=2.1.0
+azure-identity>=1.19.0
+openai>=1.55.0
 
 # Fabric CI/CD (tools/deploy.py + GitHub Actions deploy job). v1.0.0 made
 # token_credential mandatory; tools/deploy.py passes DefaultAzureCredential.

@@ -1,8 +1,33 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "a2000002-0001-0001-0001-000000000002",
+# META       "default_lakehouse_name": "lh_silver_stage",
+# META       "default_lakehouse_workspace_id": "a0000000-0001-0001-0001-000000000000",
+# META       "known_lakehouses": [
+# META         {"id": "a2000002-0001-0001-0001-000000000001"},
+# META         {"id": "a2000002-0001-0001-0001-000000000002"},
+# META         {"id": "a2000002-0001-0001-0001-000000000003"},
+# META         {"id": "a2000002-0001-0001-0001-000000000004"}
+# META       ]
+# META     }
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_02 - Silver Transform (Payer)
 #
@@ -20,9 +45,13 @@
 #   - `strftime(d, '%Y%m%d')`    → `DATE_FORMAT(d, 'yyyyMMdd')`
 #   - `generate_series(1,12)`    → `EXPLODE(SEQUENCE(1,12))`
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 from datetime import datetime
 from pyspark.sql import SparkSession
@@ -70,9 +99,13 @@ TBLPROPERTIES (
 )
 """
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ----- dim_date (rich calendar — day-of-week, ISO week, fiscal, weekend/month-end flags) -----
 spark.sql(f"""
@@ -185,9 +218,13 @@ FROM months
 
 print("[silver-stage] 14 tables written (dim_date, members, claims_header, claims_line, rx_claims, auths, appeals, premiums, providers, payers, conditions, raf_scores, quality_events, member_month)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ----- A.0c passthroughs into silver_ods (with derived date keys) -----
 
@@ -236,9 +273,13 @@ spark.sql(f"CREATE OR REPLACE TABLE {ODS}.vbc_attribution {TBL_PROPS} AS SELECT 
 
 print("[silver-ods] 8 A.0c passthroughs written")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # OPTIMIZE silver tables so gold reads from compact V-Order'd shards. Cheap at
 # smoke scale; at full scale this is what keeps Direct Lake snappy.
@@ -260,9 +301,13 @@ for t in _SILVER_ODS_TBLS:
 print(f"[silver] OPTIMIZE complete ({len(_SILVER_STAGE_TBLS)} stage + {len(_SILVER_ODS_TBLS)} ods)")
 print("[silver] PASS — 22 tables total (14 stage + 8 ods)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Audit-log emit — see NB_01 for full doc. Counts silver rows by re-querying
 # each table from the metastore so we capture post-write counts inclusive of
@@ -304,7 +349,8 @@ _audit_df = spark.createDataFrame([(
     None, _audit_rowcount_out, _audit_table_count, _audit_duration_ms,
     "success", None, _audit_started_at, _audit_completed_at,
     _audit_user, _audit_git_sha,
-)], _AUDIT_SCHEMA)try:
+)], _AUDIT_SCHEMA)
+try:
     (_audit_df.write
         .mode("append")
         .format("delta")

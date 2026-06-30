@@ -1,8 +1,33 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "a2000002-0001-0001-0001-000000000004",
+# META       "default_lakehouse_name": "lh_gold_curated",
+# META       "default_lakehouse_workspace_id": "a0000000-0001-0001-0001-000000000000",
+# META       "known_lakehouses": [
+# META         {"id": "a2000002-0001-0001-0001-000000000001"},
+# META         {"id": "a2000002-0001-0001-0001-000000000002"},
+# META         {"id": "a2000002-0001-0001-0001-000000000003"},
+# META         {"id": "a2000002-0001-0001-0001-000000000004"}
+# META       ]
+# META     }
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # Fabric Payer Healthcare Demo — Launcher
 #
@@ -36,9 +61,13 @@
 # > `tools/deploy_data_agents.py --live`, not this notebook). RTI Eventhouse
 # > + Activator + KQL Dashboard (Stream C).
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ============================================================================
 # CONFIGURATION — edit these values
@@ -60,7 +89,7 @@ RUN_SANITY_CHECK      = True   # Cell 4: gold-tier 8-table + publish-state summa
 # --- ETL options (apply only when RUN_ETL=True) ---
 RUN_ID             = "smoke"        # synth batch under Files/synth/<run_id>/
 MODE               = "overwrite"    # 'overwrite' on first run, 'append' for daily increment
-RUN_GENERATE_SMOKE = False          # set True to run NB_00 first (fetch+gen 500-member smoke set)
+RUN_GENERATE_SMOKE = True           # set True to run NB_00 first (fetch+gen 500-member smoke set)
 SMOKE_SCALE        = 0.005          # NB_00 generator scale (only used when RUN_GENERATE_SMOKE=True)
 SMOKE_SEED         = 42             # NB_00 RNG seed (deterministic)
 RUN_BRONZE         = True           # set False to skip NB_01 (silver+gold-only iteration)
@@ -71,9 +100,13 @@ print(f"Source ref:  github.com/{GITHUB_OWNER}/{GITHUB_REPO}@{GITHUB_BRANCH}")
 print(f"Toggles:     knowledge={UPLOAD_KNOWLEDGE_DOCS}  etl={RUN_ETL}  patch_agents={PATCH_DATA_AGENTS}  sanity={RUN_SANITY_CHECK}")
 print(f"ETL config:  run_id={RUN_ID}  mode={MODE}  gen_smoke={RUN_GENERATE_SMOKE}  run_bronze={RUN_BRONZE}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ============================================================================
 # CELL 1 — Upload payer_knowledge/*.md → lh_gold_curated/Files/payer_knowledge/
@@ -138,9 +171,13 @@ if UPLOAD_KNOWLEDGE_DOCS:
 else:
     print("Skipping payer-knowledge upload (UPLOAD_KNOWLEDGE_DOCS=False)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ============================================================================
 # CELL 2 — Run the medallion notebook chain
@@ -165,6 +202,7 @@ if RUN_ETL:
                 "github_owner": GITHUB_OWNER,
                 "github_repo": GITHUB_REPO,
                 "github_branch": GITHUB_BRANCH,
+                "useRootDefaultLakehouse": True,
             },
         )
 
@@ -172,15 +210,15 @@ if RUN_ETL:
         results["NB_01_Bronze_Ingest"] = mssparkutils.notebook.run(
             "NB_01_Bronze_Ingest",
             3600,
-            {"run_id": RUN_ID, "mode": MODE},
+            {"run_id": RUN_ID, "mode": MODE, "useRootDefaultLakehouse": True},
         )
 
     results["NB_02_Silver_Transform"] = mssparkutils.notebook.run(
-        "NB_02_Silver_Transform", 3600, {}
+        "NB_02_Silver_Transform", 3600, {"useRootDefaultLakehouse": True}
     )
 
     results["NB_03_Gold_Build"] = mssparkutils.notebook.run(
-        "NB_03_Gold_Build", 3600, {}
+        "NB_03_Gold_Build", 3600, {"useRootDefaultLakehouse": True}
     )
 
     for k, v in results.items():
@@ -188,9 +226,13 @@ if RUN_ETL:
 else:
     print("Skipping ETL chain (RUN_ETL=False)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ============================================================================
 # CELL 3 — Patch 7 Foundry DataAgents with real workspace artifact ids
@@ -341,9 +383,13 @@ if PATCH_DATA_AGENTS:
 else:
     print("Skipping DataAgent ID patching (PATCH_DATA_AGENTS=False)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ============================================================================
 # CELL 4 — Sanity check: gold tables + publish-state summary

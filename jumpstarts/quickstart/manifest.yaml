@@ -85,7 +85,7 @@ items:
       authoring: data_agents/StarsAgent.DataAgent
   report:
     - name: PayerAnalytics
-      source: powerbi/PayerAnalytics.Report
+      source: workspace/PayerAnalytics.Report
       pages:
         - "01_Executive"
         - "03_StarsQuality"

@@ -318,7 +318,26 @@ def _render_check() -> int:
         if isinstance(r.get("find_value"), str) and _is_workspace_placeholder(r)
     }
 
-    missing_rules = sorted(set(platform_lids) - rule_lids)
+    # Reports that bind to their semantic model by relative path
+    # (definition.pbir -> datasetReference.byPath) carry no dataset GUID to
+    # remap across tenants — fabric-cicd resolves the sibling .SemanticModel at
+    # publish time. Such reports legitimately have a `.platform` logicalId but
+    # need no find_replace rule, so exempt them from the missing-rule gate.
+    bypath_report_lids: set[str] = set()
+    for lid, item in platform_lids.items():
+        if not item.endswith(".Report"):
+            continue
+        pbir = WORKSPACE_DIR / item / "definition.pbir"
+        if not pbir.exists():
+            continue
+        try:
+            ref = json.loads(pbir.read_text(encoding="utf-8")).get("datasetReference", {})
+        except (json.JSONDecodeError, OSError):
+            continue
+        if isinstance(ref.get("byPath"), dict) and ref["byPath"].get("path"):
+            bypath_report_lids.add(lid)
+
+    missing_rules = sorted(set(platform_lids) - rule_lids - bypath_report_lids)
     dead_rules = sorted(rule_lids - set(platform_lids) - workspace_placeholder_lids)
 
     print("=" * 72)
@@ -326,6 +345,8 @@ def _render_check() -> int:
     print("=" * 72)
     print(f"  .platform logicalIds: {len(platform_lids)}")
     print(f"  parameter.yml rules (logicalId-shaped): {len(rule_lids)}")
+    if bypath_report_lids:
+        print(f"  byPath reports (no rewrite needed): {len(bypath_report_lids)}")
 
     if missing_rules:
         print()

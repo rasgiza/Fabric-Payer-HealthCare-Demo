@@ -41,7 +41,7 @@ dependencies beyond a single charting CDN.
 | Semantic model | `PayerAnalytics` | `workspace/PayerAnalytics.SemanticModel` |
 | CFO agent | `CFOAgent` | `workspace/CFOAgent.DataAgent` |
 | Stars/Quality agent | `StarsAgent` | `workspace/StarsAgent.DataAgent` |
-| Report (2 pages) | `PayerAnalytics` — `01_Executive`, `03_StarsQuality` | `powerbi/PayerAnalytics.Report` |
+| Report (2 pages) | `PayerAnalytics` — `01_Executive`, `03_StarsQuality` | `workspace/PayerAnalytics.Report` |
 | Launcher | `quickstart_launcher` | `jumpstarts/quickstart/quickstart_launcher.Notebook` |
 | Pre-baked gold | 14 Delta/parquet tables | `jumpstarts/quickstart/data/gold/` |
 

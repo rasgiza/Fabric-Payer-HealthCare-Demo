@@ -46,16 +46,20 @@ def _run(repo_root: Path, *args: str, env_overrides: dict[str, str] | None = Non
 
 
 def test_check_passes_in_sync_state(repo_root: Path) -> None:
-    """`--check` must exit 0: parameter.yml covers all 29 logicalIds, plus one
-    workspace-id placeholder rule (logicalId-shaped but exempt from the
-    dead-rule gate because it rewrites to the target workspace id)."""
+    """`--check` must exit 0: parameter.yml covers all rewriteable logicalIds.
+    Of the 30 `.platform` logicalIds, the PayerAnalytics.Report binds to its
+    semantic model byPath (no dataset GUID to remap) so it needs no rule, and
+    the parameter.yml carries one workspace-id placeholder rule (logicalId-
+    shaped but exempt from the dead-rule gate because it rewrites to the target
+    workspace id)."""
     res = _run(repo_root, "--check")
     assert res.returncode == 0, (
         f"--check failed: stdout={res.stdout!r}  stderr={res.stderr!r}"
     )
     assert "--check OK" in res.stdout
-    assert ".platform logicalIds: 29" in res.stdout
+    assert ".platform logicalIds: 30" in res.stdout
     assert "parameter.yml rules (logicalId-shaped): 30" in res.stdout
+    assert "byPath reports (no rewrite needed): 1" in res.stdout
 
 
 def test_check_does_not_require_env_flag(repo_root: Path) -> None:

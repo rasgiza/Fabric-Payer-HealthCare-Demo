@@ -72,7 +72,11 @@ def test_notebook_content_has_fabric_header_and_a_cell(workspace_dir: Path) -> N
         assert text.lstrip().startswith("# Fabric notebook source"), (
             f"{nb}: notebook-content.py must start with '# Fabric notebook source'"
         )
-        assert re.search(r"^# CELL \*\*\{", text, flags=re.MULTILINE), (
+        # Accept both Fabric serialisations of the CELL delimiter: the legacy
+        # inline `# CELL **{"language":"python"}**` and the canonical export
+        # `# CELL ********************` (language carried in the following META
+        # block). Either way, at least one code cell must be present.
+        assert re.search(r"^# CELL \*\*(\{|\*)", text, flags=re.MULTILINE), (
             f"{nb}: no CELL markers found — fabric-cicd would publish an empty notebook"
         )
 

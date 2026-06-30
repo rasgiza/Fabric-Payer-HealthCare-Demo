@@ -1,8 +1,20 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_RTI_01 - Ingest Claims Stream (Payer)
 #
@@ -44,9 +56,13 @@ kql_database = "kqldb_payer_rt"
 kql_table = "claim_arrivals"
 dry_run = True
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # claim_arrivals event schema. Kept here (not in a separate module) so the
 # Eventhouse table DDL in C.3 + the Activator rules in C.4 can lift the same
@@ -104,9 +120,13 @@ events = pd.DataFrame(rows, columns=CLAIM_ARRIVAL_COLUMNS)
 print(f"[rti_01] generated {len(events):,} events over {lookback_min} min "
       f"window ending {now.isoformat()}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Stage to parquet under Files/rt/<run_id>/ so the Eventstream's "OneLake
 # parquet" source can pick it up too (C.2 demo path: presenter runs this
@@ -117,9 +137,13 @@ parquet_path = STAGE / "claim_arrivals.parquet"
 events.to_parquet(parquet_path, index=False)
 print(f"[rti_01] staged parquet -> {parquet_path}  ({parquet_path.stat().st_size:,} bytes)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Direct ingest into kqldb_payer_rt. Skipped when dry_run=True so this
 # notebook is safe to publish before the Eventhouse cluster URI is known.

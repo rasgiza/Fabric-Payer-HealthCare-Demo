@@ -1,8 +1,20 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_RTI_03 - ADT Outreach (CareMgmt persona)
 #
@@ -39,9 +51,13 @@ kql_database = "kqldb_payer_rt"
 kql_table = "adt_admissions"
 dry_run = True
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked event schema. C.4 Activator rule + C.6 RUNBOOK lift this verbatim.
 ADT_ADMISSION_COLUMNS = [
@@ -100,9 +116,13 @@ parquet_path = STAGE / "adt_admissions.parquet"
 events.to_parquet(parquet_path, index=False)
 print(f"[rti_03] staged parquet -> {parquet_path}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked KQL query: emergency admits in the last 4h that have not been
 # touched by a CareMgmt outreach (member_outreach table assumed populated
@@ -138,9 +158,13 @@ adt_admissions
 print("[rti_03] KQL query:")
 print(ADT_OUTREACH_KQL)
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 if dry_run:
     print(f"[rti_03] dry_run=True -> skipping ingest + query against "

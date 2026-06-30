@@ -1,8 +1,33 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "a2000002-0001-0001-0001-000000000001",
+# META       "default_lakehouse_name": "lh_bronze_raw",
+# META       "default_lakehouse_workspace_id": "a0000000-0001-0001-0001-000000000000",
+# META       "known_lakehouses": [
+# META         {"id": "a2000002-0001-0001-0001-000000000001"},
+# META         {"id": "a2000002-0001-0001-0001-000000000002"},
+# META         {"id": "a2000002-0001-0001-0001-000000000003"},
+# META         {"id": "a2000002-0001-0001-0001-000000000004"}
+# META       ]
+# META     }
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_00 - Generate Smoke Data (Payer)
 #
@@ -21,9 +46,13 @@
 # - `github_repo`   - source repo name (default: `Fabric-Payer-HealthCare-Demo`)
 # - `github_branch` - source repo branch (default: `main`)
 
-# METADATA **{"language":"python"}**
+# PARAMETERS CELL ********************
 
-# PARAMETERS CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 run_id = "smoke"
 scale = 0.005
@@ -32,9 +61,13 @@ github_owner = "rasgiza"
 github_repo = "Fabric-Payer-HealthCare-Demo"
 github_branch = "main"
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # 21-table inventory matches NB_01_Bronze_Ingest BRONZE_TABLES (kept in sync by
 # tests/test_notebook_shape.py::test_bronze_inventory_matches_etl_module).
@@ -95,13 +128,20 @@ for name in REFERENCE_CSVS:
     bytes_total += _fetch(f"data/reference/{name}", STAGE_REF / name)
 print(f"[gen] fetched generator + {len(REFERENCE_CSVS)} reference csvs ({bytes_total:,} bytes)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Generator resolves reference + output paths relative to its own __file__:
 #   ref = <script>/../data/reference
-#   out = --out arg
+#   out = (--out arg) / (--run-id arg or "scale_<scale>")
+# It ALWAYS nests output under a run_id subfolder, so pass --out=STAGE_OUT.parent
+# and --run-id=run_id to make the generator's `out / run_id` resolve back to
+# STAGE_OUT (= STAGE/data/synth/<run_id>), where the copy step reads from.
 # Staging tree mirrors the repo layout, so reference lookup just works.
 proc = subprocess.run(
     [
@@ -109,7 +149,8 @@ proc = subprocess.run(
         str(STAGE_TOOLS / "gen_payer_overlay.py"),
         "--scale", str(scale),
         "--seed", str(seed),
-        "--out", str(STAGE_OUT),
+        "--out", str(STAGE_OUT.parent),
+        "--run-id", run_id,
     ],
     capture_output=True,
     text=True,
@@ -120,9 +161,13 @@ if proc.returncode != 0:
     print(proc.stderr, file=sys.stderr)
     raise RuntimeError(f"gen_payer_overlay.py failed with exit {proc.returncode}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 DEST.mkdir(parents=True, exist_ok=True)
 # Clear any prior contents under the same run_id so this notebook is idempotent.

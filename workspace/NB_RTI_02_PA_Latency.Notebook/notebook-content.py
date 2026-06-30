@@ -1,8 +1,20 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_RTI_02 - PA Latency (UM persona, CMS-0057-F)
 #
@@ -40,9 +52,13 @@ kql_database = "kqldb_payer_rt"
 kql_table = "auth_lifecycle"
 dry_run = True
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked event schema. C.4 Activator rule + C.6 RUNBOOK lift this verbatim.
 AUTH_LIFECYCLE_COLUMNS = [
@@ -113,9 +129,13 @@ parquet_path = STAGE / "auth_lifecycle.parquet"
 events.to_parquet(parquet_path, index=False)
 print(f"[rti_02] staged parquet -> {parquet_path}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Locked KQL query. Tests pin this string so C.4 Activator + C.6 RUNBOOK
 # can lift it verbatim; drift would break the downstream rule predicate.
@@ -138,9 +158,13 @@ auth_lifecycle
 print("[rti_02] KQL query:")
 print(PA_LATENCY_KQL)
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 if dry_run:
     print(f"[rti_02] dry_run=True -> skipping ingest + query against "

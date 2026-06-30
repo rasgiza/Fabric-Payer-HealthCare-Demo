@@ -1,8 +1,33 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "a2000002-0001-0001-0001-000000000001",
+# META       "default_lakehouse_name": "lh_bronze_raw",
+# META       "default_lakehouse_workspace_id": "a0000000-0001-0001-0001-000000000000",
+# META       "known_lakehouses": [
+# META         {"id": "a2000002-0001-0001-0001-000000000001"},
+# META         {"id": "a2000002-0001-0001-0001-000000000002"},
+# META         {"id": "a2000002-0001-0001-0001-000000000003"},
+# META         {"id": "a2000002-0001-0001-0001-000000000004"}
+# META       ]
+# META     }
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_01 - Bronze Ingest (Payer)
 #
@@ -15,16 +40,24 @@
 # - `run_id`  — synth run folder under `Files/synth/` (default: `smoke`)
 # - `mode`    — `overwrite` (default) or `append`
 
-# METADATA **{"language":"python"}**
+# PARAMETERS CELL ********************
 
-# PARAMETERS CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 run_id = "smoke"
 mode = "overwrite"
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 from datetime import datetime
 from pyspark.sql import SparkSession
@@ -61,9 +94,13 @@ src_root = f"Files/synth/{run_id}"
 print(f"[bronze] start={datetime.now().isoformat(timespec='seconds')} run_id={run_id} mode={mode}")
 print(f"[bronze] src={src_root}")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # 21-table inventory matches tools/run_local_etl.py BRONZE_TABLES (kept in sync
 # by tests/test_notebook_shape.py).
@@ -125,51 +162,63 @@ for t in BRONZE_TABLES:
     writer = df.write.mode(mode).format("delta")
     for k, v in _DELTA_WRITE_OPTS.items():
         writer = writer.option(k, v)
-    writer.saveAsTable(t)
+    writer.saveAsTable(f"lh_bronze_raw.{t}")
 
     # Make Delta properties sticky so MERGE / OPTIMIZE called by silver inherit
     # them, then read row count from the freshly written table (no extra scan
     # of the source CSV).
     spark.sql(f"""
-        ALTER TABLE {t} SET TBLPROPERTIES (
+        ALTER TABLE lh_bronze_raw.{t} SET TBLPROPERTIES (
             'delta.enableChangeDataFeed' = 'true',
             'delta.enableDeletionVectors' = 'true',
             'delta.autoOptimize.optimizeWrite' = 'true',
             'delta.autoOptimize.autoCompact' = 'true'
         )
     """)
-    n = spark.sql(f"SELECT COUNT(*) AS n FROM {t}").collect()[0]["n"]
+    n = spark.sql(f"SELECT COUNT(*) AS n FROM lh_bronze_raw.{t}").collect()[0]["n"]
     results.append((t, n))
     print(f"  [ok] {t:<35s} rows={n}")
 
 print(f"[bronze] wrote {len(results)} tables")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Compact the small files left behind by the per-table writes so silver and
 # gold see large parquet shards and V-Order kicks in immediately. Skipped on
 # append (incremental) so we don't rewrite history every run.
 if mode == "overwrite":
     for t, _ in results:
-        spark.sql(f"OPTIMIZE {t}")
+        spark.sql(f"OPTIMIZE lh_bronze_raw.{t}")
     print(f"[bronze] OPTIMIZE complete for {len(results)} tables")
 else:
     print(f"[bronze] mode={mode}, skipping OPTIMIZE (run NB_99_Maintenance for periodic compaction)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Smoke check: every bronze table queryable from the metastore
 for t, _ in results:
-    spark.sql(f"SELECT COUNT(*) FROM {t}").collect()
+    spark.sql(f"SELECT COUNT(*) FROM lh_bronze_raw.{t}").collect()
 print("[bronze] PASS — all 21 tables registered in lh_bronze_raw")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Emit one row into lh_gold_curated.audit_log so observability dashboards
 # (Workbook + PBI lineage report) can reconcile rowcounts and duration across

@@ -1,8 +1,13 @@
-# PayerAnalytics PBI Report — page + visual spec
+# PayerAnalytics PBI Report — page + visual DESIGN SPEC (design intent only).
 #
-# Used by tools/build_pbi_report.py to emit PBIR JSON.
-# Phase 7 fabric-cicd deploys to Fabric workspace and binds to the deployed
-# PayerAnalytics semantic model.
+# This file is the design source-of-truth for the report's page set. The page
+# IDs here are validated by tools/validate_jumpstart.py against the jumpstart
+# manifests' items.report.pages lists.
+#
+# NOTE: the DEPLOYABLE report is workspace/PayerAnalytics.Report — real Power BI
+# PBIR (v4.0) bound to the live PayerAnalytics semantic model, built via the
+# pbir CLI (see _build_payer_report.py). The legacy tools/build_pbi_report.py
+# emits a non-rendering schematic from this file and is DEPRECATED.
 #
 # Page IDs follow naming convention: NN_ShortName
 

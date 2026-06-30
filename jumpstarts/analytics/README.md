@@ -43,6 +43,26 @@ the medallion lineage end to end.
 The single source of truth is [`manifest.yaml`](manifest.yaml), validated in CI
 by `tools/validate_jumpstart.py`.
 
+## Dashboard preview
+
+A self-contained, offline HTML preview of the seven-page report ships in
+[`app/index.html`](app/index.html) — open it in any browser (Chart.js is
+vendored locally under `app/vendor/`, no network needed). It mirrors the Power
+BI layout so you can demo the analytics before deploying to Fabric:
+
+| Tab | Highlights |
+| --- | --- |
+| **Executive** | Paid trend, MLR by LOB, payer performance table |
+| **Denials & Appeals** | CARC mix, denial rate by payer, appeal overturn rate |
+| **Stars & Quality** | HEDIS compliance by measure and LOB |
+| **Risk Adjustment** | RAF by LOB, suspected HCC gaps, RAF lift opportunity |
+| **PA Lifecycle** | Median TAT and SLA-met % by service line |
+| **Member 360** | Readmissions, SDOH burden, VBC attribution, outreach |
+| **Claim Case** | Top denial CARCs with plain-language explanations |
+| **Governance** | Purview labels + OneLake access per gold table |
+
+The preview honors the Clawpilot light/dark theme via `?scoutTheme=dark`.
+
 ## Install
 
 1. Deploy the items into a Fabric workspace (`fabric-cicd` or the Jumpstart
@@ -65,6 +85,25 @@ by `tools/validate_jumpstart.py`.
 
 Ask any of these in the Mission Control router (or the agent directly) — the
 router classifies the question and dispatches to the right persona agent.
+
+## Governance & security
+
+Payers cannot ship analytics without governance, so Tier 2 bakes it in. The
+`governance` block in [`manifest.yaml`](manifest.yaml) is the source of truth:
+
+- **OneLake data-access roles** — `payer_analyst` (de-identified analytics) and
+  `phi_steward` (full PHI for compliance/clinical review), scoped per gold
+  table.
+- **Column masking** on `dim_member` — member name, SSN, and date of birth are
+  masked for the analyst role and exposed only to the PHI steward.
+- **Purview sensitivity labels** — `Highly Confidential — PHI` on member,
+  claim, member-month, and quality-event tables; `Confidential — Financial` on
+  premium and MLR aggregates.
+- **Classifications** — HIPAA and PII tags propagate to downstream lineage so
+  the semantic model and report inherit the labels.
+
+The **Governance** tab in the dashboard preview renders this matrix so reviewers
+can see exactly which role sees which table before anything is deployed.
 
 ## Notes
 

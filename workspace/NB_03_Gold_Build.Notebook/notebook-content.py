@@ -1,8 +1,33 @@
 # Fabric notebook source
 
-# METADATA **{"language":"markdown"}**
+# METADATA ********************
 
-# MARKDOWN **{"language":"markdown"}**
+# META {
+# META   "kernel_info": {
+# META     "name": "synapse_pyspark"
+# META   },
+# META   "dependencies": {
+# META     "lakehouse": {
+# META       "default_lakehouse": "a2000002-0001-0001-0001-000000000004",
+# META       "default_lakehouse_name": "lh_gold_curated",
+# META       "default_lakehouse_workspace_id": "a0000000-0001-0001-0001-000000000000",
+# META       "known_lakehouses": [
+# META         {"id": "a2000002-0001-0001-0001-000000000001"},
+# META         {"id": "a2000002-0001-0001-0001-000000000002"},
+# META         {"id": "a2000002-0001-0001-0001-000000000003"},
+# META         {"id": "a2000002-0001-0001-0001-000000000004"}
+# META       ]
+# META     }
+# META   }
+# META }
+
+# MARKDOWN ********************
+
+# METADATA ********************
+
+# META {
+# META   "language": "markdown"
+# META }
 
 # # NB_03 - Gold Build (Payer)
 #
@@ -18,9 +43,13 @@
 # SQL is a direct port of `tools/run_local_etl.py::gold()`.
 # DuckDB `quantile_cont` is translated to Spark `PERCENTILE_APPROX`.
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 from datetime import datetime
 from pyspark.sql import SparkSession
@@ -65,9 +94,13 @@ TBLPROPERTIES (
 )
 """
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ----- Dimensions (10) -----
 
@@ -84,9 +117,13 @@ spark.sql(f"CREATE OR REPLACE TABLE dim_hcc       {TBL_PROPS} AS SELECT DISTINCT
 
 print("[gold] 10 dims written")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ----- Facts (16) -----
 
@@ -127,9 +164,13 @@ spark.sql(f"CREATE OR REPLACE TABLE fact_vbc_attribution                {TBL_PRO
 
 print("[gold] 16 facts written")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # ----- Aggregates (9) -----
 
@@ -280,9 +321,13 @@ FROM oon CROSS JOIN dir
 
 print("[gold] 9 aggregates written")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Final compaction + cleanup. OPTIMIZE rewrites small files to V-Order'd shards
 # so Direct Lake reads at line-rate. VACUUM with retentionDuration=168 hours
@@ -320,9 +365,13 @@ print(f"[gold] VACUUM complete for {len(_ALL_GOLD)} tables")
 
 print("[gold] PASS — 35 tables in lh_gold_curated (10 dims + 16 facts + 9 aggs)")
 
-# METADATA **{"language":"python"}**
+# CELL ********************
 
-# CELL **{"language":"python"}**
+# METADATA ********************
+
+# META {
+# META   "language": "python"
+# META }
 
 # Audit-log emit — see NB_01 for full doc. The default lakehouse here IS
 # lh_gold_curated so the table name is unqualified.

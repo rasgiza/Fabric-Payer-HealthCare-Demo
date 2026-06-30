@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+#
+# azd config for the Payer demo's Azure AI Foundry infrastructure + agents.
+#
+# `azd up` (or `azd provision`) gives the prompt-driven jumpstart experience:
+#   1. azd prompts for: subscription, location, environment name, and the
+#      Fabric workspace ID (FABRIC_WORKSPACE_ID, via main.parameters.json).
+#   2. Bicep provisions the Foundry account + project + gpt-4.1-mini + RBAC
+#      (infra/foundry/main.bicep).
+#   3. The postprovision hook runs tools/deploy_data_agents.py --live
+#      --foundry-only, which creates the Foundry-hosted agents (orchestrator +
+#      hosted copilots) on the freshly provisioned project.
+#
+# There is intentionally NO `services:` block — the agents are created
+# declaratively via the Foundry Responses API, not deployed as azd containers.
+# The Fabric data agents are deployed separately by the Fabric launcher /
+# fabric-cicd; this azd flow only owns the Foundry side.
+#
+# Prereqs for the hook: a Python env with the repo requirements installed
+# (agent-framework-azure-ai==1.9.0, azure-identity). Override the interpreter
+# with the PYTHON env var; otherwise the hook uses ../.venv then `python`.
+name: fabric-payer-foundry
+metadata:
+  template: fabric-payer-foundry@1.0.0
+
+infra:
+  provider: bicep
+  path: infra/foundry
+  module: main
+
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      continueOnError: false
+      interactive: true
+      run: ./scripts/postprovision.ps1
+    posix:
+      shell: sh
+      continueOnError: false
+      interactive: true
+      run: ./scripts/postprovision.sh

@@ -283,3 +283,12 @@ evals/
 # Tier-1 local scratch
 _t1_live.py
 .pbir/
+
+# azd environment state (subscription/location/outputs per environment)
+.azure/
+
+# Local agent/build scratch files (leading-underscore helpers, never shipped)
+_*.py
+_*.txt
+_*.json
+_*.log
