@@ -1,0 +1,17 @@
+table dim_procedure
+	lineageTag: d5000005-0001-0001-0001-00000000001700
+	sourceLineageTag: [dbo].[dim_procedure]
+
+	column cpt_hcpcs
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001701
+		summarizeBy: none
+		sourceColumn: cpt_hcpcs
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_procedure = entity
+		mode: directLake
+		source
+			entityName: dim_procedure
+			expressionSource: 'DirectLake - lh_gold_curated'

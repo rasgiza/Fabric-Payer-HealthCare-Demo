@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "3ac0920b4b4f8320",
+  "displayName": "Prior Auth Lifecycle",
+  "width": 1280,
+  "height": 720,
+  "displayOption": "FitToPage"
+}

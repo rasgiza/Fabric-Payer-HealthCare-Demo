@@ -1,0 +1,104 @@
+table fact_readmission
+	lineageTag: d5000005-0001-0001-0001-00000000002500
+	sourceLineageTag: [dbo].[fact_readmission]
+
+	column readmit_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002501
+		summarizeBy: none
+		sourceColumn: readmit_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002502
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column index_claim_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002503
+		summarizeBy: none
+		sourceColumn: index_claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column hrrp_cohort
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002504
+		summarizeBy: none
+		sourceColumn: hrrp_cohort
+
+		annotation SummarizationSetBy = Automatic
+
+	column index_dis_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002505
+		summarizeBy: none
+		sourceColumn: index_dis_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column readmit_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002506
+		summarizeBy: none
+		sourceColumn: readmit_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column days_to_readmit
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002507
+		summarizeBy: sum
+		sourceColumn: days_to_readmit
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column readmit_within_30d
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000002508
+		summarizeBy: none
+		sourceColumn: readmit_within_30d
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002509
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column index_dis_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000250a
+		summarizeBy: none
+		sourceColumn: index_dis_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column readmit_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000250b
+		summarizeBy: none
+		sourceColumn: readmit_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_readmission = entity
+		mode: directLake
+		source
+			entityName: fact_readmission
+			expressionSource: 'DirectLake - lh_gold_curated'

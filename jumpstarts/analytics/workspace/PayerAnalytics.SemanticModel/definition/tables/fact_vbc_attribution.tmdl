@@ -1,0 +1,58 @@
+table fact_vbc_attribution
+	lineageTag: d5000005-0001-0001-0001-00000000002900
+	sourceLineageTag: [dbo].[fact_vbc_attribution]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002901
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column provider_npi
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002902
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+		annotation SummarizationSetBy = Automatic
+
+	column vbc_contract_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002903
+		summarizeBy: none
+		sourceColumn: vbc_contract_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column attribution_method
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002904
+		summarizeBy: none
+		sourceColumn: attribution_method
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002905
+		summarizeBy: sum
+		sourceColumn: effective_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column risk_arrangement
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002906
+		summarizeBy: none
+		sourceColumn: risk_arrangement
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_vbc_attribution = entity
+		mode: directLake
+		source
+			entityName: fact_vbc_attribution
+			expressionSource: 'DirectLake - lh_gold_curated'

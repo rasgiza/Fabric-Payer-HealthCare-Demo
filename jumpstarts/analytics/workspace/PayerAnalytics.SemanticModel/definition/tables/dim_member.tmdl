@@ -1,0 +1,205 @@
+table dim_member
+	lineageTag: d5000005-0001-0001-0001-00000000001100
+	sourceLineageTag: [dbo].[dim_member]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001101
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column mbi_hash
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001102
+		summarizeBy: none
+		sourceColumn: mbi_hash
+
+		annotation SummarizationSetBy = Automatic
+
+	column subscriber_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001103
+		summarizeBy: none
+		sourceColumn: subscriber_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001104
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	column product
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001105
+		summarizeBy: none
+		sourceColumn: product
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001106
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column race_ethnicity
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001107
+		summarizeBy: none
+		sourceColumn: race_ethnicity
+
+		annotation SummarizationSetBy = Automatic
+
+	column sex
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001108
+		summarizeBy: none
+		sourceColumn: sex
+
+		annotation SummarizationSetBy = Automatic
+
+	column age_at_year_end
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001109
+		summarizeBy: none
+		sourceColumn: age_at_year_end
+
+		annotation SummarizationSetBy = Automatic
+
+	column dob_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000110a
+		summarizeBy: none
+		sourceColumn: dob_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column zip3
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000110b
+		summarizeBy: none
+		sourceColumn: zip3
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-0000000000110c
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-0000000000110d
+		summarizeBy: none
+		sourceColumn: plan_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column pcp_provider_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-0000000000110e
+		summarizeBy: none
+		sourceColumn: pcp_provider_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column effective_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000110f
+		summarizeBy: sum
+		sourceColumn: effective_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column sdoh_housing_unstable
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001110
+		summarizeBy: none
+		sourceColumn: sdoh_housing_unstable
+
+		annotation SummarizationSetBy = Automatic
+
+	column sdoh_food_insecure
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001111
+		summarizeBy: none
+		sourceColumn: sdoh_food_insecure
+
+		annotation SummarizationSetBy = Automatic
+
+	column sdoh_transport_barrier
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001112
+		summarizeBy: none
+		sourceColumn: sdoh_transport_barrier
+
+		annotation SummarizationSetBy = Automatic
+
+	column lis_de_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001113
+		summarizeBy: none
+		sourceColumn: lis_de_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column disability_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001114
+		summarizeBy: none
+		sourceColumn: disability_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column hei_eligible_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001115
+		summarizeBy: none
+		sourceColumn: hei_eligible_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column re_l_collection_method
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001116
+		summarizeBy: none
+		sourceColumn: re_l_collection_method
+
+		annotation SummarizationSetBy = Automatic
+
+	column sogi_collected_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001117
+		summarizeBy: none
+		sourceColumn: sogi_collected_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column age_band
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001118
+		summarizeBy: none
+		sourceColumn: age_band
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_member = entity
+		mode: directLake
+		source
+			entityName: dim_member
+			expressionSource: 'DirectLake - lh_gold_curated'

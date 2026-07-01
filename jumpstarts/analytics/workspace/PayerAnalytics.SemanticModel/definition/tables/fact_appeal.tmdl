@@ -1,0 +1,88 @@
+table fact_appeal
+	lineageTag: d5000005-0001-0001-0001-00000000001d00
+	sourceLineageTag: [dbo].[fact_appeal]
+
+	measure 'Total Appeals' = COUNTROWS(fact_appeal)
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001de1
+
+	column appeal_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001d01
+		summarizeBy: none
+		sourceColumn: appeal_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column claim_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001d02
+		summarizeBy: none
+		sourceColumn: claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001d03
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column level
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001d04
+		summarizeBy: none
+		sourceColumn: level
+
+		annotation SummarizationSetBy = Automatic
+
+	column carc_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001d05
+		summarizeBy: none
+		sourceColumn: carc_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column filed_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000001d06
+		summarizeBy: none
+		sourceColumn: filed_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column decision
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001d07
+		summarizeBy: none
+		sourceColumn: decision
+
+		annotation SummarizationSetBy = Automatic
+
+	column peer_to_peer_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001d08
+		summarizeBy: none
+		sourceColumn: peer_to_peer_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001d09
+		summarizeBy: none
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_appeal = entity
+		mode: directLake
+		source
+			entityName: fact_appeal
+			expressionSource: 'DirectLake - lh_gold_curated'

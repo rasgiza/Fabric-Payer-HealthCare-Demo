@@ -1,0 +1,80 @@
+table fact_raf_score
+	lineageTag: d5000005-0001-0001-0001-00000000002100
+	sourceLineageTag: [dbo].[fact_raf_score]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002101
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002102
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column demographic_raf
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002103
+		summarizeBy: sum
+		sourceColumn: demographic_raf
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column coded_hcc_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002104
+		summarizeBy: sum
+		sourceColumn: coded_hcc_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column suspect_hcc_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002105
+		summarizeBy: sum
+		sourceColumn: suspect_hcc_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column coded_hccs
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002106
+		summarizeBy: none
+		sourceColumn: coded_hccs
+
+		annotation SummarizationSetBy = Automatic
+
+	column suspect_hccs
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002107
+		summarizeBy: none
+		sourceColumn: suspect_hccs
+
+		annotation SummarizationSetBy = Automatic
+
+	column raf_score
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002108
+		summarizeBy: sum
+		sourceColumn: raf_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fact_raf_score = entity
+		mode: directLake
+		source
+			entityName: fact_raf_score
+			expressionSource: 'DirectLake - lh_gold_curated'

@@ -21,7 +21,12 @@ type: Demo
 source:
   repo_url: https://github.com/rasgiza/Fabric-Payer-HealthCare-Demo.git
   repo_ref: v1.0.0
-  workspace_path: jumpstarts/analytics/
+  # Self-contained Tier-2 item tree, generated from the repo-root workspace/
+  # source-of-truth by tools/build_jumpstart_workspace.py (drift-gated in CI).
+  # The installer walks this folder for *.<ItemType> items filtered by
+  # items_in_scope, so it must contain ONLY Tier-2 items (no NB_RTI_* / RTI /
+  # ontology) plus parameter.yml.
+  workspace_path: jumpstarts/analytics/workspace/
 items_in_scope:
   - Lakehouse
   - SemanticModel

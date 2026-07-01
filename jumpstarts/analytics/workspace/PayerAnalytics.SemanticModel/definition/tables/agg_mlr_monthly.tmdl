@@ -1,0 +1,78 @@
+table agg_mlr_monthly
+	lineageTag: d5000005-0001-0001-0001-00000000002b00
+	sourceLineageTag: [dbo].[agg_mlr_monthly]
+
+	measure 'Avg MLR (Monthly Est)' = AVERAGE(agg_mlr_monthly[mlr_monthly_est])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5000005-0001-0001-0001-00000000002be1
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002b01
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002b02
+		summarizeBy: none
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002b03
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+	column medical_paid
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002b04
+		summarizeBy: sum
+		sourceColumn: medical_paid
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column premium_total
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002b05
+		summarizeBy: sum
+		sourceColumn: premium_total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column mm
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002b06
+		summarizeBy: sum
+		sourceColumn: mm
+
+		annotation SummarizationSetBy = Automatic
+
+	column mlr_monthly_est
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002b07
+		summarizeBy: none
+		sourceColumn: mlr_monthly_est
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition agg_mlr_monthly = entity
+		mode: directLake
+		source
+			entityName: agg_mlr_monthly
+			expressionSource: 'DirectLake - lh_gold_curated'

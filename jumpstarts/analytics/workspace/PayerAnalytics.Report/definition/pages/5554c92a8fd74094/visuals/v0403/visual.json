@@ -1,0 +1,120 @@
+{
+  "name": "v0403",
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "queryRef": "dim_member.product",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_member"
+                    }
+                  },
+                  "Property": "product"
+                }
+              },
+              "nativeQueryRef": "product"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "queryRef": "fact_raf_score.raf_score",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_raf_score"
+                    }
+                  },
+                  "Property": "raf_score"
+                }
+              },
+              "nativeQueryRef": "raf_score"
+            },
+            {
+              "queryRef": "fact_raf_score.suspect_hcc_count",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_raf_score"
+                    }
+                  },
+                  "Property": "suspect_hcc_count"
+                }
+              },
+              "nativeQueryRef": "suspect_hcc_count"
+            },
+            {
+              "queryRef": "fact_raf_score.coded_hcc_count",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_raf_score"
+                    }
+                  },
+                  "Property": "coded_hcc_count"
+                }
+              },
+              "nativeQueryRef": "coded_hcc_count"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {},
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'RAF by Product'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "position": {
+    "x": 24,
+    "y": 440,
+    "z": 0,
+    "width": 1232,
+    "height": 256,
+    "tabOrder": 0
+  },
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json"
+}

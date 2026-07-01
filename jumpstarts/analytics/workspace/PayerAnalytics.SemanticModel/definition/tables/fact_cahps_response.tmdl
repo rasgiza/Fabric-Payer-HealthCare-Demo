@@ -1,0 +1,85 @@
+table fact_cahps_response
+	lineageTag: d5000005-0001-0001-0001-00000000002700
+	sourceLineageTag: [dbo].[fact_cahps_response]
+
+	column response_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002701
+		summarizeBy: none
+		sourceColumn: response_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002702
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column survey_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002703
+		summarizeBy: sum
+		sourceColumn: survey_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_health_plan
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002704
+		summarizeBy: sum
+		sourceColumn: rating_health_plan
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_personal_doctor
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002705
+		summarizeBy: sum
+		sourceColumn: rating_personal_doctor
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_specialist
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002706
+		summarizeBy: sum
+		sourceColumn: rating_specialist
+
+		annotation SummarizationSetBy = Automatic
+
+	column getting_needed_care
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002707
+		summarizeBy: none
+		sourceColumn: getting_needed_care
+
+		annotation SummarizationSetBy = Automatic
+
+	column getting_care_quickly
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002708
+		summarizeBy: none
+		sourceColumn: getting_care_quickly
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_service
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002709
+		summarizeBy: none
+		sourceColumn: customer_service
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_cahps_response = entity
+		mode: directLake
+		source
+			entityName: fact_cahps_response
+			expressionSource: 'DirectLake - lh_gold_curated'

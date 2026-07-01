@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "9e4f31059b7056ee",
+  "displayName": "Pharmacy Prior Auth",
+  "width": 1280,
+  "height": 720,
+  "displayOption": "FitToPage"
+}

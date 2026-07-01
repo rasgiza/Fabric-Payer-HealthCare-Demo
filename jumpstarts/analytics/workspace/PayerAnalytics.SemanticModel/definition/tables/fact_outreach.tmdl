@@ -1,0 +1,68 @@
+table fact_outreach
+	lineageTag: d5000005-0001-0001-0001-00000000002800
+	sourceLineageTag: [dbo].[fact_outreach]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002801
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column outreach_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002802
+		summarizeBy: none
+		sourceColumn: outreach_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column channel
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002803
+		summarizeBy: none
+		sourceColumn: channel
+
+		annotation SummarizationSetBy = Automatic
+
+	column purpose
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002804
+		summarizeBy: none
+		sourceColumn: purpose
+
+		annotation SummarizationSetBy = Automatic
+
+	column outcome
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002805
+		summarizeBy: none
+		sourceColumn: outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002806
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column outreach_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002807
+		summarizeBy: none
+		sourceColumn: outreach_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_outreach = entity
+		mode: directLake
+		source
+			entityName: fact_outreach
+			expressionSource: 'DirectLake - lh_gold_curated'

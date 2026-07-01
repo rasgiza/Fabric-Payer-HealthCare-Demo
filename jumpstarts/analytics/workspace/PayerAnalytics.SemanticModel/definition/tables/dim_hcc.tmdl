@@ -1,0 +1,17 @@
+table dim_hcc
+	lineageTag: d5000005-0001-0001-0001-00000000001900
+	sourceLineageTag: [dbo].[dim_hcc]
+
+	column hcc_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001901
+		summarizeBy: none
+		sourceColumn: hcc_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_hcc = entity
+		mode: directLake
+		source
+			entityName: dim_hcc
+			expressionSource: 'DirectLake - lh_gold_curated'

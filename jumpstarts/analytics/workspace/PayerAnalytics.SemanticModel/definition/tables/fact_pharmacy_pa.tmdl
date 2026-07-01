@@ -1,0 +1,118 @@
+table fact_pharmacy_pa
+	lineageTag: d5000005-0001-0001-0001-00000000002200
+	sourceLineageTag: [dbo].[fact_pharmacy_pa]
+
+	measure 'Total PA Requests' = COUNTROWS(fact_pharmacy_pa)
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-000000000022e1
+
+	measure 'PA Approval Rate' = DIVIDE(CALCULATE(COUNTROWS(fact_pharmacy_pa), fact_pharmacy_pa[decision] = "approve"), COUNTROWS(fact_pharmacy_pa))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5000005-0001-0001-0001-000000000022e2
+
+	column pa_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002201
+		summarizeBy: none
+		sourceColumn: pa_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002202
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ndc_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002203
+		summarizeBy: none
+		sourceColumn: ndc_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column drug_class
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002204
+		summarizeBy: none
+		sourceColumn: drug_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column submitted_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002205
+		summarizeBy: none
+		sourceColumn: submitted_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column decision_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000002206
+		summarizeBy: none
+		sourceColumn: decision_at
+
+		annotation SummarizationSetBy = Automatic
+
+	column decision
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002207
+		summarizeBy: none
+		sourceColumn: decision
+
+		annotation SummarizationSetBy = Automatic
+
+	column indication
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002208
+		summarizeBy: none
+		sourceColumn: indication
+
+		annotation SummarizationSetBy = Automatic
+
+	column approval_rate_bucket
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002209
+		summarizeBy: none
+		sourceColumn: approval_rate_bucket
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000220a
+		summarizeBy: sum
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column submitted_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000220b
+		summarizeBy: none
+		sourceColumn: submitted_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column decision_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-0000000000220c
+		summarizeBy: none
+		sourceColumn: decision_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_pharmacy_pa = entity
+		mode: directLake
+		source
+			entityName: fact_pharmacy_pa
+			expressionSource: 'DirectLake - lh_gold_curated'

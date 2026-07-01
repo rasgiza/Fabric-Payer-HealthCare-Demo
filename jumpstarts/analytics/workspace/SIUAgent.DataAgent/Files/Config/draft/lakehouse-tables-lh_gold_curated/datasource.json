@@ -1,0 +1,669 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "00000000-0000-0000-0000-000000000000",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "displayName": "lh_gold_curated",
+  "type": "lakehouse_tables",
+  "dataSourceInstructions": "Gold-layer lakehouse for the SIUAgent persona. Use SQL for detail-row queries, TOP-N lists, and filtered lookups across the allowed tables. Always JOIN on _key columns. Prefer the PayerAnalytics semantic model for KPIs / percentages / fleet-wide aggregates (DAX measures are pre-computed).",
+  "userDescription": "Gold lakehouse tables exposed to SIUAgent (allowlist: ['dim_date', 'dim_member', 'dim_payer', 'dim_provider', 'fact_appeal', 'fact_claim', 'fact_rx_claim']).",
+  "metadata": {},
+  "elements": [
+    {
+      "id": "24387b9d-6eb5-5569-aaa3-86fafb428d95",
+      "is_selected": true,
+      "display_name": "Schemas",
+      "type": "schema_grouping",
+      "description": null,
+      "children": [
+        {
+          "id": "9f433af0-64d8-5ff4-96ed-66bbe5f37700",
+          "is_selected": true,
+          "display_name": "dbo",
+          "type": "lakehouse_tables.schema",
+          "description": null,
+          "children": [
+            {
+              "id": "1a78b610-cde4-54b4-8790-54e64a20e86b",
+              "is_selected": true,
+              "display_name": "Tables",
+              "type": "table_grouping",
+              "description": null,
+              "children": [
+                {
+                  "id": "9aead084-6d79-5dfd-9b14-ad8c1a0c8661",
+                  "is_selected": false,
+                  "display_name": "agg_denial_by_payer",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "d7b2b37e-c8ac-59f9-8cd3-8674e6d76e0f",
+                      "is_selected": false,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "99082370-2693-5406-ae46-da3f5579ce79",
+                  "is_selected": false,
+                  "display_name": "agg_glp1_pa_yield",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "7d84c89d-151c-5aae-8729-62e195e1e936",
+                      "is_selected": false,
+                      "display_name": "plan_year",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "int64",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "ecbfde71-0cd3-5ee4-a903-e9a19ad0b93f",
+                  "is_selected": false,
+                  "display_name": "agg_health_equity_index_proxy",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "d67ca633-2b4e-5acb-bc38-71408a8c1dc2",
+                      "is_selected": false,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "c708c42e-b427-53d2-bf6c-833d837d50d9",
+                  "is_selected": false,
+                  "display_name": "agg_mlr_monthly",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "39b3d94e-a821-52dc-bcf9-5c7aacbdb5a4",
+                      "is_selected": false,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "e6689a5d-bde0-56dd-8717-aefb8adfb5b4",
+                  "is_selected": false,
+                  "display_name": "agg_oon_directory_inaccuracy",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "7d6b50dc-c79d-5700-af56-a6cb70fdacf1",
+                      "is_selected": false,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "6b146dd3-b5f0-5b5c-9887-fc8d6d373b12",
+                  "is_selected": false,
+                  "display_name": "agg_pa_tat",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "c6ee6e1d-51f8-55eb-9a9e-1000164e0f73",
+                      "is_selected": false,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "0ae9f05f-5760-5a20-a69d-f1ad3cef14d1",
+                  "is_selected": false,
+                  "display_name": "agg_readmissions",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "b0416276-d826-596d-99b8-6a594f276897",
+                      "is_selected": false,
+                      "display_name": "plan_year",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "int64",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "afe5389d-61c0-5657-89b7-0ee63ba06845",
+                  "is_selected": false,
+                  "display_name": "agg_sdoh_burden",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "4f4fe8f5-64d0-581b-afbf-579aee31a611",
+                      "is_selected": false,
+                      "display_name": "plan_year",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "int64",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "4c4b77e0-c91e-5c10-8d5b-6f33e9b505c0",
+                  "is_selected": false,
+                  "display_name": "agg_stars_compliance",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "1b25a5c5-39d5-56b7-a2d3-3f2da86173a5",
+                      "is_selected": false,
+                      "display_name": "measure_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "242c0d06-880d-5f09-90be-ae887826acc9",
+                  "is_selected": true,
+                  "display_name": "dim_date",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "26570485-3c7b-58c6-8643-b7ad0971f0ec",
+                      "is_selected": true,
+                      "display_name": "date_key",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "int64",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "d31184bf-3a4a-51ab-a86b-694f39e3f9ef",
+                  "is_selected": false,
+                  "display_name": "dim_diagnosis",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "98370bab-fce5-58d2-ab54-d0f2df511392",
+                      "is_selected": false,
+                      "display_name": "dx_code",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "d1883acb-16da-5d79-a3ae-16bf0482f075",
+                  "is_selected": false,
+                  "display_name": "dim_drug",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "e785dac5-0cb1-5715-9035-96821be85b10",
+                      "is_selected": false,
+                      "display_name": "ndc_code",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "d8bf93a4-c7fd-5b6a-bcf6-e66c28164563",
+                  "is_selected": false,
+                  "display_name": "dim_hcc",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "af9df70a-26db-5970-8e74-44d85d94a87c",
+                      "is_selected": false,
+                      "display_name": "hcc_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "fff3aaf1-0d21-56de-84dc-e5416ba336f5",
+                  "is_selected": false,
+                  "display_name": "dim_lob",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "0334cca9-e213-5558-92e5-ed96d9628dcb",
+                      "is_selected": false,
+                      "display_name": "lob_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "4ed36e83-1e22-581a-879c-aed13e24d21d",
+                  "is_selected": true,
+                  "display_name": "dim_member",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "5454a398-a92b-5e22-9dbd-2d995aca8513",
+                      "is_selected": true,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "100c0d6a-cc57-532a-a887-1af9dc617bb5",
+                  "is_selected": true,
+                  "display_name": "dim_payer",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "8655ffa9-2bb2-5998-8627-90a954018597",
+                      "is_selected": true,
+                      "display_name": "payer_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "4f6af3df-8049-5b45-8a68-beaee296b447",
+                  "is_selected": false,
+                  "display_name": "dim_procedure",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "922d05e2-b1c7-50dd-9ffc-bf03c7c40017",
+                      "is_selected": false,
+                      "display_name": "cpt_hcpcs",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "d389544c-a16b-574e-9a93-168994ff895e",
+                  "is_selected": false,
+                  "display_name": "dim_product",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "2845a359-c86f-5b9e-a39a-6c46fc4a44ea",
+                      "is_selected": false,
+                      "display_name": "product_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "4e65b6b6-82d9-53a2-86dc-291666fa08fa",
+                  "is_selected": true,
+                  "display_name": "dim_provider",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "0f67a032-2e6d-5853-b594-4aa65a58f9df",
+                      "is_selected": true,
+                      "display_name": "provider_npi",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "542f8773-13df-5b0e-8d4f-7bbcbb6184c2",
+                  "is_selected": true,
+                  "display_name": "fact_appeal",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "90239e24-f440-538c-a8ca-8cc92f2f0147",
+                      "is_selected": true,
+                      "display_name": "appeal_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "94397a9b-f373-5b10-808d-a3d0ee8c68fb",
+                  "is_selected": false,
+                  "display_name": "fact_auth",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "5157f9b1-48b7-5111-a2a0-8800d14ee244",
+                      "is_selected": false,
+                      "display_name": "auth_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "9e1b5a44-6c3f-57b1-b889-4b6d6daec81d",
+                  "is_selected": false,
+                  "display_name": "fact_cahps_response",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "2ad7c989-301b-5068-8f28-c843afc6db9e",
+                      "is_selected": false,
+                      "display_name": "response_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "e714a1fa-7b78-529e-b934-4147d340957d",
+                  "is_selected": true,
+                  "display_name": "fact_claim",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "fd60985a-702a-5def-afeb-b5b498613ced",
+                      "is_selected": true,
+                      "display_name": "claim_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "0d3cacf3-5152-5f2e-a5d0-bd3323200f1f",
+                  "is_selected": false,
+                  "display_name": "fact_member_month",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "4d7e86ab-aca9-55d2-b1af-05ddfc6b3170",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "d0fdd2d4-9c67-50ee-8992-c8eaf07fc2d1",
+                  "is_selected": false,
+                  "display_name": "fact_outreach",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "9c6ec0e3-148f-5b5f-973e-5d62bb3403b7",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "b11134c1-74a3-525f-9da7-f375f40a6490",
+                  "is_selected": false,
+                  "display_name": "fact_pharmacy_pa",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "1414999c-dbbc-53ff-9a4c-8912e0fb3bce",
+                      "is_selected": false,
+                      "display_name": "pa_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "133b4dd1-643a-5891-baf6-0e90c467c561",
+                  "is_selected": false,
+                  "display_name": "fact_premium",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "0ccb5ed2-9617-5c13-8ecf-592a9687747a",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "40dbec10-7bb0-5d2a-bb31-0f2c1a58c323",
+                  "is_selected": false,
+                  "display_name": "fact_provider_directory_attestation",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "6d82bf2f-8d1f-5338-8e69-d04e10a5d63c",
+                      "is_selected": false,
+                      "display_name": "provider_npi",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "e5720b6a-e3bb-5d67-b8a7-3244e4dc1733",
+                  "is_selected": false,
+                  "display_name": "fact_provider_sanction",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "b787d803-b9c9-56d4-aa18-c2d977ad00d7",
+                      "is_selected": false,
+                      "display_name": "sanction_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "283233f6-14a5-5dc1-b580-ae5695632d37",
+                  "is_selected": false,
+                  "display_name": "fact_quality_event",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "fc740300-7a7a-57eb-9004-f6005c1d65f8",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "c90df009-6e10-5994-9efe-e81ee9d6c302",
+                  "is_selected": false,
+                  "display_name": "fact_raf_score",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "371e776e-cba5-53d9-b218-dfac3d702f4e",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "0585fe0b-9de4-513f-b34d-e4bf8cb27b91",
+                  "is_selected": false,
+                  "display_name": "fact_readmission",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "8b0cda35-f946-5ac6-9aee-16f9b0ac102f",
+                      "is_selected": false,
+                      "display_name": "readmit_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "02bb4346-f30b-50ca-886c-6819efb79ffb",
+                  "is_selected": true,
+                  "display_name": "fact_rx_claim",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "e75b702e-ece3-513a-a21c-e7d86248f363",
+                      "is_selected": true,
+                      "display_name": "rx_claim_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "e5fb46ba-f057-50cb-af7a-1cb580204aea",
+                  "is_selected": false,
+                  "display_name": "fact_sdoh_assessment",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "822310ca-bf90-5f8c-ad31-01f828a8cec3",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "bced4412-afc8-56d2-87d3-8554b29f8ff8",
+                  "is_selected": false,
+                  "display_name": "fact_vbc_attribution",
+                  "type": "lakehouse_tables.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "bafb6a60-d970-5e49-8b42-74275d318c24",
+                      "is_selected": false,
+                      "display_name": "member_id",
+                      "type": "lakehouse_tables.column",
+                      "data_type": "string",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

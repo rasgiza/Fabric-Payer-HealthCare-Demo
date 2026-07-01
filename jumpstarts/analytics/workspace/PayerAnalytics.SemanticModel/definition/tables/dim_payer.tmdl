@@ -1,0 +1,49 @@
+table dim_payer
+	lineageTag: d5000005-0001-0001-0001-00000000001300
+	sourceLineageTag: [dbo].[dim_payer]
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001301
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001302
+		summarizeBy: none
+		sourceColumn: payer_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001303
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	column parent_org
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001304
+		summarizeBy: none
+		sourceColumn: parent_org
+
+		annotation SummarizationSetBy = Automatic
+
+	column market_states
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001305
+		summarizeBy: none
+		sourceColumn: market_states
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_payer = entity
+		mode: directLake
+		source
+			entityName: dim_payer
+			expressionSource: 'DirectLake - lh_gold_curated'

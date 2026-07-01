@@ -1,0 +1,777 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "00000000-0000-0000-0000-000000000000",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "displayName": "PayerAnalytics",
+  "type": "semantic_model",
+  "dataSourceInstructions": "PayerAnalytics Direct Lake semantic model \u2014 primary surface for CFOAgent KPIs. Use DAX measures (already pre-computed) for rates, ratios, and fleet aggregates. Use SUMMARIZECOLUMNS over dim_* + measure(s) for grouped breakdowns. Allowed tables for this persona: ['agg_denial_by_payer', 'agg_mlr_monthly', 'dim_date', 'dim_lob', 'dim_member', 'dim_payer', 'dim_product', 'dim_provider', 'fact_appeal', 'fact_claim', 'fact_member_month', 'fact_premium'].",
+  "userDescription": "PayerAnalytics SM exposed to CFOAgent (allowlist: ['agg_denial_by_payer', 'agg_mlr_monthly', 'dim_date', 'dim_lob', 'dim_member', 'dim_payer', 'dim_product', 'dim_provider', 'fact_appeal', 'fact_claim', 'fact_member_month', 'fact_premium']).",
+  "metadata": {},
+  "elements": [
+    {
+      "id": "d1f9a4d7-6960-55bd-9970-ce32b0885d03",
+      "is_selected": true,
+      "display_name": "agg_denial_by_payer",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "7a84c349-768c-52fe-b8d4-be916260c952",
+          "is_selected": true,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "221527b3-34ce-500f-ac7a-ded270df7f3d",
+          "is_selected": true,
+          "display_name": "Avg Denial Rate",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "4221b6e3-f09b-57e0-8b6b-3bbda697dac0",
+      "is_selected": false,
+      "display_name": "agg_glp1_pa_yield",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "9b1c4ab4-2b0a-5d4b-b5d5-71b74d70ba05",
+          "is_selected": false,
+          "display_name": "plan_year",
+          "type": "semantic_model.column",
+          "data_type": "Int64",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "20f0f9de-14cd-544c-abae-3e07f4c32651",
+      "is_selected": false,
+      "display_name": "agg_health_equity_index_proxy",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "febf2ae1-55b0-56bf-9ae9-e1e31db72fa6",
+          "is_selected": false,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "6c97937f-7226-5303-9c85-0617a38acbe9",
+      "is_selected": true,
+      "display_name": "agg_mlr_monthly",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "dfb35d00-0700-50ac-b424-d820e02d3f38",
+          "is_selected": true,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "02000c65-a68f-5e1d-bb82-f846ce19220b",
+          "is_selected": true,
+          "display_name": "Avg MLR (Monthly Est)",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "8afc02d3-9316-5d8f-a271-6dbfaa7781ae",
+      "is_selected": false,
+      "display_name": "agg_oon_directory_inaccuracy",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "a4e5c5e7-cea8-5711-b139-e1bef319ff3b",
+          "is_selected": false,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "21b44737-b314-59f6-9765-3e544266cf0a",
+      "is_selected": false,
+      "display_name": "agg_pa_tat",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "e9574761-ab69-564b-9d77-c07743a50082",
+          "is_selected": false,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "e45293a8-0506-5c43-a818-9c0fed392ed3",
+          "is_selected": false,
+          "display_name": "Avg PA TAT (Median Hrs)",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "a83bca03-8cdf-5a1b-b584-b6699e5f3821",
+          "is_selected": false,
+          "display_name": "Avg PA SLA Compliance",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "c87a6327-b9fd-5935-90c0-591ed2ff3bc2",
+      "is_selected": false,
+      "display_name": "agg_readmissions",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "50233a0d-f1df-5903-bc83-934d19bab5a3",
+          "is_selected": false,
+          "display_name": "plan_year",
+          "type": "semantic_model.column",
+          "data_type": "Int64",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "427cb298-0114-58c1-b4b1-20f98296282d",
+      "is_selected": false,
+      "display_name": "agg_sdoh_burden",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "3dbb3d27-7544-5159-aba4-bdb4bfe95c5a",
+          "is_selected": false,
+          "display_name": "plan_year",
+          "type": "semantic_model.column",
+          "data_type": "Int64",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "46ac63d7-744d-52b0-9f0d-06a3087e9fe1",
+      "is_selected": false,
+      "display_name": "agg_stars_compliance",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "15bf7aee-a35a-51d9-a5a8-94108131e39e",
+          "is_selected": false,
+          "display_name": "measure_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "343e1055-ebf6-5d7c-a7fe-cbbf9b20f943",
+          "is_selected": false,
+          "display_name": "Avg Stars Compliance",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "6b28d5bf-3363-58ce-b876-075024ce0cb0",
+      "is_selected": true,
+      "display_name": "dim_date",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "d56a177b-de48-5877-97ef-a1f8f48e7be3",
+          "is_selected": true,
+          "display_name": "date_key",
+          "type": "semantic_model.column",
+          "data_type": "Int64",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "36850bf8-db54-55de-92ea-74b0c9280e1a",
+      "is_selected": false,
+      "display_name": "dim_diagnosis",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "5ab9c74f-5511-5e45-b190-c1fd75dcf748",
+          "is_selected": false,
+          "display_name": "dx_code",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "1a549d5f-3eda-5de4-b1b4-a8017045bd2d",
+      "is_selected": false,
+      "display_name": "dim_drug",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "9bc48754-3529-5712-9c37-680d6bcc1219",
+          "is_selected": false,
+          "display_name": "ndc_code",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "4d3b2eb3-9e34-5e5b-8f6c-dbd7657fd385",
+      "is_selected": false,
+      "display_name": "dim_hcc",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "43814755-0655-5fdb-bab2-4bf1cc208bb0",
+          "is_selected": false,
+          "display_name": "hcc_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "35894a7c-23d2-50c4-bf81-83f5257dde42",
+      "is_selected": true,
+      "display_name": "dim_lob",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "d558b46a-2830-5aa8-8937-0e36648a8a30",
+          "is_selected": true,
+          "display_name": "lob_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "633548e6-f2e9-570f-9b01-56818ee2f9e1",
+      "is_selected": true,
+      "display_name": "dim_member",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "da59c2e6-0192-5a20-b5e8-36e53970b456",
+          "is_selected": true,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "a5afcb69-256c-5f3d-b449-2f43245f9e18",
+      "is_selected": true,
+      "display_name": "dim_payer",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "27cc255e-dc86-572f-92f5-a49ef62f6c19",
+          "is_selected": true,
+          "display_name": "payer_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "231963d7-03bd-54c0-8ef4-716519f06ea1",
+      "is_selected": false,
+      "display_name": "dim_procedure",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "15ca5f00-b0ff-5e77-b52b-989a6156e011",
+          "is_selected": false,
+          "display_name": "cpt_hcpcs",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "8bd60323-013e-52cf-a543-7548f8927812",
+      "is_selected": true,
+      "display_name": "dim_product",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "b45d2495-9cb6-52a0-9fc2-c5887760cd51",
+          "is_selected": true,
+          "display_name": "product_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "e8bc1862-c4f7-5b06-80e9-a017df1059be",
+      "is_selected": true,
+      "display_name": "dim_provider",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "30dc8b2c-ebb7-5abd-a911-252c8203f187",
+          "is_selected": true,
+          "display_name": "provider_npi",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "6ad30c6c-beea-5aba-a1bb-34c49a71526d",
+      "is_selected": true,
+      "display_name": "fact_appeal",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "08e8c270-4e3b-51fc-a85f-69f21b9033fe",
+          "is_selected": true,
+          "display_name": "appeal_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "16c37e16-c6a0-5de0-aad6-89b038808b7e",
+          "is_selected": true,
+          "display_name": "Total Appeals",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "c78b5aa1-2c2e-500f-99b9-0be2077d8a26",
+      "is_selected": false,
+      "display_name": "fact_auth",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "9669066e-41b3-5c06-8571-75d8a03a597d",
+          "is_selected": false,
+          "display_name": "auth_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "17367519-40cc-5e0b-a8a9-62f9416b314d",
+          "is_selected": false,
+          "display_name": "Total Auths",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "9d49d5ce-6c98-5d35-ba80-037a79ce2841",
+      "is_selected": false,
+      "display_name": "fact_cahps_response",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "b0e1ed04-7c16-54ca-ba44-0ed1b2c4b766",
+          "is_selected": false,
+          "display_name": "response_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "6ca50121-007b-5eea-9eba-33726190354c",
+      "is_selected": true,
+      "display_name": "fact_claim",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "ccc61769-b5e1-5394-a1f5-42eb763b934d",
+          "is_selected": true,
+          "display_name": "claim_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "70b365ad-a0d8-55de-a291-8f8cdad4ef4b",
+          "is_selected": true,
+          "display_name": "Total Claims",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "47ed42e8-2fd4-54ae-a823-cbc762721c06",
+          "is_selected": true,
+          "display_name": "Total Billed",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "2809804f-b563-589d-b35f-0115328a1c74",
+          "is_selected": true,
+          "display_name": "Total Allowed",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "f710e90b-661c-5abf-88f4-9a981a7c83f0",
+          "is_selected": true,
+          "display_name": "Total Paid",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "25ce11aa-d7a7-5f4e-a0e0-32459aa3ca0c",
+          "is_selected": true,
+          "display_name": "Denial Rate",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "d4f35507-494b-55ea-823e-ca8c769fcde1",
+          "is_selected": true,
+          "display_name": "Allowed Yield",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "f1dfb8fc-cceb-5ea6-aeba-73ee8b8bcef8",
+      "is_selected": true,
+      "display_name": "fact_member_month",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "968accf0-d2bc-51b0-940f-332dcdc99e57",
+          "is_selected": true,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "c54efd68-8d4f-5ff7-8552-885be3a50064",
+      "is_selected": false,
+      "display_name": "fact_outreach",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "6f8fb734-8c37-5987-b55e-6bb0ee32afc3",
+          "is_selected": false,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "c0654930-41c1-5db9-a939-70b29eaaf0dc",
+      "is_selected": false,
+      "display_name": "fact_pharmacy_pa",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "645ccad4-f81b-5655-8682-1725d764f4ac",
+          "is_selected": false,
+          "display_name": "pa_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "54c3b0c5-af47-5535-a014-24956eb1a9b0",
+          "is_selected": false,
+          "display_name": "Total PA Requests",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        },
+        {
+          "id": "70d30396-c1a9-512d-bd55-220b82c89c59",
+          "is_selected": false,
+          "display_name": "PA Approval Rate",
+          "type": "semantic_model.measure",
+          "data_type": "Double",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "719cecdc-5fb7-5963-b2a1-fb83d32e6d1e",
+      "is_selected": true,
+      "display_name": "fact_premium",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "ca60482a-2f92-5326-96c4-19836d8bcbdd",
+          "is_selected": true,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "3c25dbbc-e555-55c3-b195-d14afbdfd365",
+      "is_selected": false,
+      "display_name": "fact_provider_directory_attestation",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "dc56c0ef-9a7d-5a30-976c-6f2d0ee2c8e1",
+          "is_selected": false,
+          "display_name": "provider_npi",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "2a35b8d6-2461-514b-b527-106872262ff9",
+      "is_selected": false,
+      "display_name": "fact_provider_sanction",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "99f61532-ba90-5e3b-856c-c5acf5782a7c",
+          "is_selected": false,
+          "display_name": "sanction_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "fc555743-0e68-5007-aead-411d19da3612",
+      "is_selected": false,
+      "display_name": "fact_quality_event",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "e157da71-fdf5-516b-8ad3-68034c9e95e7",
+          "is_selected": false,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "16a2940c-6f58-5496-b7fe-a86086477c9d",
+      "is_selected": false,
+      "display_name": "fact_raf_score",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "210df084-f922-5a1b-ae20-8075e3393f02",
+          "is_selected": false,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "3edf02a8-2c64-579a-88d0-2c6c19ccc712",
+      "is_selected": false,
+      "display_name": "fact_readmission",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "f442b00b-38d1-57f3-ab10-f7bd7b82dccf",
+          "is_selected": false,
+          "display_name": "readmit_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "08d9bc4b-c0e9-5bfc-8255-fc54a70f547a",
+      "is_selected": false,
+      "display_name": "fact_rx_claim",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "b7fe6232-0439-502c-a073-58a86872cf25",
+          "is_selected": false,
+          "display_name": "rx_claim_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "6db244ec-b2c3-5bc5-86e5-e02561b8b5d0",
+      "is_selected": false,
+      "display_name": "fact_sdoh_assessment",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "d1304e77-b0d7-5d3b-9521-f5a1dd68524a",
+          "is_selected": false,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "b252c82b-f90f-576e-ade5-30dc1bac3fba",
+      "is_selected": false,
+      "display_name": "fact_vbc_attribution",
+      "type": "semantic_model.table",
+      "description": null,
+      "children": [
+        {
+          "id": "e6fe0e9d-dfc6-5c46-a517-d2c60f4e9522",
+          "is_selected": false,
+          "display_name": "member_id",
+          "type": "semantic_model.column",
+          "data_type": "String",
+          "description": null,
+          "children": []
+        }
+      ]
+    }
+  ]
+}

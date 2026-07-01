@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/publishInfo/1.0.0/schema.json",
+  "description": "CFO Agent (CFOAgent) for the CFO, RevenueCycle persona(s). Bound to PayerAnalytics semantic model (Direct Lake over lh_gold_curated) and the Payer_Ontology graph. Allowed gold tables: fact_claim, fact_appeal, fact_premium, fact_member_month, agg_mlr_monthly, agg_denial_by_payer, dim_member, dim_payer, dim_product, dim_lob, dim_provider, dim_date."
+}

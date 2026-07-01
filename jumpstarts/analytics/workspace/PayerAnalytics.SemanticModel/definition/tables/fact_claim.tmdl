@@ -1,0 +1,236 @@
+table fact_claim
+	lineageTag: d5000005-0001-0001-0001-00000000001a00
+	sourceLineageTag: [dbo].[fact_claim]
+
+	measure 'Total Claims' = COUNTROWS(fact_claim)
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001ae1
+
+	measure 'Total Billed' = SUM(fact_claim[billed_amount])
+		lineageTag: d5000005-0001-0001-0001-00000000001ae2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Allowed' = SUM(fact_claim[allowed_amount])
+		lineageTag: d5000005-0001-0001-0001-00000000001ae3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Paid' = SUM(fact_claim[paid_amount])
+		lineageTag: d5000005-0001-0001-0001-00000000001ae4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Denial Rate' = DIVIDE(CALCULATE(COUNTROWS(fact_claim), fact_claim[denied_int] = 1), COUNTROWS(fact_claim))
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5000005-0001-0001-0001-00000000001ae5
+
+	measure 'Allowed Yield' = DIVIDE([Total Allowed], [Total Billed])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5000005-0001-0001-0001-00000000001ae6
+
+	column claim_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a01
+		summarizeBy: none
+		sourceColumn: claim_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column line_no
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a02
+		summarizeBy: none
+		sourceColumn: line_no
+
+		annotation SummarizationSetBy = Automatic
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a03
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column provider_npi
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a04
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+		annotation SummarizationSetBy = Automatic
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a05
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column service_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d5000005-0001-0001-0001-00000000001a06
+		summarizeBy: none
+		sourceColumn: service_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column service_date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a07
+		summarizeBy: none
+		sourceColumn: service_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a08
+		summarizeBy: none
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column claim_type
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a09
+		summarizeBy: none
+		sourceColumn: claim_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column place_of_service
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a0a
+		summarizeBy: none
+		sourceColumn: place_of_service
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a0b
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	column primary_dx_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a0c
+		summarizeBy: none
+		sourceColumn: primary_dx_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column cpt_hcpcs
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a0d
+		summarizeBy: none
+		sourceColumn: cpt_hcpcs
+
+		annotation SummarizationSetBy = Automatic
+
+	column modifier
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a0e
+		summarizeBy: none
+		sourceColumn: modifier
+
+		annotation SummarizationSetBy = Automatic
+
+	column units
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a0f
+		summarizeBy: sum
+		sourceColumn: units
+
+		annotation SummarizationSetBy = Automatic
+
+	column billed_amount
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001a10
+		summarizeBy: sum
+		sourceColumn: billed_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column allowed_amount
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001a11
+		summarizeBy: sum
+		sourceColumn: allowed_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column paid_amount
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001a12
+		summarizeBy: sum
+		sourceColumn: paid_amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column member_liability
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000001a13
+		summarizeBy: sum
+		sourceColumn: member_liability
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column denied_int
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a14
+		summarizeBy: none
+		sourceColumn: denied_int
+
+		annotation SummarizationSetBy = Automatic
+
+	column paid_int
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000001a15
+		summarizeBy: none
+		sourceColumn: paid_int
+
+		annotation SummarizationSetBy = Automatic
+
+	column carc_code
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001a16
+		summarizeBy: none
+		sourceColumn: carc_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column pa_required_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001a17
+		summarizeBy: none
+		sourceColumn: pa_required_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_claim = entity
+		mode: directLake
+		source
+			entityName: fact_claim
+			expressionSource: 'DirectLake - lh_gold_curated'

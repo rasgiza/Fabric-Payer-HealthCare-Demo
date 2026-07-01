@@ -1,0 +1,88 @@
+table agg_denial_by_payer
+	lineageTag: d5000005-0001-0001-0001-00000000002a00
+	sourceLineageTag: [dbo].[agg_denial_by_payer]
+
+	measure 'Avg Denial Rate' = AVERAGE(agg_denial_by_payer[denial_rate])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: d5000005-0001-0001-0001-00000000002ae1
+
+	column payer_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002a01
+		summarizeBy: none
+		sourceColumn: payer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002a02
+		summarizeBy: none
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column claims
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002a03
+		summarizeBy: sum
+		sourceColumn: claims
+
+		annotation SummarizationSetBy = Automatic
+
+	column denied_claims
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002a04
+		summarizeBy: sum
+		sourceColumn: denied_claims
+
+		annotation SummarizationSetBy = Automatic
+
+	column denial_rate
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002a05
+		summarizeBy: none
+		sourceColumn: denial_rate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column billed_total
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002a06
+		summarizeBy: sum
+		sourceColumn: billed_total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column allowed_total
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002a07
+		summarizeBy: sum
+		sourceColumn: allowed_total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column paid_total
+		dataType: double
+		lineageTag: d5000005-0001-0001-0001-00000000002a08
+		summarizeBy: sum
+		sourceColumn: paid_total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition agg_denial_by_payer = entity
+		mode: directLake
+		source
+			entityName: agg_denial_by_payer
+			expressionSource: 'DirectLake - lh_gold_curated'

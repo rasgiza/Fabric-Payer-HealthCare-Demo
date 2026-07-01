@@ -1,0 +1,58 @@
+table fact_quality_event
+	lineageTag: d5000005-0001-0001-0001-00000000002000
+	sourceLineageTag: [dbo].[fact_quality_event]
+
+	column member_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002001
+		summarizeBy: none
+		sourceColumn: member_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column measure_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002002
+		summarizeBy: none
+		sourceColumn: measure_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column plan_year
+		dataType: int64
+		formatString: 0
+		lineageTag: d5000005-0001-0001-0001-00000000002003
+		summarizeBy: none
+		sourceColumn: plan_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column eligible
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000002004
+		summarizeBy: none
+		sourceColumn: eligible
+
+		annotation SummarizationSetBy = Automatic
+
+	column compliant
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000002005
+		summarizeBy: none
+		sourceColumn: compliant
+
+		annotation SummarizationSetBy = Automatic
+
+	column lob
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000002006
+		summarizeBy: none
+		sourceColumn: lob
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_quality_event = entity
+		mode: directLake
+		source
+			entityName: fact_quality_event
+			expressionSource: 'DirectLake - lh_gold_curated'

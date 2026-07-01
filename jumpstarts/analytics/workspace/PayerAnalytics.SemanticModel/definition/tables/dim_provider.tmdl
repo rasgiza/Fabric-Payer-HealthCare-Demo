@@ -1,0 +1,97 @@
+table dim_provider
+	lineageTag: d5000005-0001-0001-0001-00000000001200
+	sourceLineageTag: [dbo].[dim_provider]
+
+	column provider_npi
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001201
+		summarizeBy: none
+		sourceColumn: provider_npi
+
+		annotation SummarizationSetBy = Automatic
+
+	column provider_name
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001202
+		summarizeBy: none
+		sourceColumn: provider_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column specialty_type
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001203
+		summarizeBy: none
+		sourceColumn: specialty_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_pcp
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001204
+		summarizeBy: none
+		sourceColumn: is_pcp
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001205
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column in_network_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001206
+		summarizeBy: none
+		sourceColumn: in_network_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column apm_tier
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-00000000001207
+		summarizeBy: none
+		sourceColumn: apm_tier
+
+		annotation SummarizationSetBy = Automatic
+
+	column gold_carded_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001208
+		summarizeBy: none
+		sourceColumn: gold_carded_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column leie_excluded_flag
+		dataType: boolean
+		lineageTag: d5000005-0001-0001-0001-00000000001209
+		summarizeBy: none
+		sourceColumn: leie_excluded_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column vbc_contract_id
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-0000000000120a
+		summarizeBy: none
+		sourceColumn: vbc_contract_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column vbc_risk_arrangement
+		dataType: string
+		lineageTag: d5000005-0001-0001-0001-0000000000120b
+		summarizeBy: none
+		sourceColumn: vbc_risk_arrangement
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_provider = entity
+		mode: directLake
+		source
+			entityName: dim_provider
+			expressionSource: 'DirectLake - lh_gold_curated'

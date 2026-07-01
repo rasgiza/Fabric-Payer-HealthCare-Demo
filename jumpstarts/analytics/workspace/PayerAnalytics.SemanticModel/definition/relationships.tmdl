@@ -1,0 +1,130 @@
+relationship d5000005-0001-0001-0001-00000000ff0001
+	fromColumn: fact_claim.service_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0002
+	fromColumn: fact_claim.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff0003
+	fromColumn: fact_claim.provider_npi
+	toColumn: dim_provider.provider_npi
+
+relationship d5000005-0001-0001-0001-00000000ff0004
+	fromColumn: fact_claim.payer_id
+	toColumn: dim_payer.payer_id
+
+relationship d5000005-0001-0001-0001-00000000ff0005
+	fromColumn: fact_claim.primary_dx_code
+	toColumn: dim_diagnosis.dx_code
+
+relationship d5000005-0001-0001-0001-00000000ff0006
+	fromColumn: fact_claim.cpt_hcpcs
+	toColumn: dim_procedure.cpt_hcpcs
+
+relationship d5000005-0001-0001-0001-00000000ff0007
+	fromColumn: fact_claim.lob
+	toColumn: dim_lob.lob_id
+
+relationship d5000005-0001-0001-0001-00000000ff0008
+	fromColumn: fact_rx_claim.fill_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0009
+	fromColumn: fact_rx_claim.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff000a
+	fromColumn: fact_rx_claim.ndc_code
+	toColumn: dim_drug.ndc_code
+
+relationship d5000005-0001-0001-0001-00000000ff000b
+	fromColumn: fact_auth.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff000c
+	fromColumn: fact_appeal.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff000d
+	isActive: false
+	fromColumn: fact_member_month.year_month_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff000e
+	fromColumn: fact_member_month.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff000f
+	fromColumn: fact_member_month.payer_id
+	toColumn: dim_payer.payer_id
+
+relationship d5000005-0001-0001-0001-00000000ff0010
+	fromColumn: fact_quality_event.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff0011
+	fromColumn: fact_raf_score.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff0012
+	fromColumn: fact_pharmacy_pa.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff0013
+	fromColumn: fact_pharmacy_pa.submitted_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0014
+	isActive: false
+	fromColumn: fact_pharmacy_pa.decision_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0015
+	fromColumn: fact_provider_sanction.provider_npi
+	toColumn: dim_provider.provider_npi
+
+relationship d5000005-0001-0001-0001-00000000ff0016
+	fromColumn: fact_provider_directory_attestation.provider_npi
+	toColumn: dim_provider.provider_npi
+
+relationship d5000005-0001-0001-0001-00000000ff0017
+	fromColumn: fact_readmission.index_dis_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0018
+	isActive: false
+	fromColumn: fact_readmission.readmit_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff0019
+	fromColumn: fact_sdoh_assessment.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff001a
+	fromColumn: fact_sdoh_assessment.assessment_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff001b
+	fromColumn: fact_cahps_response.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff001c
+	fromColumn: fact_outreach.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff001d
+	fromColumn: fact_outreach.outreach_date_key
+	toColumn: dim_date.date_key
+
+relationship d5000005-0001-0001-0001-00000000ff001e
+	fromColumn: fact_vbc_attribution.member_id
+	toColumn: dim_member.member_id
+
+relationship d5000005-0001-0001-0001-00000000ff001f
+	fromColumn: fact_vbc_attribution.provider_npi
+	toColumn: dim_provider.provider_npi
+
+relationship d5000005-0001-0001-0001-00000000ff0020
+	fromColumn: dim_product.lob
+	toColumn: dim_lob.lob_id

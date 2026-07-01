@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/publishInfo/1.0.0/schema.json",
+  "description": "Network/Contracting Agent (NetworkAgent) for the Network, Contracting persona(s). Bound to PayerAnalytics semantic model (Direct Lake over lh_gold_curated) and the Payer_Ontology graph. Allowed gold tables: fact_claim, dim_provider, dim_payer, dim_lob, dim_date."
+}
