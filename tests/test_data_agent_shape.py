@@ -189,10 +189,29 @@ def test_manifest_matches_disk():
         assert listed == on_disk, f"{agent}: manifest drift\n  listed={sorted(listed)}\n  on_disk={sorted(on_disk)}"
 
 
-def test_datasource_artifact_and_workspace_ids_are_zero_guids():
-    """fabric-cicd parameterizes these at deploy; they must be zero-GUIDs in repo."""
+# Each datasource's artifactId must be the *logicalId* of its backing item, so
+# fabric-cicd's native logicalId->GUID replacement rewrites it at publish time
+# (a zero-GUID would trip the "Data source ArtifactId cannot be an empty GUID"
+# validator and fail the Jumpstart install of all 8 agents). workspaceId stays
+# a zero-GUID — fabric-cicd's _replace_workspace_ids resolves it to the target
+# workspace. Mirrors the proven payer-provider jumpstart pattern.
+ZERO_GUID = "00000000-0000-0000-0000-000000000000"
+DATASOURCE_ARTIFACT_LOGICAL_ID = {
+    "lakehouse-tables-lh_gold_curated": "a2000002-0001-0001-0001-000000000004",
+    "semantic-model-PayerAnalytics": "d5000005-0001-0001-0001-000000000001",
+    "graph-Payer_Ontology": "d5000005-0001-0001-0001-000000000002",
+}
+
+
+def test_datasource_artifact_ids_are_backing_logical_ids():
+    """artifactId = backing item logicalId (deploy-time parameterized); workspaceId = zero-GUID."""
     for agent in EXPECTED_AGENTS:
         for ds in EXPECTED_DATASOURCES:
-            obj = _load_json(_agent_dir(agent) / "Files/Config/draft" / ds / "datasource.json")
-            assert obj["artifactId"] == "00000000-0000-0000-0000-000000000000"
-            assert obj["workspaceId"] == "00000000-0000-0000-0000-000000000000"
+            for stage in ("draft", "published"):
+                obj = _load_json(_agent_dir(agent) / "Files/Config" / stage / ds / "datasource.json")
+                assert obj["artifactId"] == DATASOURCE_ARTIFACT_LOGICAL_ID[ds], (
+                    f"{agent}/{stage}/{ds}: artifactId must be the backing item logicalId"
+                )
+                assert obj["workspaceId"] == ZERO_GUID, (
+                    f"{agent}/{stage}/{ds}: workspaceId must stay a zero-GUID"
+                )
