@@ -61,14 +61,16 @@ def test_launcher_gold_sanity_check_covers_key_aggregates(workspace_dir: Path) -
 
 
 def test_launcher_has_b35_cell_count(workspace_dir: Path) -> None:
-    """Launcher must keep its 6-cell shape (1 markdown + 5 python).
+    """Launcher must keep its 8-cell shape (1 markdown + 7 python).
 
     Accepts both Fabric notebook serialisations of the cell delimiter:
       - canonical export:  `# CELL ********************` / `# MARKDOWN ****...`
         (cell language lives in the following `# META {...}` block), and
       - legacy inline:     `# CELL **{"language":"python"}**`.
-    Only the cell *shape* (1 markdown + 5 python) is asserted, not the token
+    Only the cell *shape* (1 markdown + 7 python) is asserted, not the token
     spelling, so a format round-trip through Fabric doesn't break the gate.
+    The 7 python cells are: CONFIG, knowledge upload, ETL, semantic-model
+    rebuild, DataAgent patch, sanity check, and deferred SM refresh.
     """
     import re
 
@@ -85,7 +87,7 @@ def test_launcher_has_b35_cell_count(workspace_dir: Path) -> None:
         py = cells  # all non-markdown cells in the launcher are python
 
     assert md == 1, f"expected 1 markdown cell, found {md}"
-    assert py == 5, f"expected 5 python cells (CONFIG + 4 steps), found {py}"
+    assert py == 7, f"expected 7 python cells (CONFIG + 6 steps), found {py}"
 
 
 def test_launcher_exposes_jumpstart_config(workspace_dir: Path) -> None:
